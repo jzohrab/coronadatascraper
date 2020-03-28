@@ -352,15 +352,21 @@ describe('html-table-schema-validator', () => {
       for (var k in options) {
         values[k] = options[k];
       }
-      console.log(values);
 
       // Do replacement
+      let html = $html;
+      for (var k in values)
+        html = html.replace(k, values[k]);
+
+      /*
       const html = $html.
-            replace('A_C', values.AC).
+            replace('A_C', values.A_C).
             replace('A_D', values.A_D).
             replace('B_C', values.B_C).
             replace('B_D', values.B_D);
+      */
       console.log(html);
+
       const c = cheerio.load(html);
       $table = c('table#tid').eq(0);
       return $table;
@@ -377,8 +383,6 @@ describe('html-table-schema-validator', () => {
             ]
           };
           let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county'});
-          console.log('**********************');
-          console.log(t.html());
           expect(1+2).toBe(3); // TODO
         });
  
