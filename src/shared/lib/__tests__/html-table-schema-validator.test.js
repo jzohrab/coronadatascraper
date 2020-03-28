@@ -366,6 +366,7 @@ ${lines}
 </html>`;
       const c = cheerio.load(tmp);
       $table = c('table#tid').eq(0);
+      console.log($table.html());
       return $table;
     }
     
