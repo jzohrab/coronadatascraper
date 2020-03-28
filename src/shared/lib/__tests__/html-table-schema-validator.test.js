@@ -37,20 +37,29 @@ class HtmlTableValidor {
   }
 
   static checkHeadings(table, headingRules) {
+    const headerrow = table.find('tr').first();
+    const headingCellTag = 'th';
+
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      const heading = 'blahhead';
+      const heading = headerrow
+        .find(headingCellTag)
+        .eq(column)
+        .text();
       const rule = headingRules[column];
       if (rule instanceof RegExp) {
-        if (!rule.test(heading)) errs.push(`xxxRegex failure`);
+        if (!rule.test(heading)) {
+          const msg = `heading ${column} value "${heading}" did not match regex ${rule}`;
+          errs.push(msg);
+        }
       } else if (rule instanceof String) {
         if (rule !== heading) errs.push(`xxxSTRING failure`);
       } else {
         throw new Error(`Unhandled heading rule ${rule}`);
       }
     }
-    return ['blah'];
+    return errs;
   }
 
   /* eslint-ensable class-methods-use-this, no-unused-vars */
@@ -147,6 +156,7 @@ etc
     });
 
     /*
+can use tr for header row cells
 headers with empty table
 exact string matches
 multiple headers
