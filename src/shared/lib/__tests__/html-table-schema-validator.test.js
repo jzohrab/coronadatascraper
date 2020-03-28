@@ -28,11 +28,6 @@ class HtmlTableValidor {
       result.push(...he);
     }
 
-    // console.log("rules['headings']['0']");
-    // console.log(typeof(rules['headings']['0']));
-    // console.log(rules['headings']['0'] instanceof RegExp);
-    // console.log('headings' in rules);
-
     return result;
   }
 
@@ -48,6 +43,7 @@ class HtmlTableValidor {
         .eq(column)
         .text();
       const rule = headingRules[column];
+
       if (rule instanceof RegExp) {
         if (!rule.test(heading)) {
           const msg = `heading ${column} value "${heading}" did not match regex ${rule}`;
@@ -59,6 +55,7 @@ class HtmlTableValidor {
         throw new Error(`Unhandled heading rule ${rule}`);
       }
     }
+
     return errs;
   }
 
@@ -144,7 +141,7 @@ etc
   });
 
   describe('headers', () => {
-    test('can check headers with regex', () => {
+    test('one header with regex', () => {
       const rules = {
         headings: {
           0: /shouldfail/
@@ -155,12 +152,30 @@ etc
       expect(v.errors($table)).toEqual(['heading 0 value "county" did not match regex /shouldfail/']);
     });
 
+    test('multiple headers with regexes', () => {
+      const rules = {
+        headings: {
+          0: /shouldfail/,
+          1: /another_bad/
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = [
+        'heading 0 value "county" did not match regex /shouldfail/',
+        'heading 1 value "cases" did not match regex /another_bad/'
+      ];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
     /*
+case-insense match
 can use tr for header row cells
 headers with empty table
 exact string matches
 multiple headers
 bad search type fails
+good header search (match all columns)
 */
   });
 
