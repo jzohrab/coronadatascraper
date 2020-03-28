@@ -33,9 +33,13 @@ class HtmlTableValidor {
 
   static checkHeadings(table, headingRules) {
     // ASSUMPTION: header is on first row.
-    const headerrow = table.find('tr').first();
+    const trs = table.find('tr');
+    if (trs.length === 0) {
+      return ['no headers in table'];
+    }
 
-    // ASSUMPTION: using th or td for headings.
+    const headerrow = trs.first();
+
     let headingCellTag = 'th';
     if (headerrow.find('th').length === 0) headingCellTag = 'td';
 
@@ -243,8 +247,23 @@ describe('html-table-schema-validator', () => {
       }).toThrow();
     });
 
+    test('reports error if no rows in table', () => {
+      const norows = '<html><head><table id="tid"></table></head></html>';
+      const c = cheerio.load(norows);
+      $table = c('table#tid').eq(0);
+      const rules = {
+        headings: {
+          0: 'something',
+          1: 'Cases'
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = ['no headers in table'];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
     test.todo('reports error if a rule refers to a non-existent column');
-    test.todo('reports error if there is no table header row');
   });
 
   describe('success', () => {
