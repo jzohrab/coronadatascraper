@@ -181,14 +181,25 @@ etc
       expect(v.errors($table)).toEqual([]);
     });
 
+    test('regex checks can be case-insensitive', () => {
+      const rules = {
+        headings: {
+          0: /county/i,
+          1: /CASES/i,
+          2: /DEATHS/i
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(true);
+      expect(v.errors($table)).toEqual([]);
+    });
+
     /*
 case-insense match
 can use tr for header row cells
 headers with empty table
 exact string matches
-multiple headers
 bad search type fails
-good header search (match all columns)
 */
   });
 
