@@ -361,9 +361,9 @@ ${table_rows}
   </body>
 </html>`;
       const c = cheerio.load(tmp);
-      $table = c('table#tid').eq(0);
+      let ret = c('table#tid').eq(0);
       // console.log($table.html());
-      return $table;
+      return ret;
     }
 
     /* TODO REMOVE THIS
@@ -428,7 +428,7 @@ ${table_rows}
     
     describe('any row', () => {
 
-      $table = build_table(
+      let $table = build_table(
         `apple county| 10| 20
          deer county | 66| 77`
       );
