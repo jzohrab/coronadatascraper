@@ -168,7 +168,14 @@ describe('html-table-schema-validator', () => {
       expect(v.errors(t)).toEqual(['null/undefined table']);
     });
 
-    test.todo('no error if empty table but no rules');
+    test('no error if empty table but no rules', () => {
+      const norows = '<html><head><table id="tid"></table></head></html>';
+      const c = cheerio.load(norows);
+      $table = c('table#tid').eq(0);
+      const rules = {};
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(true);
+    });
   });
 
   describe('headers', () => {
