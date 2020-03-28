@@ -349,7 +349,7 @@ describe('html-table-schema-validator', () => {
         A_D: 0,
         B_D: 0
       };
-      for (var k in options.keys) {
+      for (var k in options) {
         console.log(`changing ${k}`);
         values[k] = options[k];
       }
