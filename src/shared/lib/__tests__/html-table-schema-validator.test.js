@@ -28,6 +28,11 @@ class HtmlTableValidor {
       result.push(...he);
     }
 
+    if ('minrows' in this.rules) {
+      const re = HtmlTableValidor.checkMinRows(table, this.rules.minrows);
+      result.push(...re);
+    }
+    
     return result;
   }
 
@@ -80,6 +85,15 @@ class HtmlTableValidor {
     }
 
     return errs;
+  }
+
+  static checkMinRows(table, minrows) {
+    const trs = table.find('tr');
+    console.log(`have ${trs.length} rows, need ${minrows}`);
+    if (trs.length < parseInt(minrows)) {
+      return [`expected at least ${minrows} rows, only have ${trs.length}`];
+    }
+    return [];
   }
 
   /* eslint-ensable class-methods-use-this, no-unused-vars */
@@ -291,20 +305,21 @@ describe('html-table-schema-validator', () => {
     });
   });
 
-  describe('success', () => {
-    test('success if no validation rules', () => {
-      const h = '<html><body><table id="tid"><tr><td>a</td></tr><tr><td>1</td></tr></table></body></html>';
-
-      const $ = cheerio.load(h);
-      const $table = $('table#tid').eq(0);
-
-      const rules = {};
+  describe('minrows', () => {
+    test('fails if table has insufficient rows', () => {
+      const rules = {
+        minrows: 10
+      };
       const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(true);
+      const expected = [
+        'expected at least 10 rows, only have 3'
+      ];
+      expect(v.errors($table)).toEqual(expected);
+      expect(v.success($table)).toBe(false);
     });
   });
 
-  test.todo('should have min rows');
+
   test.todo('check column contents');
   test.todo('checks invalid schema rules');
 });
