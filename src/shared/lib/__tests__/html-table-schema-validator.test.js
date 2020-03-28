@@ -378,7 +378,7 @@ describe('html-table-schema-validator', () => {
           };
           let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county'});
           console.log('**********************');
-          console.log(t.innerHTML);
+          console.log(t.html());
           expect(1+2).toBe(3); // TODO
         });
  
