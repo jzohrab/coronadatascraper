@@ -234,7 +234,16 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test.todo('throws error if a bad rule is used');
+    test('throws error if a bad rule is used', () => {
+      const rules = {
+        headings: { 0: {} }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(() => {
+        v.success($table);
+      }).toThrow();
+    });
+
     test.todo('reports error if a rule refers to a non-existent column');
     test.todo('reports error if there is no table header row');
   });
