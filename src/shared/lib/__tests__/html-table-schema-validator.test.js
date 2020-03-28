@@ -360,6 +360,7 @@ describe('html-table-schema-validator', () => {
             replace('A_D', values.A_D).
             replace('B_C', values.B_C).
             replace('B_D', values.B_D);
+      console.log(html);
       const c = cheerio.load(html);
       $table = c('table#tid').eq(0);
       return $table;
