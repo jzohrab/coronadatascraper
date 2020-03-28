@@ -340,7 +340,7 @@ describe('html-table-schema-validator', () => {
   describe('data row column checks', () => {
 
     function build_table(data) {
-      let lines = data.
+      let table_rows = data.
           split(/[\r\n]+/).
           filter(lin => lin.trim() != '').
           map(lin => lin.replace(/^ +/g, '')).
@@ -348,10 +348,6 @@ describe('html-table-schema-validator', () => {
               map(el => `<td>${el.trim()}</td>`).join('')
              ).
           map(lin => `<tr>${lin.trim()}</tr>`).join("\n");
-      // let rows = lines.
-         //  map(lin 
-          // map(lin => `<tr><td>${lin.join('</td>
-      console.log(lines);
 
         const tmp = `
 <html>
@@ -360,16 +356,17 @@ describe('html-table-schema-validator', () => {
       <tr>
         <th>county</th><th>cases</th><th>deaths</th>
       </tr>
-${lines}
+${table_rows}
     </table>
   </body>
 </html>`;
       const c = cheerio.load(tmp);
       $table = c('table#tid').eq(0);
-      console.log($table.html());
+      // console.log($table.html());
       return $table;
     }
-    
+
+    /* TODO REMOVE THIS
     // Note: load Cases col first, then Deaths.
     function data_table(options) {
       let values = {
@@ -389,40 +386,64 @@ ${lines}
       for (var k in values)
         html = html.replace(k, values[k]);
 
-      /*
       const html = $html.
             replace('A_C', values.A_C).
             replace('A_D', values.A_D).
             replace('B_C', values.B_C).
             replace('B_D', values.B_D);
-      */
+
       console.log(html);
 
       const c = cheerio.load(html);
       $table = c('table#tid').eq(0);
       return $table;
     }
+    */  // END TODO
 
+    /*
     test('aoeuaouaoeu', () => {
-      build_table(`a|b|c
-                   d|e|f`);
+      build_table(
+        `apple county|10|20
+         deer counter|66|77`
+      );
     });
+
+      const $html = `
+<html>
+  <body>
+    <table id="tid">
+      <tr>
+        <th>county</th><th>cases</th><th>deaths</th>
+      </tr>
+      <tr>
+        <td>A_NAME</td><td>A_C</td><td>A_D</td>
+      </tr>
+      <tr>
+        <td>B_NAME</td><td>B_C</td><td>B_D</td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+    */
     
     describe('any row', () => {
 
+      $table = build_table(
+        `apple county| 10| 20
+         deer county | 66| 77`
+      );
+      
       describe('regex', () => {
         test('passes if any row matches', () => {
-          let overrides = {A_NAME: 'apple county', B_NAME: 'bats county'};
-          let t = data_table(overrides);
           const rules = {
             data: [
-              ['ANY', 0, /county/]
+              ['ANY', 0, /apple/]
             ]
           };
           const v = new HtmlTableValidor(rules);
-          expect(v.success(t)).toBe(true);
+          expect(v.success($table)).toBe(true);
           const expected = [];
-          expect(v.errors(t)).toEqual(expected);
+          expect(v.errors($table)).toEqual(expected);
         });
  
         test.todo('fails if no row matches');
