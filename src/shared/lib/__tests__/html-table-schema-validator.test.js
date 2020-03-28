@@ -375,15 +375,17 @@ describe('html-table-schema-validator', () => {
     describe('any row', () => {
 
       describe('regex', () => {
-        
         test('passes if any row matches', () => {
+          let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county'});
           const rules = {
             data: [
               ['ANY', 0, /county/]
             ]
           };
-          let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county'});
-          expect(1+2).toBe(3); // TODO
+          const v = new HtmlTableValidor(rules);
+          expect(v.success(t)).toBe(true);
+          const expected = [];
+          expect(v.errors(t)).toEqual(expected);
         });
  
         test.todo('fails if no row matches');
