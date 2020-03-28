@@ -64,10 +64,10 @@ describe('html-table-schema-validator', () => {
         <th>county</th><th>cases</th><th>deaths</th>
       </tr>
       <tr>
-        <td>county</td><td>cases</td><td>deaths</td>
+        <td>apple county</td><td>11</td><td>1</td>
       </tr>
       <tr>
-        <td>county</td><td>cases</td><td>deaths</td>
+        <td>bowls county</td><td>22</td><td>2</td>
       </tr>
     </table>
   </body>
