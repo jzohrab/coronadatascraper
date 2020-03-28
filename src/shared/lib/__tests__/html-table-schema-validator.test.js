@@ -248,9 +248,5 @@ etc
     });
   });
 
-  /*
-  TODO_describe('checks invalid schema', () => {
-schema should only contain expected rules
-  });
-  */
+  test.todo('checks invalid schema rules');
 });
