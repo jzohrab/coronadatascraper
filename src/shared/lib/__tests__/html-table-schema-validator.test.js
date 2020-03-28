@@ -126,6 +126,10 @@ class HtmlTableValidor {
 // Tests - everything above this will be removed, or go into another file
 
 describe('html-table-schema-validator', () => {
+
+  // The html table that most tests will be using.
+  // For some tests, we replace the data tokens
+  // A_C, A_D, B_C, B_D with actual values.
   const $html = `
 <html>
   <body>
@@ -134,10 +138,10 @@ describe('html-table-schema-validator', () => {
         <th>county</th><th>cases</th><th>deaths</th>
       </tr>
       <tr>
-        <td>apple county</td><td>11</td><td>1</td>
+        <td>apple county</td><td>A_C</td><td>A_D</td>
       </tr>
       <tr>
-        <td>bowls county</td><td>22</td><td>2</td>
+        <td>bowls county</td><td>B_C</td><td>B_D</td>
       </tr>
     </table>
   </body>
@@ -334,6 +338,19 @@ describe('html-table-schema-validator', () => {
   });
 
   describe('data row column checks', () => {
+    // Note: load Cases col first, then Deaths.
+    function data_table(A_C, B_C, A_D, B_D) {
+      const html = $html.
+            replace('A_C', A_C).
+            replace('A_D', A_D).
+            replace('B_C', B_C).
+            replace('B_D', B_D);
+      const c = cheerio.load(html);
+      $table = c('table#tid').eq(0);
+      console.log($table.innerHTML);
+      return $table;
+    }
+    
     describe('any row', () => {
       test.todo('todo');
     });
