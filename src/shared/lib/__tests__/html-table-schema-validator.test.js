@@ -8,6 +8,7 @@ class HtmlTableValidor {
     this.rules = rules;
   }
 
+  // TODO remove these elint things
   /* eslint-disable class-methods-use-this, no-unused-vars */
   success(table) {
     // hacks to get past lint.
@@ -15,7 +16,34 @@ class HtmlTableValidor {
     return true;
   }
   /* eslint-ensable class-methods-use-this, no-unused-vars */
+  // TODO remove these elint things
 }
+
+// //// SAMPLE CODE - will be removed
+
+/*
+  const $ = cheerio.load(h);
+  console.log($.html());
+  console.log(
+  $('table#tid')
+  .first()
+  .html()
+  );
+*/
+
+/*
+  const $table = $('table#tid').eq(0);
+  const $trs = $table.find('tr');
+  console.log(`got ${$trs.length} trs`);
+  $trs.each((index, tr) => {
+  const $tr = $(tr);
+  console.log($tr.find('td:first-child').text());
+  });
+*/
+
+// //// END SAMPLE CODE - will be removed
+
+// Tests - everything above this will be removed, or go into another file
 
 describe('html-table-schema-validator', () => {
   describe('success', () => {
@@ -23,25 +51,7 @@ describe('html-table-schema-validator', () => {
       const h = '<html><body><table id="tid"><tr><td>a</td></tr><tr><td>1</td></tr></table></body></html>';
 
       const $ = cheerio.load(h);
-      /*
-      console.log($.html());
-      console.log(
-        $('table#tid')
-          .first()
-          .html()
-      );
-      */
-
       const $table = $('table#tid').eq(0);
-
-      /*
-      const $trs = $table.find('tr');
-      console.log(`got ${$trs.length} trs`);
-      $trs.each((index, tr) => {
-        const $tr = $(tr);
-        console.log($tr.find('td:first-child').text());
-      });
-      */
 
       const rules = {};
       const v = new HtmlTableValidor(rules);
@@ -50,7 +60,7 @@ describe('html-table-schema-validator', () => {
   });
 
   /*
-  describe('errors', () => {
+  TODO_describe('errors', () => {
 null table
 rule failed
 empty table
@@ -58,10 +68,8 @@ empty table
 etc
   });
 
-  describe('checks invalid schema', () => {
-    test('adds 1 + 2 to equal 3', () => {
-      expect(1 + 4).toBe(3);
-    });
+  TODO_describe('checks invalid schema', () => {
+schema should only contain expected rules
   });
   */
 });
