@@ -16,7 +16,13 @@ class HtmlTableValidor {
 
   // Returns list of error messages.
   errors(table) {
-    return [];
+    const result = [];
+    if (table === null || table === undefined) {
+      result.push('null/undefined table');
+      return result;
+    }
+
+    return result;
   }
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
@@ -78,13 +84,27 @@ describe('html-table-schema-validator', () => {
 
   describe('errors', () => {
     test('no errors if no rules', () => {
-      const rules = {};
-      const v = new HtmlTableValidor(rules);
+      const v = new HtmlTableValidor({});
       expect(v.success($table)).toBe(true);
       expect(v.errors($table)).toEqual([]);
     });
 
+    test('error if table is null', () => {
+      const v = new HtmlTableValidor({});
+      expect(v.success(null)).toBe(false);
+      expect(v.errors(null)).toEqual(['null/undefined table']);
+    });
+
+    test('error if table is undefined', () => {
+      const v = new HtmlTableValidor({});
+      expect(v.success(undefined)).toBe(false);
+      expect(v.errors(undefined)).toEqual(['null/undefined table']);
+    });
+
     /*
+    test('', () => {
+    });
+
 null table
 rule failed
 empty table
