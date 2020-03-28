@@ -347,7 +347,6 @@ describe('html-table-schema-validator', () => {
             replace('B_D', B_D);
       const c = cheerio.load(html);
       $table = c('table#tid').eq(0);
-      console.log($table.innerHTML);
       return $table;
     }
     
@@ -357,10 +356,12 @@ describe('html-table-schema-validator', () => {
         
         test('passes if any row matches', () => {
           const rules = {
-            data: {
-              0: /county/
-            }
+            data: [
+              ['ANY', 0, /county/]
+            ]
           };
+          let t = data_table({'A_NAME': 'a county', 'B_NAME': 'b county'})
+          console.log(t.innerHTML);
           expect(1+2).toBe(3); // TODO
         });
  
