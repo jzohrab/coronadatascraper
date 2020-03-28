@@ -23,8 +23,36 @@ class HtmlTableValidor {
       return result;
     }
 
+    if ('headings' in this.rules) {
+      const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
+      result.push(...he);
+    }
+
+    // console.log("rules['headings']['0']");
+    // console.log(typeof(rules['headings']['0']));
+    // console.log(rules['headings']['0'] instanceof RegExp);
+    // console.log('headings' in rules);
+
     return result;
   }
+
+  static checkHeadings(table, headingRules) {
+    const errs = [];
+    // eslint-disable-next-line guard-for-in
+    for (const column in headingRules) {
+      const heading = 'blahhead';
+      const rule = headingRules[column];
+      if (rule instanceof RegExp) {
+        if (!rule.test(heading)) errs.push(`xxxRegex failure`);
+      } else if (rule instanceof String) {
+        if (rule !== heading) errs.push(`xxxSTRING failure`);
+      } else {
+        throw new Error(`Unhandled heading rule ${rule}`);
+      }
+    }
+    return ['blah'];
+  }
+
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
 }
@@ -107,7 +135,16 @@ etc
   });
 
   describe('headers', () => {
-    test('can check headers with regex', () => {});
+    test('can check headers with regex', () => {
+      const rules = {
+        headings: {
+          0: /shouldfail/
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      expect(v.errors($table)).toEqual(['heading 0 value "county" did not match regex /shouldfail/']);
+    });
 
     /*
 headers with empty table
