@@ -344,7 +344,7 @@ describe('html-table-schema-validator', () => {
           split(/[\r\n]+/).
           filter(lin => lin.trim() != '').
           map(lin => lin.replace(/^ +/g, '')).
-          map(lin => lin.split('|').map(el => '<td>' + el.trim() + '</td>').join());
+          map(lin => lin.split('|').map(el => '<td>' + el.trim() + '</td>').join(''));
       // let rows = lines.
          //  map(lin 
           // map(lin => `<tr><td>${lin.join('</td>
