@@ -168,6 +168,19 @@ etc
       expect(v.errors($table)).toEqual(expected);
     });
 
+    test('successful regex checks', () => {
+      const rules = {
+        headings: {
+          0: /county/,
+          1: /cases/,
+          2: /deaths/
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(true);
+      expect(v.errors($table)).toEqual([]);
+    });
+
     /*
 case-insense match
 can use tr for header row cells
