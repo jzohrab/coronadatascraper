@@ -376,7 +376,7 @@ describe('html-table-schema-validator', () => {
 
       describe('regex', () => {
         test('passes if any row matches', () => {
-          let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county'});
+          let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county', A_D: 42});
           const rules = {
             data: [
               ['ANY', 0, /county/]
