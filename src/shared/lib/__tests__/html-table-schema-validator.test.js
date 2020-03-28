@@ -342,8 +342,12 @@ describe('html-table-schema-validator', () => {
     function build_table(data) {
       let lines = data.
           split(/[\r\n]+/).
+          filter(lin => lin.trim() != '').
           map(lin => lin.replace(/^ +/g, '')).
-          map(lin => lin.split('|'));
+          map(lin => lin.split('|').map(el => '<td>' + el.trim() + '</td>').join());
+      // let rows = lines.
+         //  map(lin 
+          // map(lin => `<tr><td>${lin.join('</td>
       console.log(lines);
     }
     
