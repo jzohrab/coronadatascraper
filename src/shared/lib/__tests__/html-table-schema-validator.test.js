@@ -440,6 +440,7 @@ ${table_rows}
               ['ANY', 0, /apple/]
             ]
           };
+          console.log($table.html());
           const v = new HtmlTableValidor(rules);
           expect(v.success($table)).toBe(true);
           const expected = [];
