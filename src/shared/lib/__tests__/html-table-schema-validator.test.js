@@ -352,16 +352,51 @@ describe('html-table-schema-validator', () => {
     }
     
     describe('any row', () => {
-      test.todo('todo');
+
+      describe('regex', () => {
+        
+        test('passes if any row matches', () => {
+          const rules = {
+            data: {
+              0: /county/
+            }
+          };
+          expect(1+2).toBe(3); // TODO
+        });
+ 
+        test.todo('fails if no row matches');
+        test.todo('can use numeric regex');
+        test.todo('bad column');
+      });
+
+      describe('string', () => {
+        test.todo('passes if any row matches');
+        test.todo('fails if no row matches');
+        test.todo('bad column');
+      });
+              
     });
+
     describe('all rows', () => {
-      test.todo('todo');
+      describe('regex', () => {
+        test.todo('passes if all rows match');
+        test.todo('fails if any row does not match');
+        test.todo('can use numeric regex');
+        test.todo('bad column');
+      });
     });
-    describe('last row', () => {
-      test.todo('todo');
-    });
-    describe('row number', () => {
-      test.todo('todo');
+
+    describe('single cell', () => {
+      describe('regex', () => {
+        test.todo('passes if match');
+        test.todo('fails if does not match');
+        test.todo('bad cell coords');
+      });
+      describe('string', () => {
+        test.todo('passes if match');
+        test.todo('fails if does not match');
+        test.todo('bad cell coords');
+      });
     });
   });
   
