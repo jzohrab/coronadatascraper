@@ -340,7 +340,10 @@ describe('html-table-schema-validator', () => {
   describe('data row column checks', () => {
 
     function build_table(data) {
-      let lines = data.split(/[\r\n]+/).map(lin => lin.replace(/^ +/g, ''));
+      let lines = data.
+          split(/[\r\n]+/).
+          map(lin => lin.replace(/^ +/g, '')).
+          map(lin => lin.split('|'));
       console.log(lines);
     }
     
