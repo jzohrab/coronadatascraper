@@ -32,7 +32,12 @@ class HtmlTableValidor {
       const re = HtmlTableValidor.checkMinRows(table, this.rules.minrows);
       result.push(...re);
     }
-    
+
+    if ('data' in this.rules) {
+      const de = HtmlTableValidor.checkData(table, this.data);
+      result.push(...de);
+    }
+
     return result;
   }
 
@@ -95,6 +100,68 @@ class HtmlTableValidor {
     return [];
   }
 
+
+  static checkData(table, dataRules) {
+    const trs = table.find('tr');
+    if (trs.length === 0) {
+      return ['no rows in table'];
+    }
+
+    // ASSUMPTION: data starts on the second row.
+    const datatrs = trs.slice(1);
+    // console.log(datatrs);
+
+    const first_data_row_cells = trs.eq(1).find('td');
+    const errs = [];
+
+    // eslint-disable-next-line guard-for-in
+    for (const rule in dataRules) {
+      if (isNaN(rule.column)) {
+        errs.push(`Data column ${rule.column} does not exist`);
+        continue;
+      }
+
+      if (parseInt(rule.column) > (first_data_row_cells.length - 1)) {
+        errs.push(`Data column ${rule.column} does not exist`);
+        continue;
+      }
+    }
+
+    // eslint-disable-next-line guard-for-in
+    for (const rule in dataRules.filter(r => r.row === 'ANY')) {
+      for (const dr in datatrs) {
+        errs.push(`SOMEERROR for ${r.rule}`);
+      }
+    }
+
+    /*
+      const headings = headerrow.find(headingCellTag);
+
+      const heading = headings
+        .eq(column)
+        .text();
+      const rule = headingRules[column];
+
+      if (rule instanceof RegExp) {
+        if (!rule.test(heading)) {
+          const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
+          errs.push(msg);
+        }
+      } else if (typeof rule === 'string') {
+        if (rule !== heading) {
+          const msg = `heading ${column} "${heading}" did not match string "${rule}"`;
+          errs.push(msg);
+        }
+      } else {
+        const msg = `Unhandled heading rule ${rule} of type ${typeof rule}`;
+        throw new Error(msg);
+      }
+    }
+    */
+    
+    return errs;
+  }
+
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
 }
@@ -124,6 +191,8 @@ class HtmlTableValidor {
 // ############## END SAMPLE CODE - will be removed #############
 
 // Tests - everything above this will be removed, or go into another file
+
+// TODO - refactor tests, lots of duplication on checking validation good or not.
 
 describe('html-table-schema-validator', () => {
 
@@ -437,17 +506,30 @@ ${table_rows}
         test('passes if any row matches', () => {
           const rules = {
             data: [
-              ['ANY', 0, /apple/]
+              { row: 'ANY', column: 0, rule: /apple/ }
             ]
           };
-          console.log($table.html());
+          // console.log($table.html());
           const v = new HtmlTableValidor(rules);
           expect(v.success($table)).toBe(true);
           const expected = [];
           expect(v.errors($table)).toEqual(expected);
         });
  
-        test.todo('fails if no row matches');
+        test('fails if no row matches', () => {
+          const rules = {
+            data: [
+              { row: 'ANY', column: 0, rule: /UNKNOWN/ }
+            ]
+          };
+          const v = new HtmlTableValidor(rules);
+          expect(v.success($table)).toBe(false);
+          const expected = [
+            'no row in column 0 matches regex /UNKNOWN/'
+          ];
+          expect(v.errors($table)).toEqual(expected);
+        });
+        
         test.todo('can use numeric regex');
         test.todo('bad column');
       });
