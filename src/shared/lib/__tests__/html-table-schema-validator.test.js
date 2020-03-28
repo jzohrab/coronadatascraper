@@ -350,20 +350,16 @@ describe('html-table-schema-validator', () => {
         B_D: 0
       };
       for (var k in options) {
-        console.log(`changing ${k}`);
         values[k] = options[k];
       }
       console.log(values);
 
-      let vs = Object.assign({}, values, options);
-      console.log(vs);
-      
       // Do replacement
       const html = $html.
-            replace('A_C', vs.AC).
-            replace('A_D', vs.A_D).
-            replace('B_C', vs.B_C).
-            replace('B_D', vs.B_D);
+            replace('A_C', values.AC).
+            replace('A_D', values.A_D).
+            replace('B_C', values.B_C).
+            replace('B_D', values.B_D);
       const c = cheerio.load(html);
       $table = c('table#tid').eq(0);
       return $table;
