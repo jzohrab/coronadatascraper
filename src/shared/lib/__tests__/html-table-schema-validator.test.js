@@ -137,8 +137,6 @@ describe('html-table-schema-validator', () => {
     test('', () => {
     });
 
-null table
-rule failed
 empty table
 ... try each spec rule in order
 etc
@@ -146,7 +144,7 @@ etc
   });
 
   describe('headers', () => {
-    test('one header with regex', () => {
+    test('can check header with regex', () => {
       const rules = {
         headings: {
           0: /shouldfail/
@@ -158,7 +156,7 @@ etc
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test('multiple headers with regexes', () => {
+    test('can check multiple headers at once', () => {
       const rules = {
         headings: {
           0: /shouldfail/,
@@ -174,7 +172,7 @@ etc
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test('successful regex checks', () => {
+    test('passes if all regexes match', () => {
       const rules = {
         headings: {
           0: /county/,
@@ -187,7 +185,7 @@ etc
       expect(v.errors($table)).toEqual([]);
     });
 
-    test('regex checks can be case-insensitive', () => {
+    test('can check with case-insensitive regex', () => {
       const rules = {
         headings: {
           0: /county/i,
@@ -200,7 +198,7 @@ etc
       expect(v.errors($table)).toEqual([]);
     });
 
-    test('multiple headers with strings', () => {
+    test('can check headers with strings', () => {
       const rules = {
         headings: {
           0: 'something',
@@ -216,11 +214,25 @@ etc
       expect(v.errors($table)).toEqual(expected);
     });
 
-    /*
-can use tr for header row cells
-headers with empty table
-bad search type fails
-*/
+    test('can use <tr> for header cells', () => {
+      const rules = {
+        headings: {
+          0: 'something',
+          1: 'Cases'
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = [
+        'heading 0 "county" did not match string "something"',
+        'heading 1 "cases" did not match string "Cases"'
+      ];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
+    test.todo('throws error if a bad rule is used');
+    test.todo('reports error if a rule refers to a non-existent column');
+    test.todo('reports error if there is no table header row');
   });
 
   describe('success', () => {
