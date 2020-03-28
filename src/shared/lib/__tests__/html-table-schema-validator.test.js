@@ -19,7 +19,7 @@ class HtmlTableValidor {
   // TODO remove these elint things
 }
 
-// //// SAMPLE CODE - will be removed
+// ############## SAMPLE CODE - will be removed #############
 
 /*
   const $ = cheerio.load(h);
@@ -41,11 +41,38 @@ class HtmlTableValidor {
   });
 */
 
-// //// END SAMPLE CODE - will be removed
+// ############## END SAMPLE CODE - will be removed #############
 
 // Tests - everything above this will be removed, or go into another file
 
 describe('html-table-schema-validator', () => {
+  const $html = `
+<html>
+  <body>
+    <table id="tid">
+      <tr>
+        <td>a</td>
+      </tr>
+      <tr>
+        <td>1</td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+  describe('errors', () => {
+    /*
+null table
+rule failed
+empty table
+... try each spec rule in order
+etc
+*/
+    test('no errors if no rules', () => {
+      expect(1 + 2).toBe(3);
+    });
+  });
+
   describe('success', () => {
     test('success if no validation rules', () => {
       const h = '<html><body><table id="tid"><tr><td>a</td></tr><tr><td>1</td></tr></table></body></html>';
@@ -60,14 +87,6 @@ describe('html-table-schema-validator', () => {
   });
 
   /*
-  TODO_describe('errors', () => {
-null table
-rule failed
-empty table
-... try each spec rule in order
-etc
-  });
-
   TODO_describe('checks invalid schema', () => {
 schema should only contain expected rules
   });
