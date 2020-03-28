@@ -46,13 +46,18 @@ class HtmlTableValidor {
 
       if (rule instanceof RegExp) {
         if (!rule.test(heading)) {
-          const msg = `heading ${column} value "${heading}" did not match regex ${rule}`;
+          const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
           errs.push(msg);
         }
-      } else if (rule instanceof String) {
-        if (rule !== heading) errs.push(`xxxSTRING failure`);
+      } else if (typeof rule === 'string') {
+        if (rule !== heading) {
+          const msg = `heading ${column} "${heading}" did not match string "${rule}"`;
+          errs.push(msg);
+        }
       } else {
-        throw new Error(`Unhandled heading rule ${rule}`);
+        const msg = `Unhandled heading rule ${rule} of type ${typeof rule}`;
+        console.error(msg);
+        throw new Error(msg);
       }
     }
 
@@ -149,7 +154,8 @@ etc
       };
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
-      expect(v.errors($table)).toEqual(['heading 0 value "county" did not match regex /shouldfail/']);
+      const expected = ['heading 0 "county" did not match regex /shouldfail/'];
+      expect(v.errors($table)).toEqual(expected);
     });
 
     test('multiple headers with regexes', () => {
@@ -162,8 +168,8 @@ etc
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
       const expected = [
-        'heading 0 value "county" did not match regex /shouldfail/',
-        'heading 1 value "cases" did not match regex /another_bad/'
+        'heading 0 "county" did not match regex /shouldfail/',
+        'heading 1 "cases" did not match regex /another_bad/'
       ];
       expect(v.errors($table)).toEqual(expected);
     });
@@ -194,11 +200,25 @@ etc
       expect(v.errors($table)).toEqual([]);
     });
 
+    test('multiple headers with strings', () => {
+      const rules = {
+        headings: {
+          0: 'something',
+          1: 'Cases'
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = [
+        'heading 0 "county" did not match string "something"',
+        'heading 1 "cases" did not match string "Cases"'
+      ];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
     /*
-case-insense match
 can use tr for header row cells
 headers with empty table
-exact string matches
 bad search type fails
 */
   });
