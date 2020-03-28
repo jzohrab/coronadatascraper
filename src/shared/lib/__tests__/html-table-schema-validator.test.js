@@ -46,8 +46,19 @@ class HtmlTableValidor {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      const heading = headerrow
-        .find(headingCellTag)
+      if (isNaN(column)) {
+        errs.push(`heading column ${column} does not exist`);
+        continue;
+      }
+
+      const headings = headerrow.find(headingCellTag);
+
+      if (parseInt(column) > headings.length) {
+        errs.push(`heading column ${column} does not exist`);
+        continue;
+      }
+      
+      const heading = headings
         .eq(column)
         .text();
       const rule = headingRules[column];
@@ -263,7 +274,21 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test.todo('reports error if a rule refers to a non-existent column');
+    test('reports error if a rule refers to a non-existent column', () => {
+      const rules = {
+        headings: {
+          'a': 'something',
+          17: 'Cases'
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = [
+        'heading column 17 does not exist',
+        'heading column a does not exist',
+      ];
+      expect(v.errors($table)).toEqual(expected);
+    });
   });
 
   describe('success', () => {
