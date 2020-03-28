@@ -326,7 +326,20 @@ describe('html-table-schema-validator', () => {
     });
   });
 
-
-  test.todo('check column contents');
+  describe('data row column checks', () => {
+    describe('any row', () => {
+      test.todo('todo');
+    });
+    describe('all rows', () => {
+      test.todo('todo');
+    });
+    describe('last row', () => {
+      test.todo('todo');
+    });
+    describe('row number', () => {
+      test.todo('todo');
+    });
+  });
+  
   test.todo('checks invalid schema rules');
 });
