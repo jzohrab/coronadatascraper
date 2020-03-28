@@ -339,6 +339,11 @@ describe('html-table-schema-validator', () => {
 
   describe('data row column checks', () => {
 
+    function build_table(data) {
+      let lines = data.split(/[\r\n]+/);
+      console.log(lines);
+    }
+    
     // Note: load Cases col first, then Deaths.
     function data_table(options) {
       let values = {
@@ -371,12 +376,18 @@ describe('html-table-schema-validator', () => {
       $table = c('table#tid').eq(0);
       return $table;
     }
+
+    test('aoeuaouaoeu', () => {
+      build_table(`a|b|c
+                   d|e|f`);
+    });
     
     describe('any row', () => {
 
       describe('regex', () => {
         test('passes if any row matches', () => {
-          let t = data_table({A_NAME: 'apple county', B_NAME: 'bats county', A_D: 42});
+          let overrides = {A_NAME: 'apple county', B_NAME: 'bats county'};
+          let t = data_table(overrides);
           const rules = {
             data: [
               ['ANY', 0, /county/]
