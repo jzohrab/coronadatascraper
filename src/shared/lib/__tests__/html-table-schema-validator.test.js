@@ -32,12 +32,12 @@ class HtmlTableValidor {
   }
 
   static checkHeadings(table, headingRules) {
-    // ASSUMPTION: header is on first row.
     const trs = table.find('tr');
     if (trs.length === 0) {
-      return ['no headers in table'];
+      return ['no rows in table'];
     }
 
+    // ASSUMPTION: header is on first row.
     const headerrow = trs.first();
 
     let headingCellTag = 'th';
@@ -270,7 +270,7 @@ describe('html-table-schema-validator', () => {
       };
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
-      const expected = ['no headers in table'];
+      const expected = ['no rows in table'];
       expect(v.errors($table)).toEqual(expected);
     });
 
