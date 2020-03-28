@@ -1,5 +1,6 @@
 // Test
 import cheerio from 'cheerio';
+import each from 'jest-each';
 
 // TODO: move this to its own file
 // TODO: code review on ... code style and everything, naming conventions, etc.
@@ -89,16 +90,11 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual([]);
     });
 
-    test('error if table is null', () => {
+    const noTable = [null, undefined];
+    each(noTable).test('error if table is %s', t => {
       const v = new HtmlTableValidor({});
-      expect(v.success(null)).toBe(false);
-      expect(v.errors(null)).toEqual(['null/undefined table']);
-    });
-
-    test('error if table is undefined', () => {
-      const v = new HtmlTableValidor({});
-      expect(v.success(undefined)).toBe(false);
-      expect(v.errors(undefined)).toEqual(['null/undefined table']);
+      expect(v.success(t)).toBe(false);
+      expect(v.errors(t)).toEqual(['null/undefined table']);
     });
 
     /*
