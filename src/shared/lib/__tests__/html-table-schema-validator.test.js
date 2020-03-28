@@ -32,8 +32,12 @@ class HtmlTableValidor {
   }
 
   static checkHeadings(table, headingRules) {
+    // ASSUMPTION: header is on first row.
     const headerrow = table.find('tr').first();
-    const headingCellTag = 'th';
+
+    // ASSUMPTION: using th or td for headings.
+    let headingCellTag = 'th';
+    if (headerrow.find('th').length === 0) headingCellTag = 'td';
 
     const errs = [];
     // eslint-disable-next-line guard-for-in
@@ -117,6 +121,10 @@ describe('html-table-schema-validator', () => {
   beforeEach(() => {
     const $ = cheerio.load($html);
     $table = $('table#tid').eq(0);
+
+    // Verify no screwups.
+    const headerrow = $table.find('tr').first();
+    expect(headerrow.find('th')).toHaveLength(3);
   });
 
   describe('errors', () => {
@@ -207,7 +215,10 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test('can use <tr> for header cells', () => {
+    test('can use <td> for header cells', () => {
+      const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
+      const c = cheerio.load(trhtml);
+      $table = c('table#tid').eq(0);
       const rules = {
         headings: {
           0: 'something',
