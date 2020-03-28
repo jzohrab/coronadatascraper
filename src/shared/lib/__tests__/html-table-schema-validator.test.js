@@ -89,7 +89,6 @@ class HtmlTableValidor {
 
   static checkMinRows(table, minrows) {
     const trs = table.find('tr');
-    console.log(`have ${trs.length} rows, need ${minrows}`);
     if (trs.length < parseInt(minrows)) {
       return [`expected at least ${minrows} rows, only have ${trs.length}`];
     }
@@ -316,6 +315,14 @@ describe('html-table-schema-validator', () => {
       ];
       expect(v.errors($table)).toEqual(expected);
       expect(v.success($table)).toBe(false);
+    });
+
+    test('passes if table has sufficient rows', () => {
+      const rules = {
+        minrows: 1
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(true);
     });
   });
 
