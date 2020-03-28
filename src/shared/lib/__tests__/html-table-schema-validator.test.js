@@ -133,14 +133,7 @@ describe('html-table-schema-validator', () => {
       expect(v.errors(t)).toEqual(['null/undefined table']);
     });
 
-    /*
-    test('', () => {
-    });
-
-empty table
-... try each spec rule in order
-etc
-*/
+    test.todo('no error if empty table but no rules');
   });
 
   describe('headers', () => {
@@ -248,5 +241,7 @@ etc
     });
   });
 
+  test.todo('should have min rows');
+  test.todo('check column contents');
   test.todo('checks invalid schema rules');
 });
