@@ -73,14 +73,11 @@ describe('html-table-schema-validator', () => {
   </body>
 </html>`;
 
-  let $ = null;
   let $table = null;
-  let $rules = null;
 
   beforeEach(() => {
-    $ = cheerio.load($html);
+    const $ = cheerio.load($html);
     $table = $('table#tid').eq(0);
-    $rules = {};
   });
 
   describe('errors', () => {
@@ -106,6 +103,17 @@ rule failed
 empty table
 ... try each spec rule in order
 etc
+*/
+  });
+
+  describe('headers', () => {
+    test('can check headers with regex', () => {});
+
+    /*
+headers with empty table
+exact string matches
+multiple headers
+bad search type fails
 */
   });
 
