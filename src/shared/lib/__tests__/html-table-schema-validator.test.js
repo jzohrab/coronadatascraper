@@ -352,6 +352,21 @@ describe('html-table-schema-validator', () => {
          //  map(lin 
           // map(lin => `<tr><td>${lin.join('</td>
       console.log(lines);
+
+        const tmp = `
+<html>
+  <body>
+    <table id="tid">
+      <tr>
+        <th>county</th><th>cases</th><th>deaths</th>
+      </tr>
+${lines}
+    </table>
+  </body>
+</html>`;
+      const c = cheerio.load(tmp);
+      $table = c('table#tid').eq(0);
+      return $table;
     }
     
     // Note: load Cases col first, then Deaths.
