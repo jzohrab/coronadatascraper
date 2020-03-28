@@ -11,9 +11,12 @@ class HtmlTableValidor {
   // TODO remove these elint things
   /* eslint-disable class-methods-use-this, no-unused-vars */
   success(table) {
-    // hacks to get past lint.
-    table = null;
-    return true;
+    return this.errors(table).length === 0;
+  }
+
+  // Returns list of error messages.
+  errors(table) {
+    return [];
   }
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
@@ -51,16 +54,36 @@ describe('html-table-schema-validator', () => {
   <body>
     <table id="tid">
       <tr>
-        <td>a</td>
+        <th>county</th><th>cases</th><th>deaths</th>
       </tr>
       <tr>
-        <td>1</td>
+        <td>county</td><td>cases</td><td>deaths</td>
+      </tr>
+      <tr>
+        <td>county</td><td>cases</td><td>deaths</td>
       </tr>
     </table>
   </body>
 </html>`;
 
+  let $ = null;
+  let $table = null;
+  let $rules = null;
+
+  beforeEach(() => {
+    $ = cheerio.load($html);
+    $table = $('table#tid').eq(0);
+    $rules = {};
+  });
+
   describe('errors', () => {
+    test('no errors if no rules', () => {
+      const rules = {};
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(true);
+      expect(v.errors($table)).toEqual([]);
+    });
+
     /*
 null table
 rule failed
@@ -68,9 +91,6 @@ empty table
 ... try each spec rule in order
 etc
 */
-    test('no errors if no rules', () => {
-      expect(1 + 2).toBe(3);
-    });
   });
 
   describe('success', () => {
