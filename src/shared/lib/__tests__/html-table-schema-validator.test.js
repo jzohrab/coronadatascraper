@@ -60,7 +60,6 @@ class HtmlTableValidor {
         }
       } else {
         const msg = `Unhandled heading rule ${rule} of type ${typeof rule}`;
-        console.error(msg);
         throw new Error(msg);
       }
     }
