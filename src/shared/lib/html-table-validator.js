@@ -5,10 +5,6 @@ Scrapers break occasionally due to their source HTML tables changing.
 This class provides a few simple checks to verify that the structure
 is as expected.
 
-Summary: Create an HtmlTableValidor, giving some rules to it.  Then
-call errors($table) to see any error messages, or success($table) if
-you just care about true/false.
-
 Example:
 
 Suppose you have the following table
@@ -53,7 +49,7 @@ You can create a hash of rules that the table should match:
       ]
     };
 
-Notes:
+Rule notes:
 
 * you don't have to pass all the rules, just the ones you need.
 * the data rules support ANY, ALL, or a number.
@@ -73,6 +69,16 @@ Or as a shorthand, just throw and optionally log to console:
 
     const opts = { includeErrCount: 5, log: false };
     HtmlTableValidor.throwIfErrors($rules, $table, opts);
+
+
+Usage notes:
+
+There are some ASSUMPTIONS documented in the code:
+
+* headings are on row 0
+* data starts on row 1
+* one data point per table cell
+
 */
 export default class HtmlTableValidor {
   constructor(rules) {
