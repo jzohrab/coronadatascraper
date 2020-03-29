@@ -8,11 +8,6 @@ const shared = path.join(process.cwd(), 'src', 'shared');
 const lib = path.join(shared, 'lib');
 const HtmlTableValidor = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
 
-test('sum should return the addition of two numbers', function (t) {
-  t.equal(3, (1 + 2));
-  t.end();
-});
-
 
 // The html table that most tests will be using.
 // Summarized:
@@ -42,7 +37,36 @@ let $table = null;
 let $rules = {};
 
 
+function setup() {
+  const $ = cheerio.load($html);
+  $table = $('table#tid').eq(0);
+
+  // Verify no screwups.
+  const headerrow = $table.find('tr').first();
+  expect(headerrow.find('th')).toHaveLength(3);
+}
+
+// Validate $table using $rules.
+function expectErrors(expected) {
+  const v = new HtmlTableValidor($rules);
+  const actual = v.errors($table);
+  // console.log(actual);
+  expect(actual).toEqual(expected);
+
+  const shouldBeSuccessful = expected.length === 0;
+  expect(v.success($table)).toBe(shouldBeSuccessful);
+}
+
+
+
 /*
+
+test('sum should return the addition of two numbers', function (t) {
+  t.equal(3, (1 + 2));
+  t.end();
+});
+
+
 describe('html-table-schema-validator', () => {
 
   beforeEach(() => {
@@ -67,6 +91,7 @@ describe('html-table-schema-validator', () => {
 
   describe('constructor', () => {
     test('throws error if a bad rule is used', () => {
+setup();
       const rules = {
         headings: { 0: {} }
       };
@@ -77,6 +102,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('throws error if an invalid rule is passed', () => {
+setup();
       const rules = {
         badHeading: 'this should throw'
       };
@@ -89,16 +115,19 @@ describe('html-table-schema-validator', () => {
 
   describe('sanity checks', () => {
     test('no errors if no rules', () => {
+setup();
       expectErrors([]);
     });
 
     const badTableTests = [null, undefined];
     each(badTableTests).test('error if table is %s', t => {
+setup();
       $table = t;
       expectErrors(['null/undefined table']);
     });
 
     test('reports error if no rows in table', () => {
+setup();
       const norows = '<html><head><table id="tid"></table></head></html>';
       const c = cheerio.load(norows);
       $table = c('table#tid').eq(0);
@@ -108,6 +137,7 @@ describe('html-table-schema-validator', () => {
 
   describe('header checks', () => {
     test('can check header with regex', () => {
+setup();
       $rules = {
         headings: {
           0: /shouldfail/
@@ -117,6 +147,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('can check multiple headers at once', () => {
+setup();
       $rules = {
         headings: {
           0: /shouldfail/,
@@ -130,6 +161,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('passes if all regexes match', () => {
+setup();
       $rules = {
         headings: {
           0: /location/,
@@ -141,6 +173,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('can use exact-matching regexes', () => {
+setup();
       $rules = {
         headings: {
           0: /location/,
@@ -152,6 +185,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('can use case-insensitive regex', () => {
+setup();
       $rules = {
         headings: {
           0: /LocaTion/i,
@@ -163,6 +197,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('can use <td> for header cells', () => {
+setup();
       const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
       const c = cheerio.load(trhtml);
       $table = c('table#tid').eq(0);
@@ -176,6 +211,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
+setup();
       $rules = {
         headings: {
           a: /something/,
@@ -188,6 +224,7 @@ describe('html-table-schema-validator', () => {
 
   describe('minrows', () => {
     test('fails if table has insufficient rows', () => {
+setup();
       $rules = {
         minrows: 10
       };
@@ -195,6 +232,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('passes if table has sufficient rows', () => {
+setup();
       $rules = {
         minrows: 2
       };
@@ -214,6 +252,7 @@ describe('html-table-schema-validator', () => {
 
     describe('any row', () => {
       test('passes if any row matches', () => {
+setup();
         $rules = {
           data: [{ column: 0, row: 'ANY', rule: /apple/ }]
         };
@@ -221,6 +260,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('fails if no row matches', () => {
+setup();
         $rules = {
           data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
         };
@@ -228,6 +268,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('can use numeric regex', () => {
+setup();
         $rules = {
           data: [
             { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
@@ -238,6 +279,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('reports error if a rule refers to a non-existent column', () => {
+setup();
         $rules = {
           data: [
             { column: 17, row: 'ANY', rule: /^[0-9]+$/ },
@@ -250,6 +292,7 @@ describe('html-table-schema-validator', () => {
 
     describe('all rows', () => {
       test('passes if all rows match', () => {
+setup();
         $rules = {
           data: [
             { column: 0, row: 'ALL', rule: /county/ },
@@ -260,6 +303,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('fails if any rows do not match', () => {
+setup();
         $rules = {
           data: [
             { column: 0, row: 'ALL', rule: /apple/ },
@@ -272,6 +316,7 @@ describe('html-table-schema-validator', () => {
 
     describe('single cell check', () => {
       test('passes if cell matches', () => {
+setup();
         $rules = {
           data: [{ column: 0, row: 0, rule: /location/ }]
         };
@@ -279,6 +324,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('treats bad cell references as empty', () => {
+setup();
         $rules = {
           data: [
             { column: 0, row: 10000, rule: /location/ },
@@ -292,6 +338,7 @@ describe('html-table-schema-validator', () => {
       });
 
       test('fails if cell does not match', () => {
+setup();
         $rules = {
           data: [
             { column: 0, row: 0, rule: /area/ },
@@ -309,6 +356,7 @@ describe('html-table-schema-validator', () => {
 
   describe('throwIfErrors', () => {
     test('throws if errors', () => {
+setup();
       $rules = {
         headings: {
           0: /shouldfail/
@@ -320,6 +368,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('does not throw if no errors', () => {
+setup();
       $rules = {
         headings: {
           0: /location/
@@ -330,6 +379,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('can specify count of errors to include in thrown message', () => {
+setup();
       $rules = {
         data: [
           { column: 0, row: 0, rule: /area/ },
@@ -354,6 +404,7 @@ describe('html-table-schema-validator', () => {
     });
 
     test('count of errors requested may be more than actual errors', () => {
+setup();
       $rules = {
         data: [
           { column: 0, row: 0, rule: /area/ },
