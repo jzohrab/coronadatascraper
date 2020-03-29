@@ -6,21 +6,38 @@ import each from 'jest-each';
 // TODO: code review on ... code style and everything, naming conventions, etc.
 class HtmlTableValidor {
   constructor(rules) {
-    this.rules = rules;
+    let setrules = {
+      headings: {},
+      minrows: 0,
+      data: []
+    }
+    for (var k in rules)
+      setrules[k] = rules[k];
+
+    HtmlTableValidor.validateRules(setrules);
+    this.rules = setrules;
   }
 
   // Throws exception if the rules are not valid.
   static validateRules(rules) {
+    // TODO - remove all commented out console.log calls.
+    console.log("CHECKING RULES ***********"); // TODO
+    console.log(rules); // TODO
+    
     for (var k in rules.headings) {
-      var r = rules.headings[k].rule;
+      var r = rules.headings[k];
+      console.log(r); // TODO
+      console.log(typeof(r)); // TODO
+      console.log(r instanceof RegExp); // TODO
       if (!(r instanceof RegExp)) {
-        throw new Error('Rule must be a RegExp');
+        throw new Error(`${r} is not a RegExp`);
       }
     }
 
     rules.data.forEach((r) => {
-      if (!(r instanceof RegExp)) {
-        throw new Error('Rule must be a RegExp');
+      if (!(r.rule instanceof RegExp)) {
+        console.error(r.rule);
+        throw new Error(`${r.rule} is not a RegExp`);
       }
     });
   }
@@ -39,8 +56,18 @@ class HtmlTableValidor {
       return result;
     }
 
+    // ASSUMPTION: table must have 1 header row,
+    // and at least one data row.
+    const trs = table.find('tr');
+    if (trs.length <= 1) {
+      return ['no rows in table'];
+    }
+
     if ('headings' in this.rules) {
+      console.log("checking headings ...");
       const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
+      console.log("GOT errors:");
+      console.log(he);
       result.push(...he);
     }
 
@@ -59,10 +86,7 @@ class HtmlTableValidor {
 
   static checkHeadings(table, headingRules) {
     const trs = table.find('tr');
-    if (trs.length === 0) {
-      return ['no rows in table'];
-    }
-
+    
     // ASSUMPTION: header is on first row.
     const headerrow = trs.first();
 
@@ -126,11 +150,7 @@ class HtmlTableValidor {
   }
   
   static checkData(table, dataRules) {
-
     const trs = table.find('tr');
-    if (trs.length === 0) {
-      return ['no rows in table'];
-    }
 
     // ASSUMPTION: data starts on the second row.
     const datatrs = trs.slice(1);
@@ -336,37 +356,21 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual([]);
     });
 
-    test('can check headers with strings', () => {
-      const rules = {
-        headings: {
-          0: 'something',
-          1: 'Cases'
-        }
-      };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = [
-        'heading 0 "county" did not match string "something"',
-        'heading 1 "cases" did not match string "Cases"'
-      ];
-      expect(v.errors($table)).toEqual(expected);
-    });
-
     test('can use <td> for header cells', () => {
       const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
       const c = cheerio.load(trhtml);
       $table = c('table#tid').eq(0);
       const rules = {
         headings: {
-          0: 'something',
-          1: 'Cases'
+          0: '/something/',
+          1: '/Cases/'
         }
       };
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
       const expected = [
-        'heading 0 "county" did not match string "something"',
-        'heading 1 "cases" did not match string "Cases"'
+        'heading 0 "county" did not match regex /something/',
+        'heading 1 "cases" did not match regex /Cases/'
       ];
       expect(v.errors($table)).toEqual(expected);
     });
@@ -381,27 +385,31 @@ describe('html-table-schema-validator', () => {
       }).toThrow();
     });
 
-    test('reports error if no rows in table', () => {
+    // TODO remove only
+    test.only('reports error if no rows in table', () => {
       const norows = '<html><head><table id="tid"></table></head></html>';
       const c = cheerio.load(norows);
       $table = c('table#tid').eq(0);
       const rules = {
         headings: {
-          0: 'something',
-          1: 'Cases'
+          0: /something/
         }
       };
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
       const expected = ['no rows in table'];
+      console.log('EXPECTED:');
+      console.log(expected);
+      console.log('ACTUAL:');
+      console.log(v.errors($table));
       expect(v.errors($table)).toEqual(expected);
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
       const rules = {
         headings: {
-          'a': 'something',
-          17: 'Cases'
+          'a': /something/,
+          17: /Cases/
         }
       };
       const v = new HtmlTableValidor(rules);
