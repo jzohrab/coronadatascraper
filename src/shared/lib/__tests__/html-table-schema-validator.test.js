@@ -6,13 +6,13 @@ import each from 'jest-each';
 // TODO: code review on ... code style and everything, naming conventions, etc.
 class HtmlTableValidor {
   constructor(rules) {
-    let setrules = {
+    const setrules = {
       headings: {},
       minrows: 0,
       data: []
-    }
-    for (var k in rules)
-      setrules[k] = rules[k];
+    };
+    // eslint-disable-next-line guard-for-in
+    for (const k in rules) setrules[k] = rules[k];
 
     HtmlTableValidor.validateRules(setrules);
     this.rules = setrules;
@@ -20,20 +20,21 @@ class HtmlTableValidor {
 
   // Throws exception if the rules are not valid.
   static validateRules(rules) {
-    for (var k in rules.headings) {
-      var r = rules.headings[k];
+    // eslint-disable-next-line guard-for-in
+    for (const k in rules.headings) {
+      const r = rules.headings[k];
       if (!(r instanceof RegExp)) {
         throw new Error(`${r} is not a RegExp`);
       }
     }
 
-    rules.data.forEach((r) => {
+    rules.data.forEach(r => {
       if (!(r.rule instanceof RegExp)) {
         throw new Error(`${r.rule} is not a RegExp`);
       }
     });
   }
-  
+
   // TODO remove these elint things
   /* eslint-disable class-methods-use-this, no-unused-vars */
   success(table) {
@@ -75,7 +76,7 @@ class HtmlTableValidor {
 
   static checkHeadings(table, headingRules) {
     const trs = table.find('tr');
-    
+
     // ASSUMPTION: header is on first row.
     const headerrow = trs.first();
 
@@ -85,21 +86,19 @@ class HtmlTableValidor {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      if (isNaN(column)) {
+      if (Number.isNaN(column)) {
         errs.push(`heading column ${column} does not exist`);
         continue;
       }
 
       const headings = headerrow.find(headingCellTag);
 
-      if (parseInt(column) > headings.length) {
+      if (parseInt(column, 10) > headings.length) {
         errs.push(`heading column ${column} does not exist`);
         continue;
       }
-      
-      const heading = headings
-        .eq(column)
-        .text();
+
+      const heading = headings.eq(column).text();
       const rule = headingRules[column];
 
       if (!rule.test(heading)) {
@@ -113,21 +112,18 @@ class HtmlTableValidor {
 
   static checkMinRows(table, minrows) {
     const trs = table.find('tr');
-    if (trs.length < parseInt(minrows)) {
+    if (trs.length < parseInt(minrows, 10)) {
       return [`expected at least ${minrows} rows, only have ${trs.length}`];
     }
     return [];
   }
 
-
-  static validColumnNumber(n, data_row) {
-    if (isNaN(n))
-      return false;
-    if (parseInt(n) > data_row.find('td').length - 1)
-      return false;
+  static validColumnNumber(n, dataRow) {
+    if (Number.isNaN(n)) return false;
+    if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
     return true;
   }
-  
+
   static checkData(table, dataRules) {
     const trs = table.find('tr');
 
@@ -139,18 +135,18 @@ class HtmlTableValidor {
 
     // eslint-disable-next-line guard-for-in
     const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
-    badRules.forEach((rule) => {
+    badRules.forEach(rule => {
       errs.push(`data column ${rule.column} does not exist`);
     });
 
     const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
 
-    let anyRules = validRules.filter(r => (r.row === 'ANY'));
-    anyRules.forEach((rule) => {
+    const anyRules = validRules.filter(r => r.row === 'ANY');
+    anyRules.forEach(rule => {
       let matches = false;
       // Using for loop to allow for break and exit
       // (can't break if we use forEach with anon function).
-      for(var index = 0; index < datatrs.length; ++index) {
+      for (let index = 0; index < datatrs.length; ++index) {
         // TODO code review: I feel this is brittle, and there's
         // probably a better way to do this.  I saw in some scrapers
         // people were doing magic like '$tr.find('td:last-child').text()',
@@ -159,35 +155,35 @@ class HtmlTableValidor {
         //
         // Note: I wrote the above comment for an earlier commit!
         // This now looks fine, but I'd still like a good review. :-)
-        let dr = datatrs.eq(index);
-        let td = dr.find('td').eq(rule.column);
-        let txt = td.text();
+        const dr = datatrs.eq(index);
+        const td = dr.find('td').eq(rule.column);
+        const txt = td.text();
         // console.log(`    ${txt}`);
-        if (rule.rule.test(txt) == true) {
+        if (rule.rule.test(txt) === true) {
           matches = true;
           break;
         }
-      };
+      }
       if (!matches) {
         errs.push(`no row in column ${rule.column} matches ${rule.rule}`);
       }
     });
-    
-    let allRules = validRules.filter(r => (r.row === 'ALL'));
-    allRules.forEach((rule) => {
+
+    const allRules = validRules.filter(r => r.row === 'ALL');
+    allRules.forEach(rule => {
       let matches = true;
       // Using for loop to allow for break and exit
       // (can't break if we use forEach with anon function).
-      for(var index = 0; index < datatrs.length; ++index) {
-        let dr = datatrs.eq(index);
-        let td = dr.find('td').eq(rule.column);
-        let txt = td.text();
+      for (let index = 0; index < datatrs.length; ++index) {
+        const dr = datatrs.eq(index);
+        const td = dr.find('td').eq(rule.column);
+        const txt = td.text();
         // console.log(`    ${txt}`);
-        if (rule.rule.test(txt) == false) {
+        if (rule.rule.test(txt) === false) {
           matches = false;
           break;
         }
-      };
+      }
       if (!matches) {
         errs.push(`some rows in column ${rule.column} do not match ${rule.rule}`);
       }
@@ -197,9 +193,7 @@ class HtmlTableValidor {
   }
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
-
 } // end class
-
 
 // ############## SAMPLE CODE - will be removed #############
 /*
@@ -222,15 +216,12 @@ class HtmlTableValidor {
 
 // ############## END SAMPLE CODE - will be removed #############
 
-
-
 // #########################################################
 // Tests - everything above this will be removed, or go into another file
 
 // TODO - refactor tests, lots of duplication on checking validation good or not.
 
 describe('html-table-schema-validator', () => {
-
   // The html table that most tests will be using.
   // Summarized:
   //   apple county| 10| 20
@@ -267,17 +258,15 @@ describe('html-table-schema-validator', () => {
     expect(headerrow.find('th')).toHaveLength(3);
   });
 
-
   // Validate $table using $rules.
   function expectErrors(expected) {
-    var shouldBeSuccessful = (expected.length === 0);
+    const shouldBeSuccessful = expected.length === 0;
     const v = new HtmlTableValidor($rules);
     expect(v.success($table)).toBe(shouldBeSuccessful);
-    let actual = v.errors($table);
+    const actual = v.errors($table);
     // console.log(actual);
     expect(actual).toEqual(expected);
   }
-
 
   describe('constructor', () => {
     test('throws error if a bad rule is used', () => {
@@ -291,7 +280,6 @@ describe('html-table-schema-validator', () => {
 
     test.todo('checks invalid schema rules');
   });
-
 
   describe('sanity checks', () => {
     test('no errors if no rules', () => {
@@ -310,7 +298,6 @@ describe('html-table-schema-validator', () => {
       $table = c('table#tid').eq(0);
       expectErrors(['no rows in table']);
     });
-
   });
 
   describe('header checks', () => {
@@ -330,10 +317,7 @@ describe('html-table-schema-validator', () => {
           1: /another_bad/
         }
       };
-      expectErrors([
-        'heading 0 "county" did not match /shouldfail/',
-        'heading 1 "cases" did not match /another_bad/'
-      ]);
+      expectErrors(['heading 0 "county" did not match /shouldfail/', 'heading 1 "cases" did not match /another_bad/']);
     });
 
     test('passes if all regexes match', () => {
@@ -355,10 +339,7 @@ describe('html-table-schema-validator', () => {
           2: /^ deaths $/
         }
       };
-      expectErrors([
-        'heading 1 "cases" did not match /^cases $/',
-        'heading 2 "deaths" did not match /^ deaths $/'
-      ]);
+      expectErrors(['heading 1 "cases" did not match /^cases $/', 'heading 2 "deaths" did not match /^ deaths $/']);
     });
 
     test('can use case-insensitive regex', () => {
@@ -382,23 +363,17 @@ describe('html-table-schema-validator', () => {
           1: /Cases/
         }
       };
-      expectErrors([
-        'heading 0 "county" did not match /something/',
-        'heading 1 "cases" did not match /Cases/'
-      ]);
+      expectErrors(['heading 0 "county" did not match /something/', 'heading 1 "cases" did not match /Cases/']);
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
       $rules = {
         headings: {
-          'a': /something/,
+          a: /something/,
           17: /Cases/
         }
       };
-      expectErrors([
-        'heading column 17 does not exist',
-        'heading column a does not exist',
-      ]);
+      expectErrors(['heading column 17 does not exist', 'heading column a does not exist']);
     });
   });
 
@@ -407,9 +382,7 @@ describe('html-table-schema-validator', () => {
       $rules = {
         minrows: 10
       };
-      expectErrors([
-        'expected at least 10 rows, only have 3'
-      ]);
+      expectErrors(['expected at least 10 rows, only have 3']);
     });
 
     test('passes if table has sufficient rows', () => {
@@ -421,7 +394,6 @@ describe('html-table-schema-validator', () => {
   });
 
   describe('data row column checks', () => {
-
     beforeEach(() => {
       const $ = cheerio.load($html);
       $table = $('table#tid').eq(0);
@@ -432,25 +404,20 @@ describe('html-table-schema-validator', () => {
     });
 
     describe('any row', () => {
-
       test('passes if any row matches', () => {
         $rules = {
-          data: [
-            { column: 0, row: 'ANY', rule: /apple/ }
-          ]
+          data: [{ column: 0, row: 'ANY', rule: /apple/ }]
         };
         expectErrors([]);
       });
-      
+
       test('fails if no row matches', () => {
         $rules = {
-          data: [ { row: 'ANY', column: 0, rule: /UNKNOWN/ } ]
+          data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
         };
-        expectErrors([
-          'no row in column 0 matches /UNKNOWN/'
-        ]);
+        expectErrors(['no row in column 0 matches /UNKNOWN/']);
       });
-        
+
       test('can use numeric regex', () => {
         $rules = {
           data: [
@@ -458,11 +425,9 @@ describe('html-table-schema-validator', () => {
             { column: 2, row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors([
-          'no row in column 2 matches /^[a-z]+$/'
-        ]);
+        expectErrors(['no row in column 2 matches /^[a-z]+$/']);
       });
-      
+
       test('reports error if a rule refers to a non-existent column', () => {
         $rules = {
           data: [
@@ -470,12 +435,8 @@ describe('html-table-schema-validator', () => {
             { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors([
-          'data column 17 does not exist',
-          'data column a does not exist',
-        ]);
-    });
-
+        expectErrors(['data column 17 does not exist', 'data column a does not exist']);
+      });
     });
 
     describe('all rows', () => {
@@ -496,19 +457,15 @@ describe('html-table-schema-validator', () => {
             { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
           ]
         };
-        expectErrors([
-          'some rows in column 0 do not match /apple/'
-        ]);
+        expectErrors(['some rows in column 0 do not match /apple/']);
       });
     });
 
+    // Not sure about this ...
     describe('single cell', () => {
       test.todo('passes if match');
       test.todo('fails if does not match');
       test.todo('bad cell coords');
     });
-
-  
   });
-
 });
