@@ -149,19 +149,12 @@ class HtmlTableValidor {
       // Using for loop to allow for break and exit
       // (can't break if we use forEach with anon function).
       for (let index = 0; index < datatrs.length; ++index) {
-        // TODO code review: I feel this is brittle, and there's
-        // probably a better way to do this.  I saw in some scrapers
-        // people were doing magic like '$tr.find('td:last-child').text()',
-        // and I saw they had defined '$' as a constant, but I couldn't figure
-        // out how to do that in this code.
-        //
-        // Note: I wrote the above comment for an earlier commit!
-        // This now looks fine, but I'd still like a good review. :-)
+        // TODO code review - ok here?
         const dr = datatrs.eq(index);
         const td = dr.find('td').eq(rule.column);
         const txt = td.text();
         // console.log(`    ${txt}`);
-        if (rule.rule.test(txt) === true) {
+        if (rule.rule.test(txt)) {
           matches = true;
           break;
         }
@@ -181,13 +174,29 @@ class HtmlTableValidor {
         const td = dr.find('td').eq(rule.column);
         const txt = td.text();
         // console.log(`    ${txt}`);
-        if (rule.rule.test(txt) === false) {
+        if (!rule.rule.test(txt)) {
           matches = false;
           break;
         }
       }
       if (!matches) {
         errs.push(`some rows in column ${rule.column} do not match ${rule.rule}`);
+      }
+    });
+
+    const cellRules = validRules.filter(r => r.row !== 'ALL' && r.row !== 'ANY');
+    cellRules.forEach(rule => {
+      const r = parseInt(rule.row, 10);
+      const c = parseInt(rule.column, 10);
+      const dr = trs.eq(r);
+
+      // Have to check for th or td ...
+      let cells = dr.find('td');
+      if (cells.length === 0) cells = dr.find('th');
+      const cell = cells.eq(c);
+      const txt = cell.text();
+      if (!rule.rule.test(txt)) {
+        errs.push(`cell[${r}, ${c}] value "${txt}" does not match ${rule.rule}`);
       }
     });
 
@@ -262,12 +271,13 @@ describe('html-table-schema-validator', () => {
 
   // Validate $table using $rules.
   function expectErrors(expected) {
-    const shouldBeSuccessful = expected.length === 0;
     const v = new HtmlTableValidor($rules);
-    expect(v.success($table)).toBe(shouldBeSuccessful);
     const actual = v.errors($table);
     // console.log(actual);
     expect(actual).toEqual(expected);
+
+    const shouldBeSuccessful = expected.length === 0;
+    expect(v.success($table)).toBe(shouldBeSuccessful);
   }
 
   describe('constructor', () => {
@@ -466,8 +476,7 @@ describe('html-table-schema-validator', () => {
       });
     });
 
-    // Not sure about this ...
-    describe('single cell', () => {
+    describe('single cell check', () => {
       test('passes if cell matches', () => {
         $rules = {
           data: [{ column: 0, row: 0, rule: /location/ }]
@@ -479,10 +488,11 @@ describe('html-table-schema-validator', () => {
         $rules = {
           data: [
             { column: 0, row: 0, rule: /area/ },
-            { column: 0, row: 1, rule: /apple/ }
+            { column: 0, row: 1, rule: /apple/ },
+            { column: 1, row: 2, rule: /cat/ }
           ]
         };
-        expectErrors(['cell[0, 0] value "location" does not match/area/']);
+        expectErrors(['cell[0, 0] value "location" does not match /area/']);
       });
     });
   });
