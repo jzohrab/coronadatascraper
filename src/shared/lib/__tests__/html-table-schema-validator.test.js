@@ -111,19 +111,9 @@ class HtmlTableValidor {
         .text();
       const rule = headingRules[column];
 
-      if (rule instanceof RegExp) {
-        if (!rule.test(heading)) {
-          const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
-          errs.push(msg);
-        }
-      } else if (typeof rule === 'string') {
-        if (rule !== heading) {
-          const msg = `heading ${column} "${heading}" did not match string "${rule}"`;
-          errs.push(msg);
-        }
-      } else {
-        const msg = `Unhandled heading rule ${rule} of type ${typeof rule}`;
-        throw new Error(msg);
+      if (!rule.test(heading)) {
+        const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
+        errs.push(msg);
       }
     }
 
@@ -258,23 +248,47 @@ describe('html-table-schema-validator', () => {
     expect(headerrow.find('th')).toHaveLength(3);
   });
 
-  describe('errors', () => {
+  
+  describe('constructor', () => {
+    test('throws error if a bad rule is used', () => {
+      const rules = {
+        headings: { 0: {} }
+      };
+      expect(() => {
+        const v = new HtmlTableValidor(rules);
+      }).toThrow();
+    });
+  });
+
+
+  describe('sanity checks', () => {
     test('no errors if no rules', () => {
       const v = new HtmlTableValidor({});
       expect(v.success($table)).toBe(true);
       expect(v.errors($table)).toEqual([]);
     });
 
-    const noTable = [null, undefined];
-    each(noTable).test('error if table is %s', t => {
+    const badTableTests = [null, undefined];
+    each(badTableTests).test('error if table is %s', t => {
       const v = new HtmlTableValidor({});
       expect(v.success(t)).toBe(false);
       expect(v.errors(t)).toEqual(['null/undefined table']);
     });
 
+    test('reports error if no rows in table', () => {
+      const norows = '<html><head><table id="tid"></table></head></html>';
+      const c = cheerio.load(norows);
+      $table = c('table#tid').eq(0);
+      const rules = {};
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = ['no rows in table'];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
   });
 
-  describe('headers', () => {
+  describe('header checks', () => {
     test('can check header with regex', () => {
       const rules = {
         headings: {
@@ -316,7 +330,7 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual([]);
     });
 
-    test('fails if regex must match exactly', () => {
+    test('can use exact-matching regexes', () => {
       const rules = {
         headings: {
           0: /county/,
@@ -333,7 +347,7 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual(expected);
     });
 
-    test('can check with case-insensitive regex', () => {
+    test('can use case-insensitive regex', () => {
       const rules = {
         headings: {
           0: /county/i,
@@ -362,26 +376,6 @@ describe('html-table-schema-validator', () => {
         'heading 0 "county" did not match regex /something/',
         'heading 1 "cases" did not match regex /Cases/'
       ];
-      expect(v.errors($table)).toEqual(expected);
-    });
-
-    test('throws error if a bad rule is used', () => {
-      const rules = {
-        headings: { 0: {} }
-      };
-      expect(() => {
-        const v = new HtmlTableValidor(rules);
-      }).toThrow();
-    });
-
-    test('reports error if no rows in table', () => {
-      const norows = '<html><head><table id="tid"></table></head></html>';
-      const c = cheerio.load(norows);
-      $table = c('table#tid').eq(0);
-      const rules = {};
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = ['no rows in table'];
       expect(v.errors($table)).toEqual(expected);
     });
 
