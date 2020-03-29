@@ -21,14 +21,14 @@ class HtmlTableValidor {
   // Throws exception if the rules are not valid.
   static validateRules(rules) {
     // TODO - remove all commented out console.log calls.
-    console.log("CHECKING RULES ***********"); // TODO
-    console.log(rules); // TODO
+    // console.log("CHECKING RULES ***********"); // TODO
+    // console.log(rules); // TODO
     
     for (var k in rules.headings) {
       var r = rules.headings[k];
-      console.log(r); // TODO
-      console.log(typeof(r)); // TODO
-      console.log(r instanceof RegExp); // TODO
+      // console.log(r); // TODO
+      // console.log(typeof(r)); // TODO
+      // console.log(r instanceof RegExp); // TODO
       if (!(r instanceof RegExp)) {
         throw new Error(`${r} is not a RegExp`);
       }
@@ -36,7 +36,6 @@ class HtmlTableValidor {
 
     rules.data.forEach((r) => {
       if (!(r.rule instanceof RegExp)) {
-        console.error(r.rule);
         throw new Error(`${r.rule} is not a RegExp`);
       }
     });
