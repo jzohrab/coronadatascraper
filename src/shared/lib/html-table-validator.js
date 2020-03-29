@@ -316,4 +316,15 @@ export default class HtmlTableValidor {
 
     return errs;
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  _matchCell(table, row, column, regex) {
+    const trs = table.find('tr');
+    const dr = trs.eq(row);
+    let cells = dr.find('td');
+    if (cells.length === 0) cells = dr.find('th');
+    const cell = cells.eq(column);
+    const txt = cell.text();
+    return regex.test(txt);
+  }
 } // end class
