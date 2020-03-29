@@ -110,8 +110,6 @@ class HtmlTableValidor {
   }
   
   static checkData(table, dataRules) {
-    // console.log('ALL RULES ***********************');
-    // console.log(dataRules);
 
     const trs = table.find('tr');
     if (trs.length === 0) {
@@ -131,26 +129,19 @@ class HtmlTableValidor {
     }
 
     const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
-    // console.log('VALID RULES ***********************');
-    // console.log(validRules);
 
-    // console.log('VALID RULES LOOOOP ***********************');
     validRules.
       filter(r => (r.row === 'ANY')).
       forEach((rule) => {
-        // console.log('RULE IN VALID RULE LOOP ***********************');
-        // console.log(rule);
       
         let matches = false;
         datatrs.each((index, dr) => {
+          // TODO code review: I feel this is brittle, and there's
+          // probably a better way to do this.  I saw in some scrapers
+          // people were doing magic like '$tr.find('td:last-child').text()',
+          // and I saw they had defined '$' as a constant, but I couldn't figure
+          // out how to do that in this code.
           let td = dr.children[rule.column];
-          // console.log('Loop ***********************');
-          // console.log(`dr: ${dr}`);
-          // console.log(`td:`);
-          // console.log(td);
-          // console.log(`Rule:`);
-          // console.log(rule);
-          // console.log('END RULE ***********************');
           let txt = td.children[0].data;
           if (rule.rule.test(txt)) {
             matches = true;
@@ -168,8 +159,8 @@ class HtmlTableValidor {
 
 } // end class
 
-// ############## SAMPLE CODE - will be removed #############
 
+// ############## SAMPLE CODE - will be removed #############
 /*
   const $ = cheerio.load(h);
   console.log($.html());
@@ -178,20 +169,21 @@ class HtmlTableValidor {
   .first()
   .html()
   );
-*/
 
-/*
   const $table = $('table#tid').eq(0);
   const $trs = $table.find('tr');
   console.log(`got ${$trs.length} trs`);
   $trs.each((index, tr) => {
-  const $tr = $(tr);
-  console.log($tr.find('td:first-child').text());
+    const $tr = $(tr);
+    console.log($tr.find('td:first-child').text());
   });
 */
 
 // ############## END SAMPLE CODE - will be removed #############
 
+
+
+// #########################################################
 // Tests - everything above this will be removed, or go into another file
 
 // TODO - refactor tests, lots of duplication on checking validation good or not.
