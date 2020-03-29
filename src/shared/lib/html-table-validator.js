@@ -92,23 +92,6 @@ export default class HtmlTableValidor {
     this.rules = setrules;
   }
 
-  // Throws exception if the rules are not valid.
-  static validateRules(rules) {
-    // eslint-disable-next-line guard-for-in
-    for (const k in rules.headings) {
-      const r = rules.headings[k];
-      if (!(r instanceof RegExp)) {
-        throw new Error(`${r} is not a RegExp`);
-      }
-    }
-
-    rules.data.forEach(r => {
-      if (!(r.rule instanceof RegExp)) {
-        throw new Error(`${r.rule} is not a RegExp`);
-      }
-    });
-  }
-
   success(table) {
     return this.errors(table).length === 0;
   }
@@ -138,6 +121,23 @@ export default class HtmlTableValidor {
     result.push(...de);
 
     return result;
+  }
+
+  // Throws exception if the rules are not valid.
+  static validateRules(rules) {
+    // eslint-disable-next-line guard-for-in
+    for (const k in rules.headings) {
+      const r = rules.headings[k];
+      if (!(r instanceof RegExp)) {
+        throw new Error(`${r} is not a RegExp`);
+      }
+    }
+
+    rules.data.forEach(r => {
+      if (!(r.rule instanceof RegExp)) {
+        throw new Error(`${r.rule} is not a RegExp`);
+      }
+    });
   }
 
   static checkHeadings(table, headingRules) {
