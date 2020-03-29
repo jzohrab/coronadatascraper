@@ -135,14 +135,13 @@ class HtmlTableValidor {
 
     const errs = [];
 
-    /*
     const validColNum = (n, dataRow) => {
+      // eslint-disable-next-line no-restricted-globals
       if (isNaN(n)) return false;
       if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
       return true;
     };
     console.log(validColNum(17, datatrs.eq(0)));
-    */
 
     // eslint-disable-next-line guard-for-in
     const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
