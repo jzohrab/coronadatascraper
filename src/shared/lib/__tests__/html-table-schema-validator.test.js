@@ -11,6 +11,11 @@ class HtmlTableValidor {
       minrows: 0,
       data: []
     };
+
+    for (const k in rules) {
+      if (!Object.keys(setrules).includes(k)) throw new Error(`bad rule key ${k}`);
+    }
+
     // eslint-disable-next-line guard-for-in
     for (const k in rules) setrules[k] = rules[k];
 
@@ -290,7 +295,14 @@ describe('html-table-schema-validator', () => {
       }).toThrow();
     });
 
-    test.todo('checks invalid schema rules');
+    test('throws error if an invalid rule is passed', () => {
+      const rules = {
+        badHeading: 'this should throw'
+      };
+      expect(() => {
+        const v = new HtmlTableValidor(rules);
+      }).toThrow();
+    });
   });
 
   describe('sanity checks', () => {
