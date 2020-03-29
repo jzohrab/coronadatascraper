@@ -141,15 +141,14 @@ class HtmlTableValidor {
       if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
       return true;
     };
-    console.log(validColNum(17, datatrs.eq(0)));
 
-    // eslint-disable-next-line guard-for-in
-    const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
+    const firstRow = datatrs.eq(0);
+    const badRules = dataRules.filter(r => !validColNum(r.column, firstRow));
+    const validRules = dataRules.filter(r => validColNum(r.column, firstRow));
+
     badRules.forEach(rule => {
       errs.push(`data column ${rule.column} does not exist`);
     });
-
-    const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
 
     const anyRules = validRules.filter(r => r.row === 'ANY');
     anyRules.forEach(rule => {
