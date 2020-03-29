@@ -1,6 +1,13 @@
-import cheerio from 'cheerio';
-import each from 'jest-each';
-import HtmlTableValidor from '../html-table-validator.js';
+const imports = require('esm')(module);
+const cheerio = require('cheerio');
+const test = require('tape');
+const path = require('path');
+const { join } = require('path');
+
+const shared = path.join(process.cwd(), 'src', 'shared');
+const lib = path.join(shared, 'lib');
+const HtmlTableValidor = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
+
 
 describe('html-table-schema-validator', () => {
   // The html table that most tests will be using.
