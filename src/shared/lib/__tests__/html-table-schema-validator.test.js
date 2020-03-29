@@ -432,7 +432,7 @@ describe('html-table-schema-validator', () => {
         ]);
       });
         
-      test.only('can use numeric regex', () => {
+      test('can use numeric regex', () => {
         $rules = {
           data: [
             { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
