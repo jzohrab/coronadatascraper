@@ -92,6 +92,19 @@ test('constructor throws error if a bad rule is used', (t) => {
   t.end();
 });
 
+
+test('throws error if an invalid rule is passed', (t) => {
+  setup();
+  const rules = {
+    badHeading: 'this should throw'
+  };
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new HtmlTableValidor(rules);
+  });
+  t.end();
+});
+
 /*
 
 test('sum should return the addition of two numbers', function (t) {
@@ -104,16 +117,6 @@ describe('html-table-schema-validator', () => {
 
   describe('constructor', () => {
 
-    test('throws error if an invalid rule is passed', () => {
-setup();
-      const rules = {
-        badHeading: 'this should throw'
-      };
-      expect(() => {
-        // eslint-disable-next-line no-new
-        new HtmlTableValidor(rules);
-      }).toThrow();
-    });
   });
 
   describe('sanity checks', () => {
