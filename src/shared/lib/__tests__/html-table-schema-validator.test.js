@@ -559,8 +559,8 @@ ${table_rows}
     });
 
   
-    test.todo('checks invalid schema rules');
-
   });
+
+  test.todo('checks invalid schema rules');
 
 });
