@@ -26,9 +26,11 @@ class HtmlTableValidor {
     
     for (var k in rules.headings) {
       var r = rules.headings[k];
+      /*
       console.log(r); // TODO
       console.log(typeof(r)); // TODO
       console.log(r instanceof RegExp); // TODO
+      */
       if (!(r instanceof RegExp)) {
         throw new Error(`${r} is not a RegExp`);
       }
@@ -270,14 +272,6 @@ describe('html-table-schema-validator', () => {
       expect(v.errors(t)).toEqual(['null/undefined table']);
     });
 
-    test('no error if empty table but no rules', () => {
-      const norows = '<html><head><table id="tid"></table></head></html>';
-      const c = cheerio.load(norows);
-      $table = c('table#tid').eq(0);
-      const rules = {};
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(true);
-    });
   });
 
   describe('headers', () => {
@@ -352,7 +346,7 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual([]);
     });
 
-    test.only('can use <td> for header cells', () => {
+    test('can use <td> for header cells', () => {
       const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
       const c = cheerio.load(trhtml);
       $table = c('table#tid').eq(0);
@@ -375,9 +369,8 @@ describe('html-table-schema-validator', () => {
       const rules = {
         headings: { 0: {} }
       };
-      const v = new HtmlTableValidor(rules);
       expect(() => {
-        v.success($table);
+        const v = new HtmlTableValidor(rules);
       }).toThrow();
     });
 
@@ -385,11 +378,7 @@ describe('html-table-schema-validator', () => {
       const norows = '<html><head><table id="tid"></table></head></html>';
       const c = cheerio.load(norows);
       $table = c('table#tid').eq(0);
-      const rules = {
-        headings: {
-          0: /something/
-        }
-      };
+      const rules = {};
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
       const expected = ['no rows in table'];
