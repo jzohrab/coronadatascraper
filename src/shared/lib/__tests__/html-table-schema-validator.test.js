@@ -283,9 +283,8 @@ describe('html-table-schema-validator', () => {
 
     const badTableTests = [null, undefined];
     each(badTableTests).test('error if table is %s', t => {
-      const v = new HtmlTableValidor({});
-      expect(v.success(t)).toBe(false);
-      expect(v.errors(t)).toEqual(['null/undefined table']);
+      $table = t;
+      expectErrors(['null/undefined table']);
     });
 
     test('reports error if no rows in table', () => {
