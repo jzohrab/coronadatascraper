@@ -130,13 +130,12 @@ class HtmlTableValidor {
 
     const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
 
-    validRules.
-      filter(r => (r.row === 'ANY')).
-      forEach((rule) => {
-      
+    let anyRules = validRules.filter(r => (r.row === 'ANY'));
+    
+    anyRules.forEach((rule) => {
         let matches = false;
-
-        // Using for loop to allow for break and exit.
+        // Using for loop to allow for break and exit
+        // (can't break if we use forEach with anon function).
         for(var index = 0; index < datatrs.length; ++index) {
           // TODO code review: I feel this is brittle, and there's
           // probably a better way to do this.  I saw in some scrapers
