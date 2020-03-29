@@ -162,7 +162,7 @@ Of course, if something is missing, `yarn add` it as a dependency and `import` i
 
 It's a tough challenge to write scrapers that will work when websites are inevitably updated. Here are some tips:
 
-* If your source is an Html table, use the HtmlTableValidator
+* If your source is an HTML table, use the HtmlTableValidator if possible
 * If data for a field is not present (eg. no recovered information), **do not put 0 for that field**. Make sure to leave the field undefined so the scraper knows there is no information for that particular field.
 * Write your scraper so it handles aggregate data with a single scraper entry (i.e. find a table, process the table)
 * Try not to hardcode county or city names, instead let the data on the page populate that
@@ -181,7 +181,7 @@ At the top of your scraper, import the class:
 import HtmlTableValidator from '../../../lib/html-table-validator.js';
 ```
 
-And use it like this:
+And use it like this during your scrape (assuming the table is named `$table`):
 
 ```
 const rules = {
@@ -197,7 +197,28 @@ const rules = {
   ]
 };
 const opts = { includeErrCount: 5, logToConsole: true };
-HtmlTableValidor.throwIfErrors($rules, $table, opts);
+HtmlTableValidor.throwIfErrors(rules, $table, opts);
+```
+
+When this runs, if any rules are not satisfied, it will throw
+an Error with a few sample failures (5, in this case):
+
+Sample:
+
+Logged to console:
+
+```
+3 validation errors.
+[
+  'heading 0 "County" does not match /country/i',
+  'heading 1 "Cases" does not match /number of cases/i',
+  'no row in column 0 matches /Adams/'
+]
+
+Error thrown:
+
+```
+Error processing <scraper name>:  Error: 3 validation errors..  Sample: heading 0 "County" does not match /country/i;heading 1 ... [etc.]
 ```
 
 ### Sample scraper
