@@ -148,9 +148,9 @@ class HtmlTableValidor {
 
     // eslint-disable-next-line guard-for-in
     const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
-    for (const rule in badRules) {
-      errs.push(`Data column ${rule.column} does not exist`);
-    }
+    badRules.forEach((rule) => {
+      errs.push(`data column ${rule.column} does not exist`);
+    });
 
     const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
 
@@ -445,10 +445,9 @@ ${table_rows}
       test('passes if any row matches', () => {
         $rules = {
           data: [
-            { row: 'ANY', column: 0, rule: /apple/ }
+            { column: 0, row: 'ANY', rule: /apple/ }
           ]
         };
-        // console.log($table.html());
         expectErrors([]);
       });
       
@@ -463,8 +462,31 @@ ${table_rows}
         ]);
       });
         
-      test.todo('can use numeric regex');
-      test.todo('bad column');
+      test('can use numeric regex', () => {
+        $rules = {
+          data: [
+            { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
+            { column: 2, row: 'ANY', rule: /^[a-z]+$/ }
+          ]
+        };
+        expectErrors([
+          'no row in column 2 matches regex /^[a-z]+$/'
+        ]);
+      });
+      
+      test('reports error if a rule refers to a non-existent column', () => {
+        $rules = {
+          data: [
+            { column: 17, row: 'ANY', rule: /^[0-9]+$/ },
+            { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
+          ]
+        };
+        expectErrors([
+          'data column 17 does not exist',
+          'data column a does not exist',
+        ]);
+    });
+
     });
 
     describe('all rows', () => {
