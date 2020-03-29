@@ -86,7 +86,8 @@ class HtmlTableValidor {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      if (Number.isNaN(column)) {
+      // eslint-disable-next-line no-restricted-globals
+      if (isNaN(column)) {
         errs.push(`heading column ${column} does not exist`);
         continue;
       }
@@ -119,7 +120,8 @@ class HtmlTableValidor {
   }
 
   static validColumnNumber(n, dataRow) {
-    if (Number.isNaN(n)) return false;
+    // eslint-disable-next-line no-restricted-globals
+    if (isNaN(n)) return false;
     if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
     return true;
   }
@@ -132,6 +134,15 @@ class HtmlTableValidor {
     // console.log(`Have ${datatrs.length} data rows`);
 
     const errs = [];
+
+    /*
+    const validColNum = (n, dataRow) => {
+      if (Number.isNaN(n)) return false;
+      if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
+      return true;
+    };
+    console.log(validColNum(17, datatrs.eq(0)));
+    */
 
     // eslint-disable-next-line guard-for-in
     const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
