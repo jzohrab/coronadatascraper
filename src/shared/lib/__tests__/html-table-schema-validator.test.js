@@ -500,10 +500,6 @@ describe('html-table-schema-validator', () => {
           'some rows in column 0 do not match /apple/'
         ]);
       });
-
-      test.todo('fails if any row does not match');
-      test.todo('can use numeric regex');
-      test.todo('bad column');
     });
 
     describe('single cell', () => {
