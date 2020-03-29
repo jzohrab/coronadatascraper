@@ -135,18 +135,22 @@ class HtmlTableValidor {
       forEach((rule) => {
       
         let matches = false;
-        datatrs.each((index, dr) => {
+
+        // Using for loop to allow for break and exit.
+        for(var index = 0; index < datatrs.length; ++index) {
           // TODO code review: I feel this is brittle, and there's
           // probably a better way to do this.  I saw in some scrapers
           // people were doing magic like '$tr.find('td:last-child').text()',
           // and I saw they had defined '$' as a constant, but I couldn't figure
           // out how to do that in this code.
+          let dr = datatrs[index];
           let td = dr.children[rule.column];
           let txt = td.children[0].data;
           if (rule.rule.test(txt)) {
             matches = true;
+            break;
           }
-        });
+        };
         if (!matches) {
           errs.push(`no row in column ${rule.column} matches regex ${rule.rule}`);
         }
