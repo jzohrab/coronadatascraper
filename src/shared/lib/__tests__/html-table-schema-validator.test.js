@@ -484,7 +484,7 @@ describe('html-table-schema-validator', () => {
         expectErrors([]);
       });
 
-      test.skip('fails if cell does not match', () => {
+      test('fails if cell does not match', () => {
         $rules = {
           data: [
             { column: 0, row: 0, rule: /area/ },
@@ -492,7 +492,10 @@ describe('html-table-schema-validator', () => {
             { column: 1, row: 2, rule: /cat/ }
           ]
         };
-        expectErrors(['cell[0, 0] value "location" does not match /area/']);
+        expectErrors([
+          'cell[0, 0] value "location" does not match /area/',
+          'cell[2, 1] value "66" does not match /cat/'
+        ]);
       });
     });
   });
