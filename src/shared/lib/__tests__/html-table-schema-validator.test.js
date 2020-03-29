@@ -514,68 +514,53 @@ ${table_rows}
          deer county | 66| 77`
       );
       
-      describe('regex', () => {
-        test('passes if any row matches', () => {
-          const rules = {
-            data: [
-              { row: 'ANY', column: 0, rule: /apple/ }
-            ]
-          };
-          // console.log($table.html());
-          const v = new HtmlTableValidor(rules);
-          expect(v.success($table)).toBe(true);
-          const expected = [];
-          expect(v.errors($table)).toEqual(expected);
-        });
- 
-        test('fails if no row matches', () => {
-          const rules = {
-            data: [
-              { row: 'ANY', column: 0, rule: /UNKNOWN/ }
-            ]
-          };
-          const v = new HtmlTableValidor(rules);
-          expect(v.success($table)).toBe(false);
-          const expected = [
-            'no row in column 0 matches regex /UNKNOWN/'
-          ];
-          expect(v.errors($table)).toEqual(expected);
-        });
+      test('passes if any row matches', () => {
+        const rules = {
+          data: [
+            { row: 'ANY', column: 0, rule: /apple/ }
+          ]
+        };
+        // console.log($table.html());
+        const v = new HtmlTableValidor(rules);
+        expect(v.success($table)).toBe(true);
+        const expected = [];
+        expect(v.errors($table)).toEqual(expected);
+      });
+      
+      test('fails if no row matches', () => {
+        const rules = {
+          data: [
+            { row: 'ANY', column: 0, rule: /UNKNOWN/ }
+          ]
+        };
+        const v = new HtmlTableValidor(rules);
+        expect(v.success($table)).toBe(false);
+        const expected = [
+          'no row in column 0 matches regex /UNKNOWN/'
+        ];
+        expect(v.errors($table)).toEqual(expected);
+      });
         
-        test.todo('can use numeric regex');
-        test.todo('bad column');
-      });
-
-      describe('string', () => {
-        test.todo('passes if any row matches');
-        test.todo('fails if no row matches');
-        test.todo('bad column');
-      });
-              
+      test.todo('can use numeric regex');
+      test.todo('bad column');
     });
 
     describe('all rows', () => {
-      describe('regex', () => {
-        test.todo('passes if all rows match');
-        test.todo('fails if any row does not match');
-        test.todo('can use numeric regex');
-        test.todo('bad column');
-      });
+      test.todo('passes if all rows match');
+      test.todo('fails if any row does not match');
+      test.todo('can use numeric regex');
+      test.todo('bad column');
     });
 
     describe('single cell', () => {
-      describe('regex', () => {
-        test.todo('passes if match');
-        test.todo('fails if does not match');
-        test.todo('bad cell coords');
-      });
-      describe('string', () => {
-        test.todo('passes if match');
-        test.todo('fails if does not match');
-        test.todo('bad cell coords');
-      });
+      test.todo('passes if match');
+      test.todo('fails if does not match');
+      test.todo('bad cell coords');
     });
-  });
+
   
-  test.todo('checks invalid schema rules');
+    test.todo('checks invalid schema rules');
+
+  });
+
 });
