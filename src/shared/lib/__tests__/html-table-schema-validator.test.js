@@ -167,7 +167,7 @@ describe('html-table-schema-validator', () => {
           17: /Cases/
         }
       };
-      expectErrors(['heading 17 "" does not match /Cases/', 'column a does not exist']);
+      expectErrors(['heading 17 "" does not match /Cases/', 'heading a "" does not match /something/']);
     });
   });
 
@@ -229,7 +229,7 @@ describe('html-table-schema-validator', () => {
             { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors(['column a does not exist', 'no row in column 17 matches /^[0-9]+$/']);
+        expectErrors(['no row in column 17 matches /^[0-9]+$/', 'no row in column a matches /^[a-z]+$/']);
       });
     });
 

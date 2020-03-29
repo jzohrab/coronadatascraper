@@ -179,24 +179,6 @@ export default class HtmlTableValidor {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  _validColNum(n) {
-    // eslint-disable-next-line no-restricted-globals
-    if (isNaN(n)) return false;
-
-    // ASSUMPTION: not checking bad specifications.
-    // Originially I was checking the columns, ensuring that the cells
-    // existing; however, it doesn't really matter if they don't,
-    // because missing cells are returned as empty text, and really
-    // devs should be checking column headings.
-    //
-    // Additionally, I wanted to use this method for table headings,
-    // but then I'd have to check for both th and td.  Annoying.
-    // So, if the specified column isn't there, it isn't there.
-    // if (parseInt(n, 10) > datarow.find('td').length - 1) return false;
-    return true;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   _checkHeadings(table, headingRules) {
     const trs = table.find('tr');
 
@@ -209,15 +191,9 @@ export default class HtmlTableValidor {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      if (!this._validColNum(column)) {
-        errs.push(`column ${column} does not exist`);
-        continue;
-      }
-
       const headings = headerrow.find(headingCellTag);
       const heading = headings.eq(column).text();
       const rule = headingRules[column];
-
       if (!rule.test(heading)) {
         const msg = `heading ${column} "${heading}" does not match ${rule}`;
         errs.push(msg);
@@ -246,14 +222,7 @@ export default class HtmlTableValidor {
 
     const errs = [];
 
-    const badRules = dataRules.filter(r => !this._validColNum(r.column));
-    const validRules = dataRules.filter(r => this._validColNum(r.column));
-
-    badRules.forEach(rule => {
-      errs.push(`column ${rule.column} does not exist`);
-    });
-
-    const anyRules = validRules.filter(r => r.row === 'ANY');
+    const anyRules = dataRules.filter(r => r.row === 'ANY');
     anyRules.forEach(rule => {
       let matches = false;
       // Using for loop to allow for break and exit
@@ -274,7 +243,7 @@ export default class HtmlTableValidor {
       }
     });
 
-    const allRules = validRules.filter(r => r.row === 'ALL');
+    const allRules = dataRules.filter(r => r.row === 'ALL');
     allRules.forEach(rule => {
       let matches = true;
       let failure = '';
@@ -296,7 +265,7 @@ export default class HtmlTableValidor {
       }
     });
 
-    const cellRules = validRules.filter(r => r.row !== 'ALL' && r.row !== 'ANY');
+    const cellRules = dataRules.filter(r => r.row !== 'ALL' && r.row !== 'ANY');
     cellRules.forEach(rule => {
       const r = parseInt(rule.row, 10);
       const c = parseInt(rule.column, 10);
