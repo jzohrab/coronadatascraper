@@ -271,15 +271,9 @@ export default class HtmlTableValidor {
     cellRules.forEach(rule => {
       const r = parseInt(rule.row, 10);
       const c = parseInt(rule.column, 10);
-      const dr = trs.eq(r);
-
-      // Have to check for th or td ...
-      let cells = dr.find('td');
-      if (cells.length === 0) cells = dr.find('th');
-      const cell = cells.eq(c);
-      const txt = cell.text();
-      if (!rule.rule.test(txt)) {
-        errs.push(`cell[${r}, ${c}] value "${txt}" does not match ${rule.rule}`);
+      const ret = this._matchCell(trs, r, c, rule.rule);
+      if (!ret.result) {
+        errs.push(`cell[${r}, ${c}] value "${ret.text}" does not match ${rule.rule}`);
       }
     });
 
@@ -288,13 +282,12 @@ export default class HtmlTableValidor {
 
   // TODO - remove?? unused?
   // eslint-disable-next-line class-methods-use-this
-  _matchCell(table, row, column, regex) {
-    const trs = table.find('tr');
+  _matchCell(trs, row, column, regex) {
     const dr = trs.eq(row);
     let cells = dr.find('td');
     if (cells.length === 0) cells = dr.find('th');
     const cell = cells.eq(column);
     const txt = cell.text();
-    return regex.test(txt);
+    return { result: regex.test(txt), text: txt };
   }
 } // end class
