@@ -460,7 +460,16 @@ describe('html-table-schema-validator', () => {
     });
 
     describe('all rows', () => {
-      test.todo('passes if all rows match');
+      test('passes if all rows match', () => {
+        $rules = {
+          data: [
+            { column: 0, row: 'ALL', rule: /county/ },
+            { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
+          ]
+        };
+        expectErrors([]);
+      });
+      
       test.todo('fails if any row does not match');
       test.todo('can use numeric regex');
       test.todo('bad column');
