@@ -157,11 +157,11 @@ class HtmlTableValidor {
           // people were doing magic like '$tr.find('td:last-child').text()',
           // and I saw they had defined '$' as a constant, but I couldn't figure
           // out how to do that in this code.
+          //
+          // Note: I wrote the above comment for an earlier commit!
+          // This now looks fine, but I'd still like a good review. :-)
           let dr = datatrs.eq(index);
-          console.log('DR CHILDREN **************************');
-          console.log(dr.children);
           let td = dr.find('td').eq(rule.column);
-          // let txt = td.children[0].data.trim();
           let txt = td.text();
           console.log(`    ${txt}`);
           if (rule.rule.test(txt)) {
