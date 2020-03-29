@@ -253,9 +253,15 @@ describe('html-table-schema-validator', () => {
   });
 
 
+  // Validate $table using $rules.
   function expectErrors(expected) {
+    var shouldBeSuccessful = (expected.length === 0);
+    const v = new HtmlTableValidor($rules);
+    expect(v.success($table)).toBe(shouldBeSuccessful);
+    expect(v.errors($table)).toEqual(expected);
   }
-  
+
+
   describe('constructor', () => {
     test('throws error if a bad rule is used', () => {
       const rules = {
@@ -272,9 +278,7 @@ describe('html-table-schema-validator', () => {
 
   describe('sanity checks', () => {
     test('no errors if no rules', () => {
-      const v = new HtmlTableValidor({});
-      expect(v.success($table)).toBe(true);
-      expect(v.errors($table)).toEqual([]);
+      expectErrors([]);
     });
 
     const badTableTests = [null, undefined];
