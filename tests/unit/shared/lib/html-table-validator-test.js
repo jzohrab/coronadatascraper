@@ -36,28 +36,42 @@ let $table = null;
 // The rules being used to verify $table.
 let $rules = {};
 
+// Validate $table using $rules.
+function expectErrors(t, expected) {
+  const v = new HtmlTableValidor($rules);
+  const actual = v.errors($table);
+  // console.log(actual);
+  t.equal(actual, expected);
 
-function setup() {
+  const shouldBeSuccessful = expected.length === 0;
+  t.equal(v.success($table), shouldBeSuccessful);
+}
+
+
+function setup(t) {
   const $ = cheerio.load($html);
   $table = $('table#tid').eq(0);
 
   // Verify no screwups.
   const headerrow = $table.find('tr').first();
-  expect(headerrow.find('th')).toHaveLength(3);
-}
-
-// Validate $table using $rules.
-function expectErrors(expected) {
-  const v = new HtmlTableValidor($rules);
-  const actual = v.errors($table);
-  // console.log(actual);
-  expect(actual).toEqual(expected);
-
-  const shouldBeSuccessful = expected.length === 0;
-  expect(v.success($table)).toBe(shouldBeSuccessful);
+  t.equal(headerrow.find('th').length, 3);
 }
 
 
+
+// CONSTRUCTOR
+
+test('constructor throws error if a bad rule is used', (t) => {
+  setup(t);
+  const rules = {
+    headings: { 0: {} }
+  };
+  t.throws(() => {
+    // eslint-disable-next-line no-new
+    new HtmlTableValidor(rules);
+  });
+  t.end();
+});
 
 /*
 
@@ -69,37 +83,7 @@ test('sum should return the addition of two numbers', function (t) {
 
 describe('html-table-schema-validator', () => {
 
-  beforeEach(() => {
-    const $ = cheerio.load($html);
-    $table = $('table#tid').eq(0);
-
-    // Verify no screwups.
-    const headerrow = $table.find('tr').first();
-    expect(headerrow.find('th')).toHaveLength(3);
-  });
-
-  // Validate $table using $rules.
-  function expectErrors(expected) {
-    const v = new HtmlTableValidor($rules);
-    const actual = v.errors($table);
-    // console.log(actual);
-    expect(actual).toEqual(expected);
-
-    const shouldBeSuccessful = expected.length === 0;
-    expect(v.success($table)).toBe(shouldBeSuccessful);
-  }
-
   describe('constructor', () => {
-    test('throws error if a bad rule is used', () => {
-setup();
-      const rules = {
-        headings: { 0: {} }
-      };
-      expect(() => {
-        // eslint-disable-next-line no-new
-        new HtmlTableValidor(rules);
-      }).toThrow();
-    });
 
     test('throws error if an invalid rule is passed', () => {
 setup();
