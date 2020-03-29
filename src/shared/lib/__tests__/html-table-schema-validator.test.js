@@ -20,17 +20,8 @@ class HtmlTableValidor {
 
   // Throws exception if the rules are not valid.
   static validateRules(rules) {
-    // TODO - remove all commented out console.log calls.
-    // console.log("CHECKING RULES ***********"); // TODO
-    // console.log(rules); // TODO
-    
     for (var k in rules.headings) {
       var r = rules.headings[k];
-      /*
-      console.log(r); // TODO
-      console.log(typeof(r)); // TODO
-      console.log(r instanceof RegExp); // TODO
-      */
       if (!(r instanceof RegExp)) {
         throw new Error(`${r} is not a RegExp`);
       }
@@ -166,9 +157,13 @@ class HtmlTableValidor {
           // people were doing magic like '$tr.find('td:last-child').text()',
           // and I saw they had defined '$' as a constant, but I couldn't figure
           // out how to do that in this code.
-          let dr = datatrs[index];
-          let td = dr.children[rule.column];
-          let txt = td.children[0].data;
+          let dr = datatrs.eq(index);
+          console.log('DR CHILDREN **************************');
+          console.log(dr.children);
+          let td = dr.find('td').eq(rule.column);
+          // let txt = td.children[0].data.trim();
+          let txt = td.text();
+          console.log(`    ${txt}`);
           if (rule.rule.test(txt)) {
             matches = true;
             break;
@@ -218,8 +213,9 @@ class HtmlTableValidor {
 describe('html-table-schema-validator', () => {
 
   // The html table that most tests will be using.
-  // For some tests, we replace the data tokens
-  // A_* and B_* with actual values.
+  // Summarized:
+  //   apple county| 10| 20
+  //   deer county | 66| 77
   const $html = `
 <html>
   <body>
@@ -228,10 +224,10 @@ describe('html-table-schema-validator', () => {
         <th>county</th><th>cases</th><th>deaths</th>
       </tr>
       <tr>
-        <td>A_NAME</td><td>A_C</td><td>A_D</td>
+        <td>apple county</td><td>10</td><td>20</td>
       </tr>
       <tr>
-        <td>B_NAME</td><td>B_C</td><td>B_D</td>
+        <td>deer county</td><td>66</td><td>77</td>
       </tr>
     </table>
   </body>
@@ -258,7 +254,9 @@ describe('html-table-schema-validator', () => {
     var shouldBeSuccessful = (expected.length === 0);
     const v = new HtmlTableValidor($rules);
     expect(v.success($table)).toBe(shouldBeSuccessful);
-    expect(v.errors($table)).toEqual(expected);
+    let actual = v.errors($table);
+    console.log(actual);
+    expect(actual).toEqual(expected);
   }
 
 
@@ -405,43 +403,17 @@ describe('html-table-schema-validator', () => {
 
   describe('data row column checks', () => {
 
-    function build_table(data) {
-      let table_rows = data.
-          split(/[\r\n]+/).
-          filter(lin => lin.trim() != '').
-          map(lin => lin.replace(/^ +/g, '')).
-          map(lin => lin.split('|').
-              map(el => `<td>${el.trim()}</td>`).join('')
-             ).
-          map(lin => `<tr>${lin.trim()}</tr>`).join("\n");
+    beforeEach(() => {
+      const $ = cheerio.load($html);
+      $table = $('table#tid').eq(0);
 
-        const tmp = `
-<html>
-  <body>
-    <table id="tid">
-      <tr>
-        <th>county</th><th>cases</th><th>deaths</th>
-      </tr>
-${table_rows}
-    </table>
-  </body>
-</html>`;
-      const c = cheerio.load(tmp);
-      let ret = c('table#tid').eq(0);
-      // console.log($table.html());
-      return ret;
-    }
+      // Verify no screwups.
+      const headerrow = $table.find('tr').first();
+      expect(headerrow.find('th')).toHaveLength(3);
+    });
 
     describe('any row', () => {
 
-      beforeEach(() => {
-        $table = build_table(
-          `apple county| 10| 20
-           deer county | 66| 77`
-        );
-      });
-
-      
       test('passes if any row matches', () => {
         $rules = {
           data: [
@@ -453,16 +425,14 @@ ${table_rows}
       
       test('fails if no row matches', () => {
         $rules = {
-          data: [
-            { row: 'ANY', column: 0, rule: /UNKNOWN/ }
-          ]
+          data: [ { row: 'ANY', column: 0, rule: /UNKNOWN/ } ]
         };
         expectErrors([
           'no row in column 0 matches regex /UNKNOWN/'
         ]);
       });
         
-      test('can use numeric regex', () => {
+      test.only('can use numeric regex', () => {
         $rules = {
           data: [
             { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
