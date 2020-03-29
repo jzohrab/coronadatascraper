@@ -123,6 +123,21 @@ export default class HtmlTableValidor {
     return result;
   }
 
+  static throwIfErrors(rules, table, errDisplayCount = 5, logToConsole = true) {
+    const v = new HtmlTableValidor(rules);
+    const errs = v.errors(table);
+    const errCount = errs.length;
+    if (errCount === 0) return;
+
+    const msg = `${errCount} validation errors.`;
+    const firstN = errs.slice(0, errDisplayCount);
+    if (logToConsole) {
+      console.error(msg);
+      console.error(firstN);
+    }
+    throw new Error(`${msg}.  Sample: ${firstN.join(';')}.`);
+  }
+
   // Throws exception if the rules are not valid.
   static validateRules(rules) {
     // eslint-disable-next-line guard-for-in
