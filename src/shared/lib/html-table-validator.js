@@ -99,7 +99,7 @@ export default class HtmlTableValidor {
     // eslint-disable-next-line guard-for-in
     for (const k in rules) setrules[k] = rules[k];
 
-    HtmlTableValidor.validateRules(setrules);
+    this._validateRules(setrules);
     this.rules = setrules;
   }
 
@@ -122,13 +122,13 @@ export default class HtmlTableValidor {
       return ['no rows in table'];
     }
 
-    const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
+    const he = this._checkHeadings(table, this.rules.headings);
     result.push(...he);
 
-    const re = HtmlTableValidor.checkMinRows(table, this.rules.minrows);
+    const re = this._checkMinRows(table, this.rules.minrows);
     result.push(...re);
 
-    const de = HtmlTableValidor.checkData(table, this.rules.data);
+    const de = this._checkData(table, this.rules.data);
     result.push(...de);
 
     return result;
@@ -158,7 +158,8 @@ export default class HtmlTableValidor {
   }
 
   // Throws exception if the rules are not valid.
-  static validateRules(rules) {
+  // eslint-disable-next-line class-methods-use-this
+  _validateRules(rules) {
     // eslint-disable-next-line guard-for-in
     for (const k in rules.headings) {
       const r = rules.headings[k];
@@ -174,7 +175,8 @@ export default class HtmlTableValidor {
     });
   }
 
-  static checkHeadings(table, headingRules) {
+  // eslint-disable-next-line class-methods-use-this
+  _checkHeadings(table, headingRules) {
     const trs = table.find('tr');
 
     // ASSUMPTION: header is on first row.
@@ -211,7 +213,8 @@ export default class HtmlTableValidor {
     return errs;
   }
 
-  static checkMinRows(table, minrows) {
+  // eslint-disable-next-line class-methods-use-this
+  _checkMinRows(table, minrows) {
     const trs = table.find('tr');
     if (trs.length < parseInt(minrows, 10)) {
       return [`expected at least ${minrows} rows, only have ${trs.length}`];
@@ -219,7 +222,8 @@ export default class HtmlTableValidor {
     return [];
   }
 
-  static checkData(table, dataRules) {
+  // eslint-disable-next-line class-methods-use-this
+  _checkData(table, dataRules) {
     const trs = table.find('tr');
 
     // ASSUMPTION: data starts on the second row.
