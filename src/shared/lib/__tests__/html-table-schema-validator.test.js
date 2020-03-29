@@ -103,7 +103,7 @@ class HtmlTableValidor {
       const rule = headingRules[column];
 
       if (!rule.test(heading)) {
-        const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
+        const msg = `heading ${column} "${heading}" did not match ${rule}`;
         errs.push(msg);
       }
     }
@@ -169,7 +169,7 @@ class HtmlTableValidor {
         }
       };
       if (!matches) {
-        errs.push(`no row in column ${rule.column} matches regex ${rule.rule}`);
+        errs.push(`no row in column ${rule.column} matches ${rule.rule}`);
       }
     });
     
@@ -320,7 +320,7 @@ describe('html-table-schema-validator', () => {
           0: /shouldfail/
         }
       };
-      expectErrors(['heading 0 "county" did not match regex /shouldfail/']);
+      expectErrors(['heading 0 "county" did not match /shouldfail/']);
     });
 
     test('can check multiple headers at once', () => {
@@ -331,8 +331,8 @@ describe('html-table-schema-validator', () => {
         }
       };
       expectErrors([
-        'heading 0 "county" did not match regex /shouldfail/',
-        'heading 1 "cases" did not match regex /another_bad/'
+        'heading 0 "county" did not match /shouldfail/',
+        'heading 1 "cases" did not match /another_bad/'
       ]);
     });
 
@@ -356,8 +356,8 @@ describe('html-table-schema-validator', () => {
         }
       };
       expectErrors([
-        'heading 1 "cases" did not match regex /^cases $/',
-        'heading 2 "deaths" did not match regex /^ deaths $/'
+        'heading 1 "cases" did not match /^cases $/',
+        'heading 2 "deaths" did not match /^ deaths $/'
       ]);
     });
 
@@ -383,8 +383,8 @@ describe('html-table-schema-validator', () => {
         }
       };
       expectErrors([
-        'heading 0 "county" did not match regex /something/',
-        'heading 1 "cases" did not match regex /Cases/'
+        'heading 0 "county" did not match /something/',
+        'heading 1 "cases" did not match /Cases/'
       ]);
     });
 
@@ -447,7 +447,7 @@ describe('html-table-schema-validator', () => {
           data: [ { row: 'ANY', column: 0, rule: /UNKNOWN/ } ]
         };
         expectErrors([
-          'no row in column 0 matches regex /UNKNOWN/'
+          'no row in column 0 matches /UNKNOWN/'
         ]);
       });
         
@@ -459,7 +459,7 @@ describe('html-table-schema-validator', () => {
           ]
         };
         expectErrors([
-          'no row in column 2 matches regex /^[a-z]+$/'
+          'no row in column 2 matches /^[a-z]+$/'
         ]);
       });
       
