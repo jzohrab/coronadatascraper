@@ -115,10 +115,6 @@ test('sum should return the addition of two numbers', function (t) {
 
 describe('html-table-schema-validator', () => {
 
-  describe('constructor', () => {
-
-  });
-
   describe('sanity checks', () => {
     test('no errors if no rules', () => {
 setup();
