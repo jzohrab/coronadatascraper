@@ -137,7 +137,7 @@ class HtmlTableValidor {
 
     /*
     const validColNum = (n, dataRow) => {
-      if (Number.isNaN(n)) return false;
+      if (isNaN(n)) return false;
       if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
       return true;
     };
@@ -242,7 +242,7 @@ describe('html-table-schema-validator', () => {
   <body>
     <table id="tid">
       <tr>
-        <th>county</th><th>cases</th><th>deaths</th>
+        <th>location</th><th>cases</th><th>deaths</th>
       </tr>
       <tr>
         <td>apple county</td><td>10</td><td>20</td>
@@ -318,7 +318,7 @@ describe('html-table-schema-validator', () => {
           0: /shouldfail/
         }
       };
-      expectErrors(['heading 0 "county" did not match /shouldfail/']);
+      expectErrors(['heading 0 "location" did not match /shouldfail/']);
     });
 
     test('can check multiple headers at once', () => {
@@ -328,13 +328,16 @@ describe('html-table-schema-validator', () => {
           1: /another_bad/
         }
       };
-      expectErrors(['heading 0 "county" did not match /shouldfail/', 'heading 1 "cases" did not match /another_bad/']);
+      expectErrors([
+        'heading 0 "location" did not match /shouldfail/',
+        'heading 1 "cases" did not match /another_bad/'
+      ]);
     });
 
     test('passes if all regexes match', () => {
       $rules = {
         headings: {
-          0: /county/,
+          0: /location/,
           1: /cases/,
           2: /deaths/
         }
@@ -345,7 +348,7 @@ describe('html-table-schema-validator', () => {
     test('can use exact-matching regexes', () => {
       $rules = {
         headings: {
-          0: /county/,
+          0: /location/,
           1: /^cases $/,
           2: /^ deaths $/
         }
@@ -356,7 +359,7 @@ describe('html-table-schema-validator', () => {
     test('can use case-insensitive regex', () => {
       $rules = {
         headings: {
-          0: /county/i,
+          0: /LocaTion/i,
           1: /CASES/i,
           2: /DEATHS/i
         }
@@ -374,7 +377,7 @@ describe('html-table-schema-validator', () => {
           1: /Cases/
         }
       };
-      expectErrors(['heading 0 "county" did not match /something/', 'heading 1 "cases" did not match /Cases/']);
+      expectErrors(['heading 0 "location" did not match /something/', 'heading 1 "cases" did not match /Cases/']);
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
@@ -474,9 +477,22 @@ describe('html-table-schema-validator', () => {
 
     // Not sure about this ...
     describe('single cell', () => {
-      test.todo('passes if match');
-      test.todo('fails if does not match');
-      test.todo('bad cell coords');
+      test('passes if cell matches', () => {
+        $rules = {
+          data: [{ column: 0, row: 0, rule: /location/ }]
+        };
+        expectErrors([]);
+      });
+
+      test.skip('fails if cell does not match', () => {
+        $rules = {
+          data: [
+            { column: 0, row: 0, rule: /area/ },
+            { column: 0, row: 1, rule: /apple/ }
+          ]
+        };
+        expectErrors(['cell[0, 0] value "location" does not match/area/']);
+      });
     });
   });
 });
