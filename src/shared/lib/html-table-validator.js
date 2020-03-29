@@ -209,24 +209,17 @@ export default class HtmlTableValidor {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      // eslint-disable-next-line no-restricted-globals
-      if (isNaN(column)) {
-        errs.push(`heading column ${column} does not exist`);
+      if (!this._validColNum(column)) {
+        errs.push(`column ${column} does not exist`);
         continue;
       }
 
       const headings = headerrow.find(headingCellTag);
-
-      if (parseInt(column, 10) > headings.length) {
-        errs.push(`heading column ${column} does not exist`);
-        continue;
-      }
-
       const heading = headings.eq(column).text();
       const rule = headingRules[column];
 
       if (!rule.test(heading)) {
-        const msg = `heading ${column} "${heading}" did not match ${rule}`;
+        const msg = `heading ${column} "${heading}" does not match ${rule}`;
         errs.push(msg);
       }
     }
@@ -257,7 +250,7 @@ export default class HtmlTableValidor {
     const validRules = dataRules.filter(r => this._validColNum(r.column));
 
     badRules.forEach(rule => {
-      errs.push(`data column ${rule.column} does not exist`);
+      errs.push(`column ${rule.column} does not exist`);
     });
 
     const anyRules = validRules.filter(r => r.row === 'ANY');

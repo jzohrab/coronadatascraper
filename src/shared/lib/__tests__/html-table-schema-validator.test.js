@@ -98,7 +98,7 @@ describe('html-table-schema-validator', () => {
           0: /shouldfail/
         }
       };
-      expectErrors(['heading 0 "location" did not match /shouldfail/']);
+      expectErrors(['heading 0 "location" does not match /shouldfail/']);
     });
 
     test('can check multiple headers at once', () => {
@@ -109,8 +109,8 @@ describe('html-table-schema-validator', () => {
         }
       };
       expectErrors([
-        'heading 0 "location" did not match /shouldfail/',
-        'heading 1 "cases" did not match /another_bad/'
+        'heading 0 "location" does not match /shouldfail/',
+        'heading 1 "cases" does not match /another_bad/'
       ]);
     });
 
@@ -133,7 +133,7 @@ describe('html-table-schema-validator', () => {
           2: /^ deaths $/
         }
       };
-      expectErrors(['heading 1 "cases" did not match /^cases $/', 'heading 2 "deaths" did not match /^ deaths $/']);
+      expectErrors(['heading 1 "cases" does not match /^cases $/', 'heading 2 "deaths" does not match /^ deaths $/']);
     });
 
     test('can use case-insensitive regex', () => {
@@ -157,7 +157,7 @@ describe('html-table-schema-validator', () => {
           1: /Cases/
         }
       };
-      expectErrors(['heading 0 "location" did not match /something/', 'heading 1 "cases" did not match /Cases/']);
+      expectErrors(['heading 0 "location" does not match /something/', 'heading 1 "cases" does not match /Cases/']);
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
@@ -167,7 +167,7 @@ describe('html-table-schema-validator', () => {
           17: /Cases/
         }
       };
-      expectErrors(['heading column 17 does not exist', 'heading column a does not exist']);
+      expectErrors(['heading 17 "" does not match /Cases/', 'column a does not exist']);
     });
   });
 
@@ -229,7 +229,7 @@ describe('html-table-schema-validator', () => {
             { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors(['data column a does not exist', 'no row in column 17 matches /^[0-9]+$/']);
+        expectErrors(['column a does not exist', 'no row in column 17 matches /^[0-9]+$/']);
       });
     });
 
