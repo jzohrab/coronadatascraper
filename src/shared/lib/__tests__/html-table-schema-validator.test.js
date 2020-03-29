@@ -2,8 +2,79 @@
 import cheerio from 'cheerio';
 import each from 'jest-each';
 
-// TODO: move this to its own file
-// TODO: code review on ... code style and everything, naming conventions, etc.
+// TODO: move this class to its own file
+
+/**
+HTML table structure validator.
+
+Scrapers break occasionally due to their source HTML tables changing.
+This class provides a few simple checks to verify that the structure
+is as expected.
+
+Summary: Create an HtmlTableValidor, giving some rules to it.  Then
+call errors($table) to see any error messages, or success($table) if
+you just care about true/false.
+
+Example:
+
+Suppose you have the following table
+
+    <html>
+      <body>
+        <table id="tid">
+          <tr>
+            <th>location</th>
+            <th>cases</th>
+            <th>deaths</th>
+          </tr>
+          <tr>
+            <td>apple county</td>
+            <td>10</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>deer county</td>
+            <td>66</td>
+            <td>77</td>
+          </tr>
+        </table>
+      </body>
+    </html>
+
+You can create a hash of rules that the table should match:
+
+    const rules = {
+      headings: {
+        0: /location/,
+        1: /cases/,
+        2: /deaths/
+      },
+      minrows: 2,
+      data: [
+        { column: 0, row: 'ANY', rule: /apple/i },
+        { column: 0, row: 'ALL', rule: /county$/ },
+        { column: 1, row: 'ALL', rule: /^[0-9]+$/ },
+        { column: 2, row: 'ALL', rule: /^[0-9]+$/ },
+        { column: 0, row: 2, rule: /deer/ }
+      ]
+    };
+
+Notes:
+
+* you don't have to pass all the rules, just the ones you need.
+* the data rules support ANY, ALL, or a number.
+* all rules are regexes.
+* unknown or incorrect rules will throw an exception.
+
+With the rules described, instatiate a validator, and give it your
+table:
+
+    const v = new HtmlTableValidor(rules);
+    if (!v.success($table)) {
+      // Some rules failed ...
+      console.log(v.errors($table);
+    }
+*/
 class HtmlTableValidor {
   constructor(rules) {
     const setrules = {
@@ -212,34 +283,11 @@ class HtmlTableValidor {
     return errs;
   }
   /* eslint-ensable class-methods-use-this, no-unused-vars */
-  // TODO remove these elint things
+  // TODO remove these elint things?
 } // end class
-
-// ############## SAMPLE CODE - will be removed #############
-/*
-  const $ = cheerio.load(h);
-  console.log($.html());
-  console.log(
-  $('table#tid')
-  .first()
-  .html()
-  );
-
-  const $table = $('table#tid').eq(0);
-  const $trs = $table.find('tr');
-  console.log(`got ${$trs.length} trs`);
-  $trs.each((index, tr) => {
-    const $tr = $(tr);
-    console.log($tr.find('td:first-child').text());
-  });
-*/
-
-// ############## END SAMPLE CODE - will be removed #############
 
 // #########################################################
 // Tests - everything above this will be removed, or go into another file
-
-// TODO - refactor tests, lots of duplication on checking validation good or not.
 
 describe('html-table-schema-validator', () => {
   // The html table that most tests will be using.
