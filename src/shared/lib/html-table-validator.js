@@ -124,14 +124,9 @@ export default class HtmlTableValidor {
       return ['no rows in table'];
     }
 
-    const he = this._checkHeadings(table, this.rules.headings);
-    result.push(...he);
-
-    const re = this._checkMinRows(table, this.rules.minrows);
-    result.push(...re);
-
-    const de = this._checkData(table, this.rules.data);
-    result.push(...de);
+    result.push(...this._checkHeadings(table, this.rules.headings));
+    result.push(...this._checkMinRows(table, this.rules.minrows));
+    result.push(...this._checkData(table, this.rules.data));
 
     return result;
   }
