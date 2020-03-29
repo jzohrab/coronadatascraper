@@ -163,7 +163,7 @@ class HtmlTableValidor {
           let dr = datatrs.eq(index);
           let td = dr.find('td').eq(rule.column);
           let txt = td.text();
-          console.log(`    ${txt}`);
+          // console.log(`    ${txt}`);
           if (rule.rule.test(txt)) {
             matches = true;
             break;
@@ -255,7 +255,7 @@ describe('html-table-schema-validator', () => {
     const v = new HtmlTableValidor($rules);
     expect(v.success($table)).toBe(shouldBeSuccessful);
     let actual = v.errors($table);
-    console.log(actual);
+    // console.log(actual);
     expect(actual).toEqual(expected);
   }
 
