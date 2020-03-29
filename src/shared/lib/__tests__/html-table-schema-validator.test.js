@@ -64,10 +64,7 @@ class HtmlTableValidor {
     }
 
     if ('headings' in this.rules) {
-      console.log("checking headings ...");
       const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
-      console.log("GOT errors:");
-      console.log(he);
       result.push(...he);
     }
 
@@ -398,10 +395,6 @@ describe('html-table-schema-validator', () => {
       const v = new HtmlTableValidor(rules);
       expect(v.success($table)).toBe(false);
       const expected = ['no rows in table'];
-      console.log('EXPECTED:');
-      console.log(expected);
-      console.log('ACTUAL:');
-      console.log(v.errors($table));
       expect(v.errors($table)).toEqual(expected);
     });
 
