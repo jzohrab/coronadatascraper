@@ -13,7 +13,11 @@ class HtmlTableValidor {
     };
 
     for (const k in rules) {
-      if (!Object.keys(setrules).includes(k)) throw new Error(`bad rule key ${k}`);
+      if (!Object.keys(setrules).includes(k)) {
+        const msg = `bad rule key ${k}`;
+        console.log(msg);
+        throw new Error(msg);
+      }
     }
 
     // eslint-disable-next-line guard-for-in
