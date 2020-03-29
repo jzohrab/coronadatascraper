@@ -251,7 +251,7 @@ describe('html-table-schema-validator', () => {
             { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
           ]
         };
-        expectErrors(['some rows in column 0 do not match /apple/']);
+        expectErrors(['"deer county" in column 0 does not match /apple/']);
       });
     });
 

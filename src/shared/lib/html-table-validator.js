@@ -233,6 +233,7 @@ export default class HtmlTableValidor {
     const allRules = validRules.filter(r => r.row === 'ALL');
     allRules.forEach(rule => {
       let matches = true;
+      let failure = '';
       // Using for loop to allow for break and exit
       // (can't break if we use forEach with anon function).
       for (let index = 0; index < datatrs.length; ++index) {
@@ -242,11 +243,12 @@ export default class HtmlTableValidor {
         // console.log(`    ${txt}`);
         if (!rule.rule.test(txt)) {
           matches = false;
+          failure = txt;
           break;
         }
       }
       if (!matches) {
-        errs.push(`some rows in column ${rule.column} do not match ${rule.rule}`);
+        errs.push(`"${failure}" in column ${rule.column} does not match ${rule.rule}`);
       }
     });
 
