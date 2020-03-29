@@ -69,7 +69,7 @@ cheerio table:
 
 Or as a shorthand, just throw and optionally log to console:
 
-    const opts = { includeErrCount: 5, log: false };
+    const opts = { includeErrCount: 5, logToConsole: false };
     HtmlTableValidor.throwIfErrors($rules, $table, opts);
 
 
@@ -138,11 +138,11 @@ export default class HtmlTableValidor {
   // Options defaults:
   // {
   //   includeErrCount: 5,
-  //   log: false
+  //   logToConsole: false
   // }
   static throwIfErrors(rules, table, options = {}) {
     const includeErrCount = options.includeErrCount || 5;
-    const logToConsole = options.log || false;
+    const logToConsole = options.logToConsole || false;
 
     const v = new HtmlTableValidor(rules);
     const errs = v.errors(table);

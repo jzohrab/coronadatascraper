@@ -300,7 +300,7 @@ describe('html-table-schema-validator', () => {
         }
       };
       expect(() => {
-        HtmlTableValidor.throwIfErrors($rules, $table, { log: false });
+        HtmlTableValidor.throwIfErrors($rules, $table, { logToConsole: false });
       }).toThrow(/1 validation errors/);
     });
 
@@ -310,7 +310,7 @@ describe('html-table-schema-validator', () => {
           0: /location/
         }
       };
-      HtmlTableValidor.throwIfErrors($rules, $table, { log: false });
+      HtmlTableValidor.throwIfErrors($rules, $table, { logToConsole: false });
       expect(1 + 1).toBe(2); // :-)
     });
 
@@ -328,7 +328,7 @@ describe('html-table-schema-validator', () => {
 
       let errMsg;
       try {
-        const opts = { includeErrCount: 1, log: false };
+        const opts = { includeErrCount: 1, logToConsole: false };
         HtmlTableValidor.throwIfErrors($rules, $table, opts);
       } catch (e) {
         errMsg = e.message;
@@ -352,7 +352,7 @@ describe('html-table-schema-validator', () => {
 
       let errMsg;
       try {
-        const opts = { includeErrCount: 999, log: false };
+        const opts = { includeErrCount: 999, logToConsole: false };
         HtmlTableValidor.throwIfErrors($rules, $table, opts);
       } catch (e) {
         errMsg = e.message;
