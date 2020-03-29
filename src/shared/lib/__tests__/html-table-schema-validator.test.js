@@ -263,6 +263,16 @@ describe('html-table-schema-validator', () => {
         expectErrors([]);
       });
 
+      test('treats bad cell references as empty', () => {
+        $rules = {
+          data: [
+            { column: 0, row: 10000, rule: /location/ },
+            { column: 5000, row: 2, rule: /outerspace/ }
+          ]
+        };
+        expectErrors(['data column 5000 does not exist', 'cell[10000, 0] value "" does not match /location/']);
+      });
+
       test('fails if cell does not match', () => {
         $rules = {
           data: [
