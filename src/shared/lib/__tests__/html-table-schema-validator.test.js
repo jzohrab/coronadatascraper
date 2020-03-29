@@ -291,11 +291,7 @@ describe('html-table-schema-validator', () => {
       const norows = '<html><head><table id="tid"></table></head></html>';
       const c = cheerio.load(norows);
       $table = c('table#tid').eq(0);
-      const rules = {};
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = ['no rows in table'];
-      expect(v.errors($table)).toEqual(expected);
+      expectErrors(['no rows in table']);
     });
 
   });
