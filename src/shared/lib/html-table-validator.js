@@ -55,6 +55,8 @@ Rule notes:
 * the data rules support ANY, ALL, or a number.
 * all rules are regexes.
 * unknown or incorrect rules will throw an exception.
+* we don't check column or row umber validity: if you put "column: 'a'",
+  that's on you!
 
 With the rules described, instatiate a validator, and give it your
 cheerio table:
