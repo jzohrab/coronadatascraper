@@ -298,131 +298,108 @@ describe('html-table-schema-validator', () => {
 
   describe('header checks', () => {
     test('can check header with regex', () => {
-      const rules = {
+      $rules = {
         headings: {
           0: /shouldfail/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = ['heading 0 "county" did not match regex /shouldfail/'];
-      expect(v.errors($table)).toEqual(expected);
+      expectErrors(['heading 0 "county" did not match regex /shouldfail/']);
     });
 
     test('can check multiple headers at once', () => {
-      const rules = {
+      $rules = {
         headings: {
           0: /shouldfail/,
           1: /another_bad/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = [
+      expectErrors([
         'heading 0 "county" did not match regex /shouldfail/',
         'heading 1 "cases" did not match regex /another_bad/'
-      ];
-      expect(v.errors($table)).toEqual(expected);
+      ]);
     });
 
     test('passes if all regexes match', () => {
-      const rules = {
+      $rules = {
         headings: {
           0: /county/,
           1: /cases/,
           2: /deaths/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(true);
-      expect(v.errors($table)).toEqual([]);
+      expectErrors([]);
     });
 
     test('can use exact-matching regexes', () => {
-      const rules = {
+      $rules = {
         headings: {
           0: /county/,
           1: /^cases $/,
           2: /^ deaths $/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = [
+      expectErrors([
         'heading 1 "cases" did not match regex /^cases $/',
         'heading 2 "deaths" did not match regex /^ deaths $/'
-      ];
-      expect(v.errors($table)).toEqual(expected);
+      ]);
     });
 
     test('can use case-insensitive regex', () => {
-      const rules = {
+      $rules = {
         headings: {
           0: /county/i,
           1: /CASES/i,
           2: /DEATHS/i
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(true);
-      expect(v.errors($table)).toEqual([]);
+      expectErrors([]);
     });
 
     test('can use <td> for header cells', () => {
       const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
       const c = cheerio.load(trhtml);
       $table = c('table#tid').eq(0);
-      const rules = {
+      $rules = {
         headings: {
           0: /something/,
           1: /Cases/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = [
+      expectErrors([
         'heading 0 "county" did not match regex /something/',
         'heading 1 "cases" did not match regex /Cases/'
-      ];
-      expect(v.errors($table)).toEqual(expected);
+      ]);
     });
 
     test('reports error if a rule refers to a non-existent column', () => {
-      const rules = {
+      $rules = {
         headings: {
           'a': /something/,
           17: /Cases/
         }
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(false);
-      const expected = [
+      expectErrors([
         'heading column 17 does not exist',
         'heading column a does not exist',
-      ];
-      expect(v.errors($table)).toEqual(expected);
+      ]);
     });
   });
 
   describe('minrows', () => {
     test('fails if table has insufficient rows', () => {
-      const rules = {
+      $rules = {
         minrows: 10
       };
-      const v = new HtmlTableValidor(rules);
-      const expected = [
+      expectErrors([
         'expected at least 10 rows, only have 3'
-      ];
-      expect(v.errors($table)).toEqual(expected);
-      expect(v.success($table)).toBe(false);
+      ]);
     });
 
     test('passes if table has sufficient rows', () => {
-      const rules = {
-        minrows: 1
+      $rules = {
+        minrows: 2
       };
-      const v = new HtmlTableValidor(rules);
-      expect(v.success($table)).toBe(true);
+      expectErrors([]);
     });
   });
 
@@ -455,98 +432,35 @@ ${table_rows}
       return ret;
     }
 
-    /* TODO REMOVE THIS
-    // Note: load Cases col first, then Deaths.
-    function data_table(options) {
-      let values = {
-        A_NAME: 'a county',
-        B_NAME: 'b county',
-        A_C: 0,
-        B_C: 0,
-        A_D: 0,
-        B_D: 0
-      };
-      for (var k in options) {
-        values[k] = options[k];
-      }
-
-      // Do replacement
-      let html = $html;
-      for (var k in values)
-        html = html.replace(k, values[k]);
-
-      const html = $html.
-            replace('A_C', values.A_C).
-            replace('A_D', values.A_D).
-            replace('B_C', values.B_C).
-            replace('B_D', values.B_D);
-
-      console.log(html);
-
-      const c = cheerio.load(html);
-      $table = c('table#tid').eq(0);
-      return $table;
-    }
-    */  // END TODO
-
-    /*
-    test('aoeuaouaoeu', () => {
-      build_table(
-        `apple county|10|20
-         deer counter|66|77`
-      );
-    });
-
-      const $html = `
-<html>
-  <body>
-    <table id="tid">
-      <tr>
-        <th>county</th><th>cases</th><th>deaths</th>
-      </tr>
-      <tr>
-        <td>A_NAME</td><td>A_C</td><td>A_D</td>
-      </tr>
-      <tr>
-        <td>B_NAME</td><td>B_C</td><td>B_D</td>
-      </tr>
-    </table>
-  </body>
-</html>`;
-    */
-    
     describe('any row', () => {
 
-      let $table = build_table(
-        `apple county| 10| 20
-         deer county | 66| 77`
-      );
+      beforeEach(() => {
+        $table = build_table(
+          `apple county| 10| 20
+           deer county | 66| 77`
+        );
+      });
+
       
       test('passes if any row matches', () => {
-        const rules = {
+        $rules = {
           data: [
             { row: 'ANY', column: 0, rule: /apple/ }
           ]
         };
         // console.log($table.html());
-        const v = new HtmlTableValidor(rules);
-        expect(v.success($table)).toBe(true);
-        const expected = [];
-        expect(v.errors($table)).toEqual(expected);
+        expectErrors([]);
       });
       
       test('fails if no row matches', () => {
-        const rules = {
+        $rules = {
           data: [
             { row: 'ANY', column: 0, rule: /UNKNOWN/ }
           ]
         };
-        const v = new HtmlTableValidor(rules);
-        expect(v.success($table)).toBe(false);
-        const expected = [
+        expectErrors([
           'no row in column 0 matches regex /UNKNOWN/'
-        ];
-        expect(v.errors($table)).toEqual(expected);
+        ]);
       });
         
       test.todo('can use numeric regex');
