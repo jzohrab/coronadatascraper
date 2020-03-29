@@ -146,33 +146,52 @@ class HtmlTableValidor {
     const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
 
     let anyRules = validRules.filter(r => (r.row === 'ANY'));
-    
     anyRules.forEach((rule) => {
-        let matches = false;
-        // Using for loop to allow for break and exit
-        // (can't break if we use forEach with anon function).
-        for(var index = 0; index < datatrs.length; ++index) {
-          // TODO code review: I feel this is brittle, and there's
-          // probably a better way to do this.  I saw in some scrapers
-          // people were doing magic like '$tr.find('td:last-child').text()',
-          // and I saw they had defined '$' as a constant, but I couldn't figure
-          // out how to do that in this code.
-          //
-          // Note: I wrote the above comment for an earlier commit!
-          // This now looks fine, but I'd still like a good review. :-)
-          let dr = datatrs.eq(index);
-          let td = dr.find('td').eq(rule.column);
-          let txt = td.text();
-          // console.log(`    ${txt}`);
-          if (rule.rule.test(txt)) {
-            matches = true;
-            break;
-          }
-        };
-        if (!matches) {
-          errs.push(`no row in column ${rule.column} matches regex ${rule.rule}`);
+      let matches = false;
+      // Using for loop to allow for break and exit
+      // (can't break if we use forEach with anon function).
+      for(var index = 0; index < datatrs.length; ++index) {
+        // TODO code review: I feel this is brittle, and there's
+        // probably a better way to do this.  I saw in some scrapers
+        // people were doing magic like '$tr.find('td:last-child').text()',
+        // and I saw they had defined '$' as a constant, but I couldn't figure
+        // out how to do that in this code.
+        //
+        // Note: I wrote the above comment for an earlier commit!
+        // This now looks fine, but I'd still like a good review. :-)
+        let dr = datatrs.eq(index);
+        let td = dr.find('td').eq(rule.column);
+        let txt = td.text();
+        // console.log(`    ${txt}`);
+        if (rule.rule.test(txt) == true) {
+          matches = true;
+          break;
         }
-      });
+      };
+      if (!matches) {
+        errs.push(`no row in column ${rule.column} matches regex ${rule.rule}`);
+      }
+    });
+    
+    let allRules = validRules.filter(r => (r.row === 'ALL'));
+    allRules.forEach((rule) => {
+      let matches = true;
+      // Using for loop to allow for break and exit
+      // (can't break if we use forEach with anon function).
+      for(var index = 0; index < datatrs.length; ++index) {
+        let dr = datatrs.eq(index);
+        let td = dr.find('td').eq(rule.column);
+        let txt = td.text();
+        // console.log(`    ${txt}`);
+        if (rule.rule.test(txt) == false) {
+          matches = false;
+          break;
+        }
+      };
+      if (!matches) {
+        errs.push(`some rows in column ${rule.column} do not match ${rule.rule}`);
+      }
+    });
 
     return errs;
   }
@@ -469,7 +488,19 @@ describe('html-table-schema-validator', () => {
         };
         expectErrors([]);
       });
-      
+
+      test('fails if any rows do not match', () => {
+        $rules = {
+          data: [
+            { column: 0, row: 'ALL', rule: /apple/ },
+            { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
+          ]
+        };
+        expectErrors([
+          'some rows in column 0 do not match /apple/'
+        ]);
+      });
+
       test.todo('fails if any row does not match');
       test.todo('can use numeric regex');
       test.todo('bad column');
