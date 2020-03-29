@@ -103,6 +103,8 @@ export default class HtmlTableValidor {
     this.rules = setrules;
   }
 
+  // PUBLIC //////////////////////////////////////////////
+
   success(table) {
     return this.errors(table).length === 0;
   }
@@ -134,6 +136,8 @@ export default class HtmlTableValidor {
     return result;
   }
 
+  // Utility method to do quick validation.
+  //
   // Options defaults:
   // {
   //   includeErrCount: 5,
@@ -156,6 +160,10 @@ export default class HtmlTableValidor {
     }
     throw new Error(`${msg}.  Sample: ${firstN.join(';')}.`);
   }
+
+  // PRIVATE (ish) //////////////////////////////////////////////
+  // Javascript doesn't really have private, prepending underscore
+  // to discourage direct calls.
 
   // Throws exception if the rules are not valid.
   // eslint-disable-next-line class-methods-use-this
