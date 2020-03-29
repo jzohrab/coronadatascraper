@@ -68,6 +68,11 @@ cheerio table:
       // Some rules failed ...
       console.log(v.errors($table);
     }
+
+Or as a shorthand, just throw and optionally log to console:
+
+    const opts = { includeErrCount: 5, log: false };
+    HtmlTableValidor.throwIfErrors($rules, $table, opts);
 */
 export default class HtmlTableValidor {
   constructor(rules) {
