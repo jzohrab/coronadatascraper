@@ -8,12 +8,11 @@ const shared = path.join(process.cwd(), 'src', 'shared');
 const lib = path.join(shared, 'lib');
 const HtmlTableValidor = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
 
-/*
 test('sum should return the addition of two numbers', function (t) {
   t.equal(3, (1 + 2));
   t.end();
 });
-*/
+
 
 // The html table that most tests will be using.
 // Summarized:
