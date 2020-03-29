@@ -159,8 +159,13 @@ export default class HtmlTableValidor {
   }
 
   // PRIVATE (ish) //////////////////////////////////////////////
+  //
   // Javascript doesn't really have private, prepending underscore
   // to discourage direct calls.
+  //
+  // Most of these methods should be static b/c they don't use "this",
+  // but that makes invocation long.  I'm lazy, so turning off that
+  // lint check.
 
   // Throws exception if the rules are not valid.
   // eslint-disable-next-line class-methods-use-this
@@ -181,12 +186,12 @@ export default class HtmlTableValidor {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  // ASSUMPTION: header is on first row (row 0).
   _checkHeadings(table, headingRules) {
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
       const re = headingRules[column];
-      // ASSUMPTION: header is on first row.
       const ret = this._matchCell(table.find('tr'), 0, column, re);
       if (!ret.result) {
         errs.push(`heading ${column} "${ret.text}" does not match ${re}`);
@@ -206,10 +211,10 @@ export default class HtmlTableValidor {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  // ASSUMPTION: data starts on the second row.
   _checkData(table, dataRules) {
     const trs = table.find('tr');
 
-    // ASSUMPTION: data starts on the second row.
     const datatrs = trs.slice(1);
     // console.log(`Have ${datatrs.length} data rows`);
 
@@ -221,7 +226,6 @@ export default class HtmlTableValidor {
       // Using for loop to allow for break and exit
       // (can't break if we use forEach with anon function).
       for (let index = 0; index < datatrs.length; ++index) {
-        // TODO code review - ok here?
         const dr = datatrs.eq(index);
         const td = dr.find('td').eq(rule.column);
         const txt = td.text();
@@ -271,7 +275,6 @@ export default class HtmlTableValidor {
     return errs;
   }
 
-  // TODO - remove?? unused?
   // eslint-disable-next-line class-methods-use-this
   _matchCell(trs, row, column, regex) {
     const dr = trs.eq(row);
