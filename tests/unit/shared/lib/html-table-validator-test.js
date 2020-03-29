@@ -8,7 +8,38 @@ const shared = path.join(process.cwd(), 'src', 'shared');
 const lib = path.join(shared, 'lib');
 const HtmlTableValidor = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
 
+test('sum should return the addition of two numbers', function (t) {
+  t.equal(3, (1 + 2));
+  t.end();
+});
 
+test('2sum should return the addition of two numbers', function (t) {
+  t.equal(4, (2 + 2));
+  t.end();
+});
+
+// The html table that most tests will be using.
+// Summarized:
+//   apple county| 10| 20
+//   deer county | 66| 77
+const $html = `
+<html>
+  <body>
+    <table id="tid">
+      <tr>
+        <th>location</th><th>cases</th><th>deaths</th>
+      </tr>
+      <tr>
+        <td>apple county</td><td>10</td><td>20</td>
+      </tr>
+      <tr>
+        <td>deer county</td><td>66</td><td>77</td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+/*
 describe('html-table-schema-validator', () => {
   // The html table that most tests will be using.
   // Summarized:
@@ -370,3 +401,4 @@ describe('html-table-schema-validator', () => {
     });
   });
 });
+*/
