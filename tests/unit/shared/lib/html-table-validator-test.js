@@ -13,11 +13,6 @@ test('sum should return the addition of two numbers', function (t) {
   t.end();
 });
 
-test('2sum should return the addition of two numbers', function (t) {
-  t.equal(4, (2 + 2));
-  t.end();
-});
-
 // The html table that most tests will be using.
 // Summarized:
 //   apple county| 10| 20
