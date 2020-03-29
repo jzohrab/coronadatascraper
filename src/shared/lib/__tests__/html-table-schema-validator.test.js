@@ -237,7 +237,11 @@ describe('html-table-schema-validator', () => {
   </body>
 </html>`;
 
+  // The table for the current test run.
   let $table = null;
+
+  // The rules being used to verify $table.
+  let $rules = {};
 
   beforeEach(() => {
     const $ = cheerio.load($html);
@@ -248,6 +252,9 @@ describe('html-table-schema-validator', () => {
     expect(headerrow.find('th')).toHaveLength(3);
   });
 
+
+  function expectErrors(expected) {
+  }
   
   describe('constructor', () => {
     test('throws error if a bad rule is used', () => {
