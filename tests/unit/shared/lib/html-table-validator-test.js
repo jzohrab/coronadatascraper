@@ -47,14 +47,33 @@ function expectErrors(t, expected) {
   t.equal(v.success($table), shouldBeSuccessful);
 }
 
+test.Test.prototype.validationErrorsEquals = function(expected) {
 
-function setup(t) {
+  const v = new HtmlTableValidor($rules);
+  const actual = v.errors($table);
+
+  this._assert(actual === expected, {
+    message: message || 'mismatch',
+    operator: 'validationErrorsEquals',
+    actual: actual,
+    expected: expected
+  });
+
+  const shouldBeSuccessful = expected.length === 0;
+  const successful = v.success($table);
+  this._assert(successful === shouldBeSuccessful, {
+    message: message || 'successful check',
+    operator: 'validationErrorsEquals',
+    actual: successful,
+    expected: shouldBeSuccessful
+  });
+
+};
+
+
+function setup() {
   const $ = cheerio.load($html);
   $table = $('table#tid').eq(0);
-
-  // Verify no screwups.
-  const headerrow = $table.find('tr').first();
-  t.equal(headerrow.find('th').length, 3);
 }
 
 
@@ -62,7 +81,7 @@ function setup(t) {
 // CONSTRUCTOR
 
 test('constructor throws error if a bad rule is used', (t) => {
-  setup(t);
+  setup();
   const rules = {
     headings: { 0: {} }
   };
