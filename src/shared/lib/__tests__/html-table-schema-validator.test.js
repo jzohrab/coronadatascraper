@@ -34,7 +34,7 @@ class HtmlTableValidor {
     }
 
     if ('data' in this.rules) {
-      const de = HtmlTableValidor.checkData(table, this.data);
+      const de = HtmlTableValidor.checkData(table, this.rules.data);
       result.push(...de);
     }
 
@@ -101,7 +101,18 @@ class HtmlTableValidor {
   }
 
 
+  static validColumnNumber(n, data_row) {
+    if (isNaN(n))
+      return false;
+    if (parseInt(n) > data_row.find('td').length - 1)
+      return false;
+    return true;
+  }
+  
   static checkData(table, dataRules) {
+    // console.log('ALL RULES ***********************');
+    // console.log(dataRules);
+
     const trs = table.find('tr');
     if (trs.length === 0) {
       return ['no rows in table'];
@@ -109,62 +120,53 @@ class HtmlTableValidor {
 
     // ASSUMPTION: data starts on the second row.
     const datatrs = trs.slice(1);
-    // console.log(datatrs);
+    // console.log(`Have ${datatrs.length} data rows`);
 
-    const first_data_row_cells = trs.eq(1).find('td');
     const errs = [];
 
     // eslint-disable-next-line guard-for-in
-    for (const rule in dataRules) {
-      if (isNaN(rule.column)) {
-        errs.push(`Data column ${rule.column} does not exist`);
-        continue;
-      }
-
-      if (parseInt(rule.column) > (first_data_row_cells.length - 1)) {
-        errs.push(`Data column ${rule.column} does not exist`);
-        continue;
-      }
+    const badRules = dataRules.filter(r => !HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
+    for (const rule in badRules) {
+      errs.push(`Data column ${rule.column} does not exist`);
     }
 
-    // eslint-disable-next-line guard-for-in
-    for (const rule in dataRules.filter(r => r.row === 'ANY')) {
-      for (const dr in datatrs) {
-        errs.push(`SOMEERROR for ${r.rule}`);
-      }
-    }
+    const validRules = dataRules.filter(r => HtmlTableValidor.validColumnNumber(r.column, datatrs.eq(0)));
+    // console.log('VALID RULES ***********************');
+    // console.log(validRules);
 
-    /*
-      const headings = headerrow.find(headingCellTag);
-
-      const heading = headings
-        .eq(column)
-        .text();
-      const rule = headingRules[column];
-
-      if (rule instanceof RegExp) {
-        if (!rule.test(heading)) {
-          const msg = `heading ${column} "${heading}" did not match regex ${rule}`;
-          errs.push(msg);
+    // console.log('VALID RULES LOOOOP ***********************');
+    validRules.
+      filter(r => (r.row === 'ANY')).
+      forEach((rule) => {
+        // console.log('RULE IN VALID RULE LOOP ***********************');
+        // console.log(rule);
+      
+        let matches = false;
+        datatrs.each((index, dr) => {
+          let td = dr.children[rule.column];
+          // console.log('Loop ***********************');
+          // console.log(`dr: ${dr}`);
+          // console.log(`td:`);
+          // console.log(td);
+          // console.log(`Rule:`);
+          // console.log(rule);
+          // console.log('END RULE ***********************');
+          let txt = td.children[0].data;
+          if (rule.rule.test(txt)) {
+            matches = true;
+          }
+        });
+        if (!matches) {
+          errs.push(`no row in column ${rule.column} matches regex ${rule.rule}`);
         }
-      } else if (typeof rule === 'string') {
-        if (rule !== heading) {
-          const msg = `heading ${column} "${heading}" did not match string "${rule}"`;
-          errs.push(msg);
-        }
-      } else {
-        const msg = `Unhandled heading rule ${rule} of type ${typeof rule}`;
-        throw new Error(msg);
-      }
-    }
-    */
-    
+      });
+
     return errs;
   }
-
   /* eslint-ensable class-methods-use-this, no-unused-vars */
   // TODO remove these elint things
-}
+
+} // end class
 
 // ############## SAMPLE CODE - will be removed #############
 
