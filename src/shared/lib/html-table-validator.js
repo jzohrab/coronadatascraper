@@ -109,8 +109,6 @@ export default class HtmlTableValidor {
     });
   }
 
-  // TODO remove these elint things
-  /* eslint-disable class-methods-use-this, no-unused-vars */
   success(table) {
     return this.errors(table).length === 0;
   }
@@ -270,6 +268,4 @@ export default class HtmlTableValidor {
 
     return errs;
   }
-  /* eslint-ensable class-methods-use-this, no-unused-vars */
-  // TODO remove these elint things?
 } // end class
