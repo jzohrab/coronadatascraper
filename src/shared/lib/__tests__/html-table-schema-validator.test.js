@@ -287,7 +287,7 @@ describe('html-table-schema-validator', () => {
         }
       };
       expect(() => {
-        HtmlTableValidor.throwIfErrors($rules, $table);
+        HtmlTableValidor.throwIfErrors($rules, $table, { log: false });
       }).toThrow(/1 validation errors/);
     });
 

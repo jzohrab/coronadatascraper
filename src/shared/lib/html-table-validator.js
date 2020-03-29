@@ -80,7 +80,7 @@ export default class HtmlTableValidor {
     for (const k in rules) {
       if (!Object.keys(setrules).includes(k)) {
         const msg = `bad rule key ${k}`;
-        console.log(msg);
+        // console.log(msg);
         throw new Error(msg);
       }
     }
@@ -123,7 +123,15 @@ export default class HtmlTableValidor {
     return result;
   }
 
-  static throwIfErrors(rules, table, errDisplayCount = 5, logToConsole = true) {
+  // Options defaults:
+  // {
+  //   display: 5,
+  //   log: false
+  // }
+  static throwIfErrors(rules, table, options = {}) {
+    const errDisplayCount = options.display || 5;
+    const logToConsole = options.log || false;
+
     const v = new HtmlTableValidor(rules);
     const errs = v.errors(table);
     const errCount = errs.length;
