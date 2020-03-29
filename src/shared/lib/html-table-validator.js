@@ -130,20 +130,14 @@ export default class HtmlTableValidor {
       return ['no rows in table'];
     }
 
-    if ('headings' in this.rules) {
-      const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
-      result.push(...he);
-    }
+    const he = HtmlTableValidor.checkHeadings(table, this.rules.headings);
+    result.push(...he);
 
-    if ('minrows' in this.rules) {
-      const re = HtmlTableValidor.checkMinRows(table, this.rules.minrows);
-      result.push(...re);
-    }
+    const re = HtmlTableValidor.checkMinRows(table, this.rules.minrows);
+    result.push(...re);
 
-    if ('data' in this.rules) {
-      const de = HtmlTableValidor.checkData(table, this.rules.data);
-      result.push(...de);
-    }
+    const de = HtmlTableValidor.checkData(table, this.rules.data);
+    result.push(...de);
 
     return result;
   }
