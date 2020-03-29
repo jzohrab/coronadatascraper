@@ -278,4 +278,11 @@ describe('html-table-schema-validator', () => {
       });
     });
   });
+
+  describe('ThrowIfErrors', () => {
+    test.todo('throws if errors');
+    test.todo('does not throw if no errors');
+    test.todo('can specify count of errors to include in thrown message');
+    test.todo('count of errors requested may be more than actual errors');
+  });
 });
