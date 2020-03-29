@@ -290,6 +290,23 @@ describe('html-table-schema-validator', () => {
       expect(v.errors($table)).toEqual([]);
     });
 
+    test('fails if regex must match exactly', () => {
+      const rules = {
+        headings: {
+          0: /county/,
+          1: /^cases $/,
+          2: /^ deaths $/
+        }
+      };
+      const v = new HtmlTableValidor(rules);
+      expect(v.success($table)).toBe(false);
+      const expected = [
+        'heading 1 "cases" did not match regex /^cases $/',
+        'heading 2 "deaths" did not match regex /^ deaths $/'
+      ];
+      expect(v.errors($table)).toEqual(expected);
+    });
+
     test('can check with case-insensitive regex', () => {
       const rules = {
         headings: {
