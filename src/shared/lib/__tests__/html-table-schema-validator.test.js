@@ -291,7 +291,16 @@ describe('html-table-schema-validator', () => {
       }).toThrow(/1 validation errors/);
     });
 
-    test.todo('does not throw if no errors');
+    test('does not throw if no errors', () => {
+      $rules = {
+        headings: {
+          0: /location/
+        }
+      };
+      HtmlTableValidor.throwIfErrors($rules, $table, { log: false });
+      expect(1 + 1).toBe(2); // :-)
+    });
+
     test.todo('can specify count of errors to include in thrown message');
     test.todo('count of errors requested may be more than actual errors');
   });
