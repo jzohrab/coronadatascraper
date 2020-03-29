@@ -258,6 +258,8 @@ describe('html-table-schema-validator', () => {
         const v = new HtmlTableValidor(rules);
       }).toThrow();
     });
+
+    test.todo('checks invalid schema rules');
   });
 
 
@@ -560,7 +562,5 @@ ${table_rows}
 
   
   });
-
-  test.todo('checks invalid schema rules');
 
 });
