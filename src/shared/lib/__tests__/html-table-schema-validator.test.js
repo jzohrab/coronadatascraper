@@ -9,6 +9,22 @@ class HtmlTableValidor {
     this.rules = rules;
   }
 
+  // Throws exception if the rules are not valid.
+  static validateRules(rules) {
+    for (var k in rules.headings) {
+      var r = rules.headings[k].rule;
+      if (!(r instanceof RegExp)) {
+        throw new Error('Rule must be a RegExp');
+      }
+    }
+
+    rules.data.forEach((r) => {
+      if (!(r instanceof RegExp)) {
+        throw new Error('Rule must be a RegExp');
+      }
+    });
+  }
+  
   // TODO remove these elint things
   /* eslint-disable class-methods-use-this, no-unused-vars */
   success(table) {
