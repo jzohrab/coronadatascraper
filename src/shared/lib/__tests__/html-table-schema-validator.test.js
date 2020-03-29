@@ -119,13 +119,6 @@ class HtmlTableValidor {
     return [];
   }
 
-  static validColumnNumber(n, dataRow) {
-    // eslint-disable-next-line no-restricted-globals
-    if (isNaN(n)) return false;
-    if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
-    return true;
-  }
-
   static checkData(table, dataRules) {
     const trs = table.find('tr');
 
@@ -135,16 +128,16 @@ class HtmlTableValidor {
 
     const errs = [];
 
-    const validColNum = (n, dataRow) => {
+    const validColNum = n => {
       // eslint-disable-next-line no-restricted-globals
       if (isNaN(n)) return false;
-      if (parseInt(n, 10) > dataRow.find('td').length - 1) return false;
+      const firstRow = datatrs.eq(0);
+      if (parseInt(n, 10) > firstRow.find('td').length - 1) return false;
       return true;
     };
 
-    const firstRow = datatrs.eq(0);
-    const badRules = dataRules.filter(r => !validColNum(r.column, firstRow));
-    const validRules = dataRules.filter(r => validColNum(r.column, firstRow));
+    const badRules = dataRules.filter(r => !validColNum(r.column));
+    const validRules = dataRules.filter(r => validColNum(r.column));
 
     badRules.forEach(rule => {
       errs.push(`data column ${rule.column} does not exist`);
