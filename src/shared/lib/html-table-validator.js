@@ -182,23 +182,14 @@ export default class HtmlTableValidor {
 
   // eslint-disable-next-line class-methods-use-this
   _checkHeadings(table, headingRules) {
-    const trs = table.find('tr');
-
-    // ASSUMPTION: header is on first row.
-    const headerrow = trs.first();
-
-    let headingCellTag = 'th';
-    if (headerrow.find('th').length === 0) headingCellTag = 'td';
-
     const errs = [];
     // eslint-disable-next-line guard-for-in
     for (const column in headingRules) {
-      const headings = headerrow.find(headingCellTag);
-      const heading = headings.eq(column).text();
-      const rule = headingRules[column];
-      if (!rule.test(heading)) {
-        const msg = `heading ${column} "${heading}" does not match ${rule}`;
-        errs.push(msg);
+      const re = headingRules[column];
+      // ASSUMPTION: header is on first row.
+      const ret = this._matchCell(table.find('tr'), 0, column, re);
+      if (!ret.result) {
+        errs.push(`heading ${column} "${ret.text}" does not match ${re}`);
       }
     }
 
