@@ -279,8 +279,18 @@ describe('html-table-schema-validator', () => {
     });
   });
 
-  describe('ThrowIfErrors', () => {
-    test.todo('throws if errors');
+  describe('throwIfErrors', () => {
+    test('throws if errors', () => {
+      $rules = {
+        headings: {
+          0: /shouldfail/
+        }
+      };
+      expect(() => {
+        HtmlTableValidor.throwIfErrors($rules, $table);
+      }).toThrow(/1 validation errors/);
+    });
+
     test.todo('does not throw if no errors');
     test.todo('can specify count of errors to include in thrown message');
     test.todo('count of errors requested may be more than actual errors');
