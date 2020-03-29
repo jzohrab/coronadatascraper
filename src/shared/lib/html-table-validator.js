@@ -125,11 +125,11 @@ export default class HtmlTableValidor {
 
   // Options defaults:
   // {
-  //   display: 5,
+  //   includeErrCount: 5,
   //   log: false
   // }
   static throwIfErrors(rules, table, options = {}) {
-    const errDisplayCount = options.display || 5;
+    const includeErrCount = options.includeErrCount || 5;
     const logToConsole = options.log || false;
 
     const v = new HtmlTableValidor(rules);
@@ -138,7 +138,7 @@ export default class HtmlTableValidor {
     if (errCount === 0) return;
 
     const msg = `${errCount} validation errors.`;
-    const firstN = errs.slice(0, errDisplayCount);
+    const firstN = errs.slice(0, includeErrCount);
     if (logToConsole) {
       console.error(msg);
       console.error(firstN);

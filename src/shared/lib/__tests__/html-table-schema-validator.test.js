@@ -301,7 +301,52 @@ describe('html-table-schema-validator', () => {
       expect(1 + 1).toBe(2); // :-)
     });
 
-    test.todo('can specify count of errors to include in thrown message');
-    test.todo('count of errors requested may be more than actual errors');
+    test('can specify count of errors to include in thrown message', () => {
+      $rules = {
+        data: [
+          { column: 0, row: 0, rule: /area/ },
+          { column: 0, row: 1, rule: /apple/ },
+          { column: 1, row: 2, rule: /cat/ }
+        ]
+      };
+
+      // Sanity check of validation errors:
+      expectErrors(['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+
+      let errMsg;
+      try {
+        const opts = { includeErrCount: 1, log: false };
+        HtmlTableValidor.throwIfErrors($rules, $table, opts);
+      } catch (e) {
+        errMsg = e.message;
+      }
+
+      expect(errMsg).toMatch(/value "location"/);
+      expect(errMsg).not.toMatch(/value "66"/);
+    });
+
+    test('count of errors requested may be more than actual errors', () => {
+      $rules = {
+        data: [
+          { column: 0, row: 0, rule: /area/ },
+          { column: 0, row: 1, rule: /apple/ },
+          { column: 1, row: 2, rule: /cat/ }
+        ]
+      };
+
+      // Sanity check of validation errors:
+      expectErrors(['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+
+      let errMsg;
+      try {
+        const opts = { includeErrCount: 999, log: false };
+        HtmlTableValidor.throwIfErrors($rules, $table, opts);
+      } catch (e) {
+        errMsg = e.message;
+      }
+
+      expect(errMsg).toMatch(/value "location"/);
+      expect(errMsg).toMatch(/value "66"/);
+    });
   });
 });
