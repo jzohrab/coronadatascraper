@@ -229,7 +229,7 @@ describe('html-table-schema-validator', () => {
             { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors(['data column 17 does not exist', 'data column a does not exist']);
+        expectErrors(['data column a does not exist', 'no row in column 17 matches /^[0-9]+$/']);
       });
     });
 
@@ -270,7 +270,10 @@ describe('html-table-schema-validator', () => {
             { column: 5000, row: 2, rule: /outerspace/ }
           ]
         };
-        expectErrors(['data column 5000 does not exist', 'cell[10000, 0] value "" does not match /location/']);
+        expectErrors([
+          'cell[10000, 0] value "" does not match /location/',
+          'cell[2, 5000] value "" does not match /outerspace/'
+        ]);
       });
 
       test('fails if cell does not match', () => {

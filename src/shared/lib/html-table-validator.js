@@ -179,6 +179,24 @@ export default class HtmlTableValidor {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  _validColNum(n) {
+    // eslint-disable-next-line no-restricted-globals
+    if (isNaN(n)) return false;
+
+    // ASSUMPTION: not checking bad specifications.
+    // Originially I was checking the columns, ensuring that the cells
+    // existing; however, it doesn't really matter if they don't,
+    // because missing cells are returned as empty text, and really
+    // devs should be checking column headings.
+    //
+    // Additionally, I wanted to use this method for table headings,
+    // but then I'd have to check for both th and td.  Annoying.
+    // So, if the specified column isn't there, it isn't there.
+    // if (parseInt(n, 10) > datarow.find('td').length - 1) return false;
+    return true;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   _checkHeadings(table, headingRules) {
     const trs = table.find('tr');
 
@@ -235,16 +253,8 @@ export default class HtmlTableValidor {
 
     const errs = [];
 
-    const validColNum = n => {
-      // eslint-disable-next-line no-restricted-globals
-      if (isNaN(n)) return false;
-      const firstRow = datatrs.eq(0);
-      if (parseInt(n, 10) > firstRow.find('td').length - 1) return false;
-      return true;
-    };
-
-    const badRules = dataRules.filter(r => !validColNum(r.column));
-    const validRules = dataRules.filter(r => validColNum(r.column));
+    const badRules = dataRules.filter(r => !this._validColNum(r.column));
+    const validRules = dataRules.filter(r => this._validColNum(r.column));
 
     badRules.forEach(rule => {
       errs.push(`data column ${rule.column} does not exist`);
@@ -312,6 +322,7 @@ export default class HtmlTableValidor {
     return errs;
   }
 
+  // TODO - remove?? unused?
   // eslint-disable-next-line class-methods-use-this
   _matchCell(table, row, column, regex) {
     const trs = table.find('tr');
