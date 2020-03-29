@@ -39,34 +39,15 @@ const $html = `
   </body>
 </html>`;
 
+// The table for the current test run.
+let $table = null;
+
+// The rules being used to verify $table.
+let $rules = {};
+
+
 /*
 describe('html-table-schema-validator', () => {
-  // The html table that most tests will be using.
-  // Summarized:
-  //   apple county| 10| 20
-  //   deer county | 66| 77
-  const $html = `
-<html>
-  <body>
-    <table id="tid">
-      <tr>
-        <th>location</th><th>cases</th><th>deaths</th>
-      </tr>
-      <tr>
-        <td>apple county</td><td>10</td><td>20</td>
-      </tr>
-      <tr>
-        <td>deer county</td><td>66</td><td>77</td>
-      </tr>
-    </table>
-  </body>
-</html>`;
-
-  // The table for the current test run.
-  let $table = null;
-
-  // The rules being used to verify $table.
-  let $rules = {};
 
   beforeEach(() => {
     const $ = cheerio.load($html);
