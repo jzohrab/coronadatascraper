@@ -59,40 +59,11 @@ function expectErrors(t, expected) {
   t.equal(v.success($table), shouldBeSuccessful);
 }
 
-test.Test.prototype.validationErrorsEquals = function(expected) {
-
-  const v = new HtmlTableValidator($rules);
-  const actual = v.errors($table);
-
-  /*
-  this._assert(actual == expected, {
-    message: 'mismatch',
-    operator: 'validationErrorsEquals',
-    actual: actual,
-    expected: expected
-  });
-  */
-  this.equal(actual, expected);
-  
-  const shouldBeSuccessful = expected.length === 0;
-  const successful = v.success($table);
-  this.equal(successful, shouldBeSuccessful);
-  /*
-  this._assert(successful == shouldBeSuccessful, {
-    message: 'successful check',
-    operator: 'validationErrorsEquals',
-    actual: successful,
-    expected: shouldBeSuccessful
-  });
-  */
-};
-
 
 function setup() {
   const $ = cheerio.load($html);
   $table = $('table#tid').eq(0);
 }
-
 
 
 // CONSTRUCTOR
@@ -124,7 +95,7 @@ test('throws error if an invalid rule is passed', (t) => {
 
 // SANITY CHECKS
 
-test.only('no errors if no rules', (t) => {
+test('no errors if no rules', (t) => {
   setup();
   expectErrors(t, []);
   t.end();
@@ -139,7 +110,7 @@ test('error if table is null', (t) => {
 
 test('error if table is undefined', (t) => {
   setup();
-  $table = undefine;
+  $table = undefined;
   expectErrors(t, ['null/undefined table']);
   t.end();
 });
