@@ -55,8 +55,9 @@ function expectErrors(t, expected) {
   // console.log(actual);
   t.equal(actual.toString(), expected.toString());
 
-  const shouldBeSuccessful = expected.length === 0;
-  t.equal(v.success($table), shouldBeSuccessful);
+  // Don't bother -- success() just checks error length.
+  // const shouldBeSuccessful = expected.length === 0;
+  // t.equal(v.success($table), shouldBeSuccessful);
 }
 
 
