@@ -1,12 +1,6 @@
-const imports = require('esm')(module);
 const cheerio = require('cheerio');
 const test = require('tape');
-const path = require('path');
-const { join } = require('path');
-const shared = path.join(process.cwd(), 'src', 'shared');
-const lib = path.join(shared, 'lib');
-const HtmlTableValidator = require(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
-
+const HtmlTableValidator = require('../../../../src/shared/lib/html-table-validator.js');
 
 // The html table that most tests will be using.
 // Summarized:
@@ -47,16 +41,14 @@ function expectErrors(t, expected) {
   // t.equal(v.success($table), shouldBeSuccessful);
 }
 
-
 function setup() {
   const c = cheerio.load($html);
   $table = c('table#tid').eq(0);
 }
 
-
 // CONSTRUCTOR
 
-test('constructor: throws error if a bad rule is used', (t) => {
+test('constructor: throws error if a bad rule is used', t => {
   setup();
   const rules = {
     headings: { 0: {} }
@@ -68,8 +60,7 @@ test('constructor: throws error if a bad rule is used', (t) => {
   t.end();
 });
 
-
-test('constructor: throws error if an invalid rule is passed', (t) => {
+test('constructor: throws error if an invalid rule is passed', t => {
   setup();
   const rules = {
     badHeading: 'this should throw'
@@ -83,27 +74,27 @@ test('constructor: throws error if an invalid rule is passed', (t) => {
 
 // SANITY CHECKS
 
-test('sanity: no errors if no rules', (t) => {
+test('sanity: no errors if no rules', t => {
   setup();
   expectErrors(t, []);
   t.end();
 });
 
-test('sanity: error if table is null', (t) => {
+test('sanity: error if table is null', t => {
   setup();
   $table = null;
   expectErrors(t, ['null/undefined table']);
   t.end();
 });
 
-test('sanity: error if table is undefined', (t) => {
+test('sanity: error if table is undefined', t => {
   setup();
   $table = undefined;
   expectErrors(t, ['null/undefined table']);
   t.end();
 });
 
-test('sanity: reports error if no rows in table', (t) => {
+test('sanity: reports error if no rows in table', t => {
   setup();
   const norows = '<html><head><table id="tid"></table></head></html>';
   const c = cheerio.load(norows);
@@ -114,7 +105,7 @@ test('sanity: reports error if no rows in table', (t) => {
 
 // HEADER CHECKS
 
-test('headers: can check header with regex', (t) => {
+test('headers: can check header with regex', t => {
   setup();
   $rules = {
     headings: {
@@ -125,7 +116,7 @@ test('headers: can check header with regex', (t) => {
   t.end();
 });
 
-test('headers: can check multiple headers at once', (t) => {
+test('headers: can check multiple headers at once', t => {
   setup();
   $rules = {
     headings: {
@@ -140,7 +131,7 @@ test('headers: can check multiple headers at once', (t) => {
   t.end();
 });
 
-test('headers: passes if all regexes match', (t) => {
+test('headers: passes if all regexes match', t => {
   setup();
   $rules = {
     headings: {
@@ -153,7 +144,7 @@ test('headers: passes if all regexes match', (t) => {
   t.end();
 });
 
-test('headers: can use exact-matching regexes', (t) => {
+test('headers: can use exact-matching regexes', t => {
   setup();
   $rules = {
     headings: {
@@ -166,7 +157,7 @@ test('headers: can use exact-matching regexes', (t) => {
   t.end();
 });
 
-test('headers: can use case-insensitive regex', (t) => {
+test('headers: can use case-insensitive regex', t => {
   setup();
   $rules = {
     headings: {
@@ -179,7 +170,7 @@ test('headers: can use case-insensitive regex', (t) => {
   t.end();
 });
 
-test('headers: can use <td> for header cells', (t) => {
+test('headers: can use <td> for header cells', t => {
   setup();
   const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
   const c = cheerio.load(trhtml);
@@ -194,7 +185,7 @@ test('headers: can use <td> for header cells', (t) => {
   t.end();
 });
 
-test('headers: reports error if a rule refers to a non-existent column', (t) => {
+test('headers: reports error if a rule refers to a non-existent column', t => {
   setup();
   $rules = {
     headings: {
@@ -206,10 +197,9 @@ test('headers: reports error if a rule refers to a non-existent column', (t) => 
   t.end();
 });
 
-
 // MINROW CHECKS
 
-test('minrows: fails if table has insufficient rows', (t) => {
+test('minrows: fails if table has insufficient rows', t => {
   setup();
   $rules = {
     minrows: 10
@@ -218,7 +208,7 @@ test('minrows: fails if table has insufficient rows', (t) => {
   t.end();
 });
 
-test('minrows: passes if table has sufficient rows', (t) => {
+test('minrows: passes if table has sufficient rows', t => {
   setup();
   $rules = {
     minrows: 2
@@ -227,10 +217,9 @@ test('minrows: passes if table has sufficient rows', (t) => {
   t.end();
 });
 
-
 // DATA ROW COLUMN CHECKS
 
-test('data ANY: passes if any row matches', (t) => {
+test('data ANY: passes if any row matches', t => {
   setup();
   $rules = {
     data: [{ column: 0, row: 'ANY', rule: /apple/ }]
@@ -239,7 +228,7 @@ test('data ANY: passes if any row matches', (t) => {
   t.end();
 });
 
-test('data ANY: fails if no row matches', (t) => {
+test('data ANY: fails if no row matches', t => {
   setup();
   $rules = {
     data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
@@ -248,7 +237,7 @@ test('data ANY: fails if no row matches', (t) => {
   t.end();
 });
 
-test('data ANY: can use numeric regex', (t) => {
+test('data ANY: can use numeric regex', t => {
   setup();
   $rules = {
     data: [
@@ -260,7 +249,7 @@ test('data ANY: can use numeric regex', (t) => {
   t.end();
 });
 
-test('data ANY: reports error if a rule refers to a non-existent column', (t) => {
+test('data ANY: reports error if a rule refers to a non-existent column', t => {
   setup();
   $rules = {
     data: [
@@ -272,8 +261,7 @@ test('data ANY: reports error if a rule refers to a non-existent column', (t) =>
   t.end();
 });
 
-
-test('data ALL: passes if all rows match', (t) => {
+test('data ALL: passes if all rows match', t => {
   setup();
   $rules = {
     data: [
@@ -285,7 +273,7 @@ test('data ALL: passes if all rows match', (t) => {
   t.end();
 });
 
-test('data ALL: fails if any rows do not match', (t) => {
+test('data ALL: fails if any rows do not match', t => {
   setup();
   $rules = {
     data: [
@@ -297,8 +285,7 @@ test('data ALL: fails if any rows do not match', (t) => {
   t.end();
 });
 
-
-test('data CELL: passes if cell matches', (t) => {
+test('data CELL: passes if cell matches', t => {
   setup();
   $rules = {
     data: [{ column: 0, row: 0, rule: /location/ }]
@@ -307,7 +294,7 @@ test('data CELL: passes if cell matches', (t) => {
   t.end();
 });
 
-test('data CELL: treats bad cell references as empty', (t) => {
+test('data CELL: treats bad cell references as empty', t => {
   setup();
   $rules = {
     data: [
@@ -322,7 +309,7 @@ test('data CELL: treats bad cell references as empty', (t) => {
   t.end();
 });
 
-test('data CELL: fails if cell does not match', (t) => {
+test('data CELL: fails if cell does not match', t => {
   setup();
   $rules = {
     data: [
@@ -331,17 +318,13 @@ test('data CELL: fails if cell does not match', (t) => {
       { column: 1, row: 2, rule: /cat/ }
     ]
   };
-  expectErrors(t, [
-    'cell[0, 0] value "location" does not match /area/',
-    'cell[2, 1] value "66" does not match /cat/'
-  ]);
+  expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
   t.end();
 });
 
-
 // THROWIFERRORS TESTS
 
-test('throwIfErrors: throws if errors', (t) => {
+test('throwIfErrors: throws if errors', t => {
   setup();
   $rules = {
     headings: {
@@ -354,7 +337,7 @@ test('throwIfErrors: throws if errors', (t) => {
   t.end();
 });
 
-test('throwIfErrors: does not throw if no errors', (t) => {
+test('throwIfErrors: does not throw if no errors', t => {
   setup();
   $rules = {
     headings: {
@@ -366,7 +349,7 @@ test('throwIfErrors: does not throw if no errors', (t) => {
   t.end();
 });
 
-test('throwIfErrors: can specify count of errors to include in thrown message', (t) => {
+test('throwIfErrors: can specify count of errors to include in thrown message', t => {
   setup();
   $rules = {
     data: [
@@ -375,10 +358,10 @@ test('throwIfErrors: can specify count of errors to include in thrown message', 
       { column: 1, row: 2, rule: /cat/ }
     ]
   };
-  
+
   // Sanity check of validation errors:
   expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
-  
+
   let errMsg;
   try {
     const opts = { includeErrCount: 1, logToConsole: false };
@@ -386,13 +369,13 @@ test('throwIfErrors: can specify count of errors to include in thrown message', 
   } catch (e) {
     errMsg = e.message;
   }
-  
+
   t.match(errMsg, /value "location"/);
   t.doesNotMatch(errMsg, /value "66"/);
   t.end();
 });
 
-test('throwIfErrors: count of errors requested may be more than actual errors', (t) => {
+test('throwIfErrors: count of errors requested may be more than actual errors', t => {
   setup();
   $rules = {
     data: [
@@ -401,10 +384,10 @@ test('throwIfErrors: count of errors requested may be more than actual errors', 
       { column: 1, row: 2, rule: /cat/ }
     ]
   };
-  
+
   // Sanity check of validation errors:
   expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
-  
+
   let errMsg;
   try {
     const opts = { includeErrCount: 999, logToConsole: false };
@@ -412,7 +395,7 @@ test('throwIfErrors: count of errors requested may be more than actual errors', 
   } catch (e) {
     errMsg = e.message;
   }
-  
+
   t.match(errMsg, /value "location"/);
   t.match(errMsg, /value "66"/);
   t.end();
