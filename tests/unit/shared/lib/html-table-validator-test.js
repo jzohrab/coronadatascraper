@@ -207,30 +207,31 @@ test('headers: reports error if a rule refers to a non-existent column', (t) => 
 });
 
 
+// MINROW CHECKS
+
+test('minrows: fails if table has insufficient rows', (t) => {
+  setup();
+  $rules = {
+    minrows: 10
+  };
+  expectErrors(t, ['expected at least 10 rows, only have 3']);
+  t.end();
+});
+
+test('minrows: passes if table has sufficient rows', (t) => {
+  setup();
+  $rules = {
+    minrows: 2
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+
+
 /*
 
 describe('html-table-schema-validator', (t) => {
-
-  describe('header checks', (t) => {
-  });
-
-  describe('minrows', (t) => {
-    test('fails if table has insufficient rows', (t) => {
-setup();
-      $rules = {
-        minrows: 10
-      };
-      expectErrors(t, ['expected at least 10 rows, only have 3']);
-    });
-
-    test('passes if table has sufficient rows', (t) => {
-setup();
-      $rules = {
-        minrows: 2
-      };
-      expectErrors(t, []);
-    });
-  });
 
   describe('data row column checks', (t) => {
     beforeEach((t) => {
