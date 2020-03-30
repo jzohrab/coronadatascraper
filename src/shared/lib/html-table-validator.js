@@ -61,7 +61,7 @@ Rule notes:
 With the rules described, instatiate a validator, and give it your
 cheerio table:
 
-    const v = new HtmlTableValidor(rules);
+    const v = new HtmlTableValidator(rules);
     if (!v.success($table)) {
       // Some rules failed ...
       console.log(v.errors($table);
@@ -70,7 +70,7 @@ cheerio table:
 Or as a shorthand, just throw and optionally log to console:
 
     const opts = { includeErrCount: 5, logToConsole: false };
-    HtmlTableValidor.throwIfErrors($rules, $table, opts);
+    HtmlTableValidator.throwIfErrors($rules, $table, opts);
 
 
 Usage notes:
@@ -82,7 +82,7 @@ There are some ASSUMPTIONS documented in the code:
 * one data point per table cell
 
 */
-export default class HtmlTableValidor {
+class HtmlTableValidator {
   constructor(rules) {
     const setrules = {
       headings: {},
@@ -144,7 +144,7 @@ export default class HtmlTableValidor {
     const includeErrCount = options.includeErrCount || 5;
     const logToConsole = options.logToConsole || false;
 
-    const v = new HtmlTableValidor(rules);
+    const v = new HtmlTableValidator(rules);
     const errs = v.errors(table);
     const errCount = errs.length;
     if (errCount === 0) return;
@@ -285,3 +285,6 @@ export default class HtmlTableValidor {
     return { result: regex.test(txt), text: txt };
   }
 } // end class
+
+
+module.exports = HtmlTableValidator;

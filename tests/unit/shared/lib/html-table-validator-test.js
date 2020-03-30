@@ -6,8 +6,20 @@ const { join } = require('path');
 
 const shared = path.join(process.cwd(), 'src', 'shared');
 const lib = path.join(shared, 'lib');
-const HtmlTableValidor = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
 
+const HtmlTableValidator = require(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
+
+// const HtmlTableValidator = require('../../../../src/shared/lib/html-table-validator.js');
+
+// const HtmlTableValidator = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
+// const { HtmlTableValidator } = require(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js');
+
+// const HtmlTableValidator = require(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js');
+
+
+console.log('*************************');
+console.log(HtmlTableValidator);
+console.log('*************************');
 
 // The html table that most tests will be using.
 // Summarized:
@@ -38,10 +50,10 @@ let $rules = {};
 
 // Validate $table using $rules.
 function expectErrors(t, expected) {
-  const v = new HtmlTableValidor($rules);
+  const v = new HtmlTableValidator($rules);
   const actual = v.errors($table);
   // console.log(actual);
-  t.equal(actual, expected);
+  t.equal(actual.toString(), expected.toString());
 
   const shouldBeSuccessful = expected.length === 0;
   t.equal(v.success($table), shouldBeSuccessful);
@@ -49,25 +61,30 @@ function expectErrors(t, expected) {
 
 test.Test.prototype.validationErrorsEquals = function(expected) {
 
-  const v = new HtmlTableValidor($rules);
+  const v = new HtmlTableValidator($rules);
   const actual = v.errors($table);
 
-  this._assert(actual === expected, {
-    message: message || 'mismatch',
+  /*
+  this._assert(actual == expected, {
+    message: 'mismatch',
     operator: 'validationErrorsEquals',
     actual: actual,
     expected: expected
   });
-
+  */
+  this.equal(actual, expected);
+  
   const shouldBeSuccessful = expected.length === 0;
   const successful = v.success($table);
-  this._assert(successful === shouldBeSuccessful, {
-    message: message || 'successful check',
+  this.equal(successful, shouldBeSuccessful);
+  /*
+  this._assert(successful == shouldBeSuccessful, {
+    message: 'successful check',
     operator: 'validationErrorsEquals',
     actual: successful,
     expected: shouldBeSuccessful
   });
-
+  */
 };
 
 
@@ -87,7 +104,7 @@ test('constructor throws error if a bad rule is used', (t) => {
   };
   t.throws(() => {
     // eslint-disable-next-line no-new
-    new HtmlTableValidor(rules);
+    new HtmlTableValidator(rules);
   });
   t.end();
 });
@@ -100,8 +117,39 @@ test('throws error if an invalid rule is passed', (t) => {
   };
   t.throws(() => {
     // eslint-disable-next-line no-new
-    new HtmlTableValidor(rules);
+    new HtmlTableValidator(rules);
   });
+  t.end();
+});
+
+// SANITY CHECKS
+
+test.only('no errors if no rules', (t) => {
+  setup();
+  expectErrors(t, []);
+  t.end();
+});
+
+test('error if table is null', (t) => {
+  setup();
+  $table = null;
+  expectErrors(t, ['null/undefined table']);
+  t.end();
+});
+
+test('error if table is undefined', (t) => {
+  setup();
+  $table = undefine;
+  expectErrors(t, ['null/undefined table']);
+  t.end();
+});
+
+test('reports error if no rows in table', (t) => {
+  setup();
+  const norows = '<html><head><table id="tid"></table></head></html>';
+  const c = cheerio.load(norows);
+  $table = c('table#tid').eq(0);
+  expectErrors(t, ['no rows in table']);
   t.end();
 });
 
@@ -116,25 +164,6 @@ test('sum should return the addition of two numbers', function (t) {
 describe('html-table-schema-validator', () => {
 
   describe('sanity checks', () => {
-    test('no errors if no rules', () => {
-setup();
-      expectErrors([]);
-    });
-
-    const badTableTests = [null, undefined];
-    each(badTableTests).test('error if table is %s', t => {
-setup();
-      $table = t;
-      expectErrors(['null/undefined table']);
-    });
-
-    test('reports error if no rows in table', () => {
-setup();
-      const norows = '<html><head><table id="tid"></table></head></html>';
-      const c = cheerio.load(norows);
-      $table = c('table#tid').eq(0);
-      expectErrors(['no rows in table']);
-    });
   });
 
   describe('header checks', () => {
@@ -365,7 +394,7 @@ setup();
         }
       };
       expect(() => {
-        HtmlTableValidor.throwIfErrors($rules, $table, { logToConsole: false });
+        HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
       }).toThrow(/1 validation errors/);
     });
 
@@ -376,7 +405,7 @@ setup();
           0: /location/
         }
       };
-      HtmlTableValidor.throwIfErrors($rules, $table, { logToConsole: false });
+      HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
       expect(1 + 1).toBe(2); // :-)
     });
 
@@ -396,7 +425,7 @@ setup();
       let errMsg;
       try {
         const opts = { includeErrCount: 1, logToConsole: false };
-        HtmlTableValidor.throwIfErrors($rules, $table, opts);
+        HtmlTableValidator.throwIfErrors($rules, $table, opts);
       } catch (e) {
         errMsg = e.message;
       }
@@ -421,7 +450,7 @@ setup();
       let errMsg;
       try {
         const opts = { includeErrCount: 999, logToConsole: false };
-        HtmlTableValidor.throwIfErrors($rules, $table, opts);
+        HtmlTableValidator.throwIfErrors($rules, $table, opts);
       } catch (e) {
         errMsg = e.message;
       }
