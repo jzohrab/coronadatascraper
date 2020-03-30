@@ -56,7 +56,7 @@ function setup() {
 
 // CONSTRUCTOR
 
-test('constructor throws error if a bad rule is used', (t) => {
+test('constructor: throws error if a bad rule is used', (t) => {
   setup();
   const rules = {
     headings: { 0: {} }
@@ -69,7 +69,7 @@ test('constructor throws error if a bad rule is used', (t) => {
 });
 
 
-test('throws error if an invalid rule is passed', (t) => {
+test('constructor: throws error if an invalid rule is passed', (t) => {
   setup();
   const rules = {
     badHeading: 'this should throw'
@@ -83,27 +83,27 @@ test('throws error if an invalid rule is passed', (t) => {
 
 // SANITY CHECKS
 
-test('no errors if no rules', (t) => {
+test('sanity: no errors if no rules', (t) => {
   setup();
   expectErrors(t, []);
   t.end();
 });
 
-test('error if table is null', (t) => {
+test('sanity: error if table is null', (t) => {
   setup();
   $table = null;
   expectErrors(t, ['null/undefined table']);
   t.end();
 });
 
-test('error if table is undefined', (t) => {
+test('sanity: error if table is undefined', (t) => {
   setup();
   $table = undefined;
   expectErrors(t, ['null/undefined table']);
   t.end();
 });
 
-test('reports error if no rows in table', (t) => {
+test('sanity: reports error if no rows in table', (t) => {
   setup();
   const norows = '<html><head><table id="tid"></table></head></html>';
   const c = cheerio.load(norows);
@@ -114,7 +114,7 @@ test('reports error if no rows in table', (t) => {
 
 // HEADER CHECKS
 
-test('can check header with regex', (t) => {
+test('headers: can check header with regex', (t) => {
   setup();
   $rules = {
     headings: {
@@ -125,7 +125,7 @@ test('can check header with regex', (t) => {
   t.end();
 });
 
-test('can check multiple headers at once', (t) => {
+test('headers: can check multiple headers at once', (t) => {
   setup();
   $rules = {
     headings: {
@@ -140,7 +140,7 @@ test('can check multiple headers at once', (t) => {
   t.end();
 });
 
-test('passes if all regexes match', (t) => {
+test('headers: passes if all regexes match', (t) => {
   setup();
   $rules = {
     headings: {
@@ -153,7 +153,7 @@ test('passes if all regexes match', (t) => {
   t.end();
 });
 
-test('can use exact-matching regexes', (t) => {
+test('headers: can use exact-matching regexes', (t) => {
   setup();
   $rules = {
     headings: {
@@ -166,7 +166,7 @@ test('can use exact-matching regexes', (t) => {
   t.end();
 });
 
-test('can use case-insensitive regex', (t) => {
+test('headers: can use case-insensitive regex', (t) => {
   setup();
   $rules = {
     headings: {
@@ -179,7 +179,7 @@ test('can use case-insensitive regex', (t) => {
   t.end();
 });
 
-test('can use <td> for header cells', (t) => {
+test('headers: can use <td> for header cells', (t) => {
   setup();
   const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
   const c = cheerio.load(trhtml);
@@ -194,7 +194,7 @@ test('can use <td> for header cells', (t) => {
   t.end();
 });
 
-test('reports error if a rule refers to a non-existent column', (t) => {
+test('headers: reports error if a rule refers to a non-existent column', (t) => {
   setup();
   $rules = {
     headings: {
