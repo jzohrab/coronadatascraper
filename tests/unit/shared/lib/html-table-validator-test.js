@@ -3,23 +3,10 @@ const cheerio = require('cheerio');
 const test = require('tape');
 const path = require('path');
 const { join } = require('path');
-
 const shared = path.join(process.cwd(), 'src', 'shared');
 const lib = path.join(shared, 'lib');
-
 const HtmlTableValidator = require(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
 
-// const HtmlTableValidator = require('../../../../src/shared/lib/html-table-validator.js');
-
-// const HtmlTableValidator = imports(join(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js'));
-// const { HtmlTableValidator } = require(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js');
-
-// const HtmlTableValidator = require(process.cwd(), 'src', 'shared', 'lib', 'html-table-validator.js');
-
-
-console.log('*************************');
-console.log(HtmlTableValidator);
-console.log('*************************');
 
 // The html table that most tests will be using.
 // Summarized:
@@ -125,126 +112,128 @@ test('reports error if no rows in table', (t) => {
   t.end();
 });
 
-/*
+// HEADER CHECKS
 
-test('sum should return the addition of two numbers', function (t) {
-  t.equal(3, (1 + 2));
+test('can check header with regex', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /shouldfail/
+    }
+  };
+  expectErrors(t, ['heading 0 "location" does not match /shouldfail/']);
+  t.end();
+});
+
+test('can check multiple headers at once', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /shouldfail/,
+      1: /another_bad/
+    }
+  };
+  expectErrors(t, [
+    'heading 0 "location" does not match /shouldfail/',
+    'heading 1 "cases" does not match /another_bad/'
+  ]);
+  t.end();
+});
+
+test('passes if all regexes match', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /location/,
+      1: /cases/,
+      2: /deaths/
+    }
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+test('can use exact-matching regexes', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /location/,
+      1: /^cases $/,
+      2: /^ deaths $/
+    }
+  };
+  expectErrors(t, ['heading 1 "cases" does not match /^cases $/', 'heading 2 "deaths" does not match /^ deaths $/']);
+  t.end();
+});
+
+test('can use case-insensitive regex', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /LocaTion/i,
+      1: /CASES/i,
+      2: /DEATHS/i
+    }
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+test('can use <td> for header cells', (t) => {
+  setup();
+  const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
+  const c = cheerio.load(trhtml);
+  $table = c('table#tid').eq(0);
+  $rules = {
+    headings: {
+      0: /something/,
+      1: /Cases/
+    }
+  };
+  expectErrors(t, ['heading 0 "location" does not match /something/', 'heading 1 "cases" does not match /Cases/']);
+  t.end();
+});
+
+test('reports error if a rule refers to a non-existent column', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      a: /something/,
+      17: /Cases/
+    }
+  };
+  expectErrors(t, ['heading 17 "" does not match /Cases/', 'heading a "" does not match /something/']);
   t.end();
 });
 
 
-describe('html-table-schema-validator', () => {
+/*
 
-  describe('sanity checks', () => {
+describe('html-table-schema-validator', (t) => {
+
+  describe('header checks', (t) => {
   });
 
-  describe('header checks', () => {
-    test('can check header with regex', () => {
-setup();
-      $rules = {
-        headings: {
-          0: /shouldfail/
-        }
-      };
-      expectErrors(['heading 0 "location" does not match /shouldfail/']);
-    });
-
-    test('can check multiple headers at once', () => {
-setup();
-      $rules = {
-        headings: {
-          0: /shouldfail/,
-          1: /another_bad/
-        }
-      };
-      expectErrors([
-        'heading 0 "location" does not match /shouldfail/',
-        'heading 1 "cases" does not match /another_bad/'
-      ]);
-    });
-
-    test('passes if all regexes match', () => {
-setup();
-      $rules = {
-        headings: {
-          0: /location/,
-          1: /cases/,
-          2: /deaths/
-        }
-      };
-      expectErrors([]);
-    });
-
-    test('can use exact-matching regexes', () => {
-setup();
-      $rules = {
-        headings: {
-          0: /location/,
-          1: /^cases $/,
-          2: /^ deaths $/
-        }
-      };
-      expectErrors(['heading 1 "cases" does not match /^cases $/', 'heading 2 "deaths" does not match /^ deaths $/']);
-    });
-
-    test('can use case-insensitive regex', () => {
-setup();
-      $rules = {
-        headings: {
-          0: /LocaTion/i,
-          1: /CASES/i,
-          2: /DEATHS/i
-        }
-      };
-      expectErrors([]);
-    });
-
-    test('can use <td> for header cells', () => {
-setup();
-      const trhtml = $html.replace(/<th>/g, '<td>').replace(/<\/th>/g, '</td>');
-      const c = cheerio.load(trhtml);
-      $table = c('table#tid').eq(0);
-      $rules = {
-        headings: {
-          0: /something/,
-          1: /Cases/
-        }
-      };
-      expectErrors(['heading 0 "location" does not match /something/', 'heading 1 "cases" does not match /Cases/']);
-    });
-
-    test('reports error if a rule refers to a non-existent column', () => {
-setup();
-      $rules = {
-        headings: {
-          a: /something/,
-          17: /Cases/
-        }
-      };
-      expectErrors(['heading 17 "" does not match /Cases/', 'heading a "" does not match /something/']);
-    });
-  });
-
-  describe('minrows', () => {
-    test('fails if table has insufficient rows', () => {
+  describe('minrows', (t) => {
+    test('fails if table has insufficient rows', (t) => {
 setup();
       $rules = {
         minrows: 10
       };
-      expectErrors(['expected at least 10 rows, only have 3']);
+      expectErrors(t, ['expected at least 10 rows, only have 3']);
     });
 
-    test('passes if table has sufficient rows', () => {
+    test('passes if table has sufficient rows', (t) => {
 setup();
       $rules = {
         minrows: 2
       };
-      expectErrors([]);
+      expectErrors(t, []);
     });
   });
 
-  describe('data row column checks', () => {
-    beforeEach(() => {
+  describe('data row column checks', (t) => {
+    beforeEach((t) => {
       const $ = cheerio.load($html);
       $table = $('table#tid').eq(0);
 
@@ -253,24 +242,24 @@ setup();
       expect(headerrow.find('th')).toHaveLength(3);
     });
 
-    describe('any row', () => {
-      test('passes if any row matches', () => {
+    describe('any row', (t) => {
+      test('passes if any row matches', (t) => {
 setup();
         $rules = {
           data: [{ column: 0, row: 'ANY', rule: /apple/ }]
         };
-        expectErrors([]);
+        expectErrors(t, []);
       });
 
-      test('fails if no row matches', () => {
+      test('fails if no row matches', (t) => {
 setup();
         $rules = {
           data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
         };
-        expectErrors(['no row in column 0 matches /UNKNOWN/']);
+        expectErrors(t, ['no row in column 0 matches /UNKNOWN/']);
       });
 
-      test('can use numeric regex', () => {
+      test('can use numeric regex', (t) => {
 setup();
         $rules = {
           data: [
@@ -278,10 +267,10 @@ setup();
             { column: 2, row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors(['no row in column 2 matches /^[a-z]+$/']);
+        expectErrors(t, ['no row in column 2 matches /^[a-z]+$/']);
       });
 
-      test('reports error if a rule refers to a non-existent column', () => {
+      test('reports error if a rule refers to a non-existent column', (t) => {
 setup();
         $rules = {
           data: [
@@ -289,12 +278,12 @@ setup();
             { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
           ]
         };
-        expectErrors(['no row in column 17 matches /^[0-9]+$/', 'no row in column a matches /^[a-z]+$/']);
+        expectErrors(t, ['no row in column 17 matches /^[0-9]+$/', 'no row in column a matches /^[a-z]+$/']);
       });
     });
 
-    describe('all rows', () => {
-      test('passes if all rows match', () => {
+    describe('all rows', (t) => {
+      test('passes if all rows match', (t) => {
 setup();
         $rules = {
           data: [
@@ -302,10 +291,10 @@ setup();
             { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
           ]
         };
-        expectErrors([]);
+        expectErrors(t, []);
       });
 
-      test('fails if any rows do not match', () => {
+      test('fails if any rows do not match', (t) => {
 setup();
         $rules = {
           data: [
@@ -313,20 +302,20 @@ setup();
             { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
           ]
         };
-        expectErrors(['"deer county" in column 0 does not match /apple/']);
+        expectErrors(t, ['"deer county" in column 0 does not match /apple/']);
       });
     });
 
-    describe('single cell check', () => {
-      test('passes if cell matches', () => {
+    describe('single cell check', (t) => {
+      test('passes if cell matches', (t) => {
 setup();
         $rules = {
           data: [{ column: 0, row: 0, rule: /location/ }]
         };
-        expectErrors([]);
+        expectErrors(t, []);
       });
 
-      test('treats bad cell references as empty', () => {
+      test('treats bad cell references as empty', (t) => {
 setup();
         $rules = {
           data: [
@@ -334,13 +323,13 @@ setup();
             { column: 5000, row: 2, rule: /outerspace/ }
           ]
         };
-        expectErrors([
+        expectErrors(t, [
           'cell[10000, 0] value "" does not match /location/',
           'cell[2, 5000] value "" does not match /outerspace/'
         ]);
       });
 
-      test('fails if cell does not match', () => {
+      test('fails if cell does not match', (t) => {
 setup();
         $rules = {
           data: [
@@ -349,7 +338,7 @@ setup();
             { column: 1, row: 2, rule: /cat/ }
           ]
         };
-        expectErrors([
+        expectErrors(t, [
           'cell[0, 0] value "location" does not match /area/',
           'cell[2, 1] value "66" does not match /cat/'
         ]);
@@ -357,20 +346,20 @@ setup();
     });
   });
 
-  describe('throwIfErrors', () => {
-    test('throws if errors', () => {
+  describe('throwIfErrors', (t) => {
+    test('throws if errors', (t) => {
 setup();
       $rules = {
         headings: {
           0: /shouldfail/
         }
       };
-      expect(() => {
+      expect((t) => {
         HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
       }).toThrow(/1 validation errors/);
     });
 
-    test('does not throw if no errors', () => {
+    test('does not throw if no errors', (t) => {
 setup();
       $rules = {
         headings: {
@@ -381,7 +370,7 @@ setup();
       expect(1 + 1).toBe(2); // :-)
     });
 
-    test('can specify count of errors to include in thrown message', () => {
+    test('can specify count of errors to include in thrown message', (t) => {
 setup();
       $rules = {
         data: [
@@ -392,7 +381,7 @@ setup();
       };
 
       // Sanity check of validation errors:
-      expectErrors(['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+      expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
 
       let errMsg;
       try {
@@ -406,7 +395,7 @@ setup();
       expect(errMsg).not.toMatch(/value "66"/);
     });
 
-    test('count of errors requested may be more than actual errors', () => {
+    test('count of errors requested may be more than actual errors', (t) => {
 setup();
       $rules = {
         data: [
@@ -417,7 +406,7 @@ setup();
       };
 
       // Sanity check of validation errors:
-      expectErrors(['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+      expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
 
       let errMsg;
       try {
