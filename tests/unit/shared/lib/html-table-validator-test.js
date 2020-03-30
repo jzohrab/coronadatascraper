@@ -49,8 +49,8 @@ function expectErrors(t, expected) {
 
 
 function setup() {
-  const $ = cheerio.load($html);
-  $table = $('table#tid').eq(0);
+  const c = cheerio.load($html);
+  $table = c('table#tid').eq(0);
 }
 
 
