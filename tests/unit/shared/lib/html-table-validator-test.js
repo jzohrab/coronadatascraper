@@ -339,87 +339,81 @@ test('data CELL: fails if cell does not match', (t) => {
 });
 
 
-/*
+// THROWIFERRORS TESTS
 
-describe('html-table-schema-validator', (t) => {
-
-  describe('throwIfErrors', (t) => {
-    test('throws if errors', (t) => {
-setup();
-      $rules = {
-        headings: {
-          0: /shouldfail/
-        }
-      };
-      expect((t) => {
-        HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
-      }).toThrow(/1 validation errors/);
-t.end();
-    });
-
-    test('does not throw if no errors', (t) => {
-setup();
-      $rules = {
-        headings: {
-          0: /location/
-        }
-      };
-      HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
-      expect(1 + 1).toBe(2); // :-)
-t.end();
-    });
-
-    test('can specify count of errors to include in thrown message', (t) => {
-setup();
-      $rules = {
-        data: [
-          { column: 0, row: 0, rule: /area/ },
-          { column: 0, row: 1, rule: /apple/ },
-          { column: 1, row: 2, rule: /cat/ }
-        ]
-      };
-
-      // Sanity check of validation errors:
-      expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
-
-      let errMsg;
-      try {
-        const opts = { includeErrCount: 1, logToConsole: false };
-        HtmlTableValidator.throwIfErrors($rules, $table, opts);
-      } catch (e) {
-        errMsg = e.message;
-      }
-
-      expect(errMsg).toMatch(/value "location"/);
-      expect(errMsg).not.toMatch(/value "66"/);
-t.end();
-    });
-
-    test('count of errors requested may be more than actual errors', (t) => {
-setup();
-      $rules = {
-        data: [
-          { column: 0, row: 0, rule: /area/ },
-          { column: 0, row: 1, rule: /apple/ },
-          { column: 1, row: 2, rule: /cat/ }
-        ]
-      };
-
-      // Sanity check of validation errors:
-      expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
-
-      let errMsg;
-      try {
-        const opts = { includeErrCount: 999, logToConsole: false };
-        HtmlTableValidator.throwIfErrors($rules, $table, opts);
-      } catch (e) {
-        errMsg = e.message;
-      }
-
-      expect(errMsg).toMatch(/value "location"/);
-      expect(errMsg).toMatch(/value "66"/);
-t.end();
-    });
+test('throwIfErrors: throws if errors', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /shouldfail/
+    }
+  };
+  t.throws(() => {
+    HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
   });
+  t.end();
 });
-*/
+
+test('throwIfErrors: does not throw if no errors', (t) => {
+  setup();
+  $rules = {
+    headings: {
+      0: /location/
+    }
+  };
+  HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
+  t.equal(1, 1);
+  t.end();
+});
+
+test('throwIfErrors: can specify count of errors to include in thrown message', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 0, rule: /area/ },
+      { column: 0, row: 1, rule: /apple/ },
+      { column: 1, row: 2, rule: /cat/ }
+    ]
+  };
+  
+  // Sanity check of validation errors:
+  expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+  
+  let errMsg;
+  try {
+    const opts = { includeErrCount: 1, logToConsole: false };
+    HtmlTableValidator.throwIfErrors($rules, $table, opts);
+  } catch (e) {
+    errMsg = e.message;
+  }
+  
+  t.match(errMsg, /value "location"/);
+  t.doesNotMatch(errMsg, /value "66"/);
+  t.end();
+});
+
+test('throwIfErrors: count of errors requested may be more than actual errors', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 0, rule: /area/ },
+      { column: 0, row: 1, rule: /apple/ },
+      { column: 1, row: 2, rule: /cat/ }
+    ]
+  };
+  
+  // Sanity check of validation errors:
+  expectErrors(t, ['cell[0, 0] value "location" does not match /area/', 'cell[2, 1] value "66" does not match /cat/']);
+  
+  let errMsg;
+  try {
+    const opts = { includeErrCount: 999, logToConsole: false };
+    HtmlTableValidator.throwIfErrors($rules, $table, opts);
+  } catch (e) {
+    errMsg = e.message;
+  }
+  
+  t.match(errMsg, /value "location"/);
+  t.match(errMsg, /value "66"/);
+  t.end();
+});
