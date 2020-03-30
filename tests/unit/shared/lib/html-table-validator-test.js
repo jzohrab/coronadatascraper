@@ -228,6 +228,50 @@ test('minrows: passes if table has sufficient rows', (t) => {
 });
 
 
+// DATA ROW COLUMN CHECKS
+
+test('data ANY: passes if any row matches', (t) => {
+  setup();
+  $rules = {
+    data: [{ column: 0, row: 'ANY', rule: /apple/ }]
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+test('data ANY: fails if no row matches', (t) => {
+  setup();
+  $rules = {
+    data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
+  };
+  expectErrors(t, ['no row in column 0 matches /UNKNOWN/']);
+  t.end();
+});
+
+test('data ANY: can use numeric regex', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
+      { column: 2, row: 'ANY', rule: /^[a-z]+$/ }
+    ]
+  };
+  expectErrors(t, ['no row in column 2 matches /^[a-z]+$/']);
+  t.end();
+});
+
+test('data ANY: reports error if a rule refers to a non-existent column', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 17, row: 'ANY', rule: /^[0-9]+$/ },
+      { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
+    ]
+  };
+  expectErrors(t, ['no row in column 17 matches /^[0-9]+$/', 'no row in column a matches /^[a-z]+$/']);
+  t.end();
+});
+
 
 /*
 
@@ -244,43 +288,6 @@ describe('html-table-schema-validator', (t) => {
     });
 
     describe('any row', (t) => {
-      test('passes if any row matches', (t) => {
-setup();
-        $rules = {
-          data: [{ column: 0, row: 'ANY', rule: /apple/ }]
-        };
-        expectErrors(t, []);
-      });
-
-      test('fails if no row matches', (t) => {
-setup();
-        $rules = {
-          data: [{ row: 'ANY', column: 0, rule: /UNKNOWN/ }]
-        };
-        expectErrors(t, ['no row in column 0 matches /UNKNOWN/']);
-      });
-
-      test('can use numeric regex', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 1, row: 'ANY', rule: /^[0-9]+$/ },
-            { column: 2, row: 'ANY', rule: /^[a-z]+$/ }
-          ]
-        };
-        expectErrors(t, ['no row in column 2 matches /^[a-z]+$/']);
-      });
-
-      test('reports error if a rule refers to a non-existent column', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 17, row: 'ANY', rule: /^[0-9]+$/ },
-            { column: 'a', row: 'ANY', rule: /^[a-z]+$/ }
-          ]
-        };
-        expectErrors(t, ['no row in column 17 matches /^[0-9]+$/', 'no row in column a matches /^[a-z]+$/']);
-      });
     });
 
     describe('all rows', (t) => {
