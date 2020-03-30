@@ -284,7 +284,6 @@ class HtmlTableValidator {
     const txt = cell.text();
     return { result: regex.test(txt), text: txt };
   }
-} // end class
-
+}
 
 module.exports = HtmlTableValidator;
