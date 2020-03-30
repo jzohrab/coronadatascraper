@@ -273,86 +273,75 @@ test('data ANY: reports error if a rule refers to a non-existent column', (t) =>
 });
 
 
+test('data ALL: passes if all rows match', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 'ALL', rule: /county/ },
+      { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
+    ]
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+test('data ALL: fails if any rows do not match', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 'ALL', rule: /apple/ },
+      { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
+    ]
+  };
+  expectErrors(t, ['"deer county" in column 0 does not match /apple/']);
+  t.end();
+});
+
+
+test('data CELL: passes if cell matches', (t) => {
+  setup();
+  $rules = {
+    data: [{ column: 0, row: 0, rule: /location/ }]
+  };
+  expectErrors(t, []);
+  t.end();
+});
+
+test('data CELL: treats bad cell references as empty', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 10000, rule: /location/ },
+      { column: 5000, row: 2, rule: /outerspace/ }
+    ]
+  };
+  expectErrors(t, [
+    'cell[10000, 0] value "" does not match /location/',
+    'cell[2, 5000] value "" does not match /outerspace/'
+  ]);
+  t.end();
+});
+
+test('data CELL: fails if cell does not match', (t) => {
+  setup();
+  $rules = {
+    data: [
+      { column: 0, row: 0, rule: /area/ },
+      { column: 0, row: 1, rule: /apple/ },
+      { column: 1, row: 2, rule: /cat/ }
+    ]
+  };
+  expectErrors(t, [
+    'cell[0, 0] value "location" does not match /area/',
+    'cell[2, 1] value "66" does not match /cat/'
+  ]);
+  t.end();
+});
+
+
 /*
 
 describe('html-table-schema-validator', (t) => {
-
-  describe('data row column checks', (t) => {
-    beforeEach((t) => {
-      const $ = cheerio.load($html);
-      $table = $('table#tid').eq(0);
-
-      // Verify no screwups.
-      const headerrow = $table.find('tr').first();
-      expect(headerrow.find('th')).toHaveLength(3);
-    });
-
-    describe('any row', (t) => {
-    });
-
-    describe('all rows', (t) => {
-      test('passes if all rows match', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 0, row: 'ALL', rule: /county/ },
-            { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
-          ]
-        };
-        expectErrors(t, []);
-      });
-
-      test('fails if any rows do not match', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 0, row: 'ALL', rule: /apple/ },
-            { column: 1, row: 'ALL', rule: /^[0-9]+$/ }
-          ]
-        };
-        expectErrors(t, ['"deer county" in column 0 does not match /apple/']);
-      });
-    });
-
-    describe('single cell check', (t) => {
-      test('passes if cell matches', (t) => {
-setup();
-        $rules = {
-          data: [{ column: 0, row: 0, rule: /location/ }]
-        };
-        expectErrors(t, []);
-      });
-
-      test('treats bad cell references as empty', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 0, row: 10000, rule: /location/ },
-            { column: 5000, row: 2, rule: /outerspace/ }
-          ]
-        };
-        expectErrors(t, [
-          'cell[10000, 0] value "" does not match /location/',
-          'cell[2, 5000] value "" does not match /outerspace/'
-        ]);
-      });
-
-      test('fails if cell does not match', (t) => {
-setup();
-        $rules = {
-          data: [
-            { column: 0, row: 0, rule: /area/ },
-            { column: 0, row: 1, rule: /apple/ },
-            { column: 1, row: 2, rule: /cat/ }
-          ]
-        };
-        expectErrors(t, [
-          'cell[0, 0] value "location" does not match /area/',
-          'cell[2, 1] value "66" does not match /cat/'
-        ]);
-      });
-    });
-  });
 
   describe('throwIfErrors', (t) => {
     test('throws if errors', (t) => {
@@ -365,6 +354,7 @@ setup();
       expect((t) => {
         HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
       }).toThrow(/1 validation errors/);
+t.end();
     });
 
     test('does not throw if no errors', (t) => {
@@ -376,6 +366,7 @@ setup();
       };
       HtmlTableValidator.throwIfErrors($rules, $table, { logToConsole: false });
       expect(1 + 1).toBe(2); // :-)
+t.end();
     });
 
     test('can specify count of errors to include in thrown message', (t) => {
@@ -401,6 +392,7 @@ setup();
 
       expect(errMsg).toMatch(/value "location"/);
       expect(errMsg).not.toMatch(/value "66"/);
+t.end();
     });
 
     test('count of errors requested may be more than actual errors', (t) => {
@@ -426,6 +418,7 @@ setup();
 
       expect(errMsg).toMatch(/value "location"/);
       expect(errMsg).toMatch(/value "66"/);
+t.end();
     });
   });
 });
