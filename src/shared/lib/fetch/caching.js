@@ -136,13 +136,18 @@ export const saveFileToCache = async (url, type, date, data) => {
   const dir = getCachedFolderPath(date);
   const base = getCachedFileNameBase(url);
   const ext = getCachedFileNameExt(url, type);
-  const filePath = join(dir, `${base}.${ext}`);
+  const fname = `${base}.${ext}`;
+  const filePath = join(dir, fname);
   const metadataFilePath = join(dir, `metadata-${base}.json`);
 
   const dataasync = fs.writeFile(filePath, data, { silent: true });
 
   const metadata = {
-    something: 'here'
+    cachefile: fname,
+    url: url,
+    cachedatetime: 'date time the file was written',
+    md5: hash(data),
+    cachepath: join(date, fname)
   };
   
   const metaasync = fs.writeJSON(metadataFilePath, metadata, { silent: true });

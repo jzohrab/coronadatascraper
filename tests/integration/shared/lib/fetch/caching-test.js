@@ -58,7 +58,10 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
   const url = 'http://hi.com';
   const type = 'csv';
 
-  await caching.saveFileToCache(url, type, date, 'data,stuff');
+  const csvData = 'data,stuff';
+  const csvDataMd5 = '6595d1b8e586b2fbfb2e59d48140b401';  // calculated during dev!
+  
+  await caching.saveFileToCache(url, type, date, csvData);
 
   const fname = caching.getCachedFileName(url, type);
   const basename = fname.replace(/\.csv$/, '');
@@ -73,10 +76,10 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
     cachefile: fname,
     url: url,
     cachedatetime: 'date time the file was written',
-    md5: '{md5 of file content}',
-    cachepath: `${path.join(date, metadataFileName)}`
+    md5: csvDataMd5,
+    cachepath: path.join(date, fname)
   };
-  t.equal(metadata, expected);
+  t.deepEqual(metadata, expected);
 
   t.end();
   teardown();
@@ -84,7 +87,9 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
 
 
 /*
-TODO - cache with huge PDF should still be OK.
+TODO
+cache with huge PDF should still be OK.
+works with null date
  */
 
 // Ensure teardown is done at the end!
