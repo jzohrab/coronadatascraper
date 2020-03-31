@@ -41,10 +41,13 @@ test.only('caching.saveFileToCache creates file and metadata file', async t => {
   const fname = caching.getCachedFileName(url, type);
 
   const basename = fname.replace(/\.csv$/, '');
+
+  // Note: when OVERRIDE_CACHE_PATH is set, the files aren't stored in
+  // subdirectories named '$date'.
   t.ok(fs.existsSync(path.join(testDir, fname)), `cache file ${fname} created`);
 
   const metadataFile = path.join(testDir, `metadata-${basename}.json`);
-  // t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
+  t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
 
   t.end();
   teardown();
