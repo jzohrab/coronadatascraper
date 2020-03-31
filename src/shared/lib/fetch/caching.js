@@ -28,13 +28,41 @@ const hash = str => {
 };
 
 /**
+ * Get the filename base (before extension) of the cache for the given URL
+ * @param {*} url URL of the cached resource
+ */
+const getCachedFileNameBase = (url) => {
+  return hash(url);
+};
+
+/**
+ * Get the folder path of cache at the given date
+ * @param {*} date the date associated with this resource, or false if a timeseries data
+ */
+const getCachedFolderPath = (date = false) => {
+  let cachePath = date === false ? TIMESERIES_CACHE_PATH : join(DEFAULT_CACHE_PATH, date);
+  // Rewire cache path for testing
+  if (process.env.OVERRIDE_CACHE_PATH) cachePath = process.env.OVERRIDE_CACHE_PATH;
+  return cachePath;
+};
+
+/**
+ * Get the extension of the cache file for the given URL
+ * @param {*} url URL of the cached resource
+ * @param {*} type type of the cached resource
+ */
+const getCachedFileNameExt = (url, type) => {
+  return type || path.extname(url).replace(/^\./, '') || 'txt';
+};
+
+/**
  * Get the filename of the cache for the given URL
  * @param {*} url URL of the cached resource
  * @param {*} type type of the cached resource
  */
 export const getCachedFileName = (url, type) => {
-  const urlHash = hash(url);
-  const extension = type || path.extname(url).replace(/^\./, '') || 'txt';
+  const urlHash = getCachedFileNameBase(url);
+  const extension = getCachedFileNameExt(url, type);
   return `${urlHash}.${extension}`;
 };
 
@@ -45,10 +73,10 @@ export const getCachedFileName = (url, type) => {
  * @param {*} date the date associated with this resource, or false if a timeseries data
  */
 export const getCachedFilePath = (url, type, date = false) => {
-  let cachePath = date === false ? TIMESERIES_CACHE_PATH : join(DEFAULT_CACHE_PATH, date);
-  // Rewire cache path for testing
-  if (process.env.OVERRIDE_CACHE_PATH) cachePath = process.env.OVERRIDE_CACHE_PATH;
-  return join(cachePath, getCachedFileName(url, type));
+  const dir = getCachedFolderPath(date);
+  const base = getCachedFileNameBase(url);
+  const ext = getCachedFileNameExt(url, type);
+  return join(dir, `${base}.${ext}`);
 };
 
 /**
@@ -89,6 +117,12 @@ export const getCachedFile = async (url, type, date, encoding = 'utf8') => {
  * @param {*} data file data to be saved
  */
 export const saveFileToCache = async (url, type, date, data) => {
-  const filePath = getCachedFilePath(url, type, date);
+  const dir = getCachedFolderPath(date);
+  const base = getCachedFileNameBase(url);
+  const ext = getCachedFileNameExt(url, type);
+  const filePath = join(dir, `${base}.${ext}`);
+  const metadataFilePath = join(dir, `metadata-${base}.json`);
+
+  fs.writeFile(metadataFilePath, 'metadata', { silent: true });
   return fs.writeFile(filePath, data, { silent: true });
 };

@@ -31,7 +31,7 @@ function teardown() {
   delete process.env.OVERRIDE_CACHE_PATH;
 }
 
-test.only('caching.saveFileToCache creates file and metadata file', async t => {
+test('caching.saveFileToCache creates file and metadata file', async t => {
   setup();
 
   const date = '2020-06-06';
@@ -52,6 +52,23 @@ test.only('caching.saveFileToCache creates file and metadata file', async t => {
   t.end();
   teardown();
 });
+
+
+console.log('TODO: metadata file contains expected data');
+
+/*
+
+{
+    cachefile: {filename-with-extension},
+    url: {source url},
+    cachedatetime: date time cached,
+    md5: {md5 of file content},
+
+    // These are 'nice-to-have', because the callers
+    // could derive this information from the above ...
+    fullpath: {cache-date-folder}/{cachefile}
+  },
+ */
 
 // Ensure teardown is done at the end!
 teardown();
