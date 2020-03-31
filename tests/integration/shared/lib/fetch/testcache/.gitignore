@@ -1,0 +1,7 @@
+# This directory contains junk generated during caching tests.
+# Ignore everything, except this file.
+
+*
+
+# But not these files...
+!.gitignore
