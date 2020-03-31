@@ -142,10 +142,11 @@ export const saveFileToCache = async (url, type, date, data) => {
 
   const dataasync = fs.writeFile(filePath, data, { silent: true });
 
+  var now = new Date();
   const metadata = {
     cachefile: fname,
     url: url,
-    cachedatetime: 'date time the file was written',
+    cachedatetime: now.toISOString(),
     md5: hash(data),
     cachepath: join(date, fname)
   };
