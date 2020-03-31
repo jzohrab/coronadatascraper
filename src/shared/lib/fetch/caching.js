@@ -48,16 +48,20 @@ const getCachedFileNameBase = (url) => {
  */
 const getCachedFolderPath = (date = false) => {
   let base = DEFAULT_CACHE_PATH;
-
-  // Allow changing the default cache path for testing.
+  let timeseries = TIMESERIES_CACHE_PATH;
+  
+  // Allow changing the default cache paths for testing.
   if (process.env.OVERRIDE_DEFAULT_CACHE_PATH)
     base = process.env.OVERRIDE_DEFAULT_CACHE_PATH;
+  if (process.env.OVERRIDE_TIMESERIES_CACHE_PATH)
+    timeseries = process.env.OVERRIDE_TIMESERIES_CACHE_PATH;
 
-  let cachePath = date === false ? TIMESERIES_CACHE_PATH : join(base, date);
+  let cachePath = date === false ? timeseries : join(base, date);
 
   // Clobber everything if OVERRIDE_CACHE_PATH is set.
   // This is necessary for tests/integration/scraper tests.
-  if (process.env.OVERRIDE_CACHE_PATH) cachePath = process.env.OVERRIDE_CACHE_PATH;
+  if (process.env.OVERRIDE_CACHE_PATH)
+    cachePath = process.env.OVERRIDE_CACHE_PATH;
 
   return cachePath;
 };
@@ -148,8 +152,12 @@ export const saveFileToCache = async (url, type, date, data) => {
     url: url,
     cachedatetime: now.toISOString(),
     md5: hash(data),
-    cachepath: join(date, fname)
+    cachepath: join(dir, fname)
   };
+  console.log("**************************************************");
+  console.log("ABOUT TO SAVE METADATA");
+  console.log(metadata);
+  console.log("**************************************************");
   
   const metaasync = fs.writeJSON(metadataFilePath, metadata, { silent: true });
   return [ dataasync, metaasync ];

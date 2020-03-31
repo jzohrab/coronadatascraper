@@ -14,7 +14,7 @@ const testDir = path.join(process.cwd(), 'tests', 'integration', 'shared', 'lib'
 // Test data
 // Unless otherwise specified, all tests use the following:
 
-const $date = '2020-06-06';
+var $date = '2020-06-06';
 const $url = 'http://hi.com';
 const $type = 'csv';
 const $csvData = 'data,stuff';
@@ -46,10 +46,12 @@ function setup() {
   });
 
   process.env.OVERRIDE_DEFAULT_CACHE_PATH = testDir;
+  process.env.OVERRIDE_TIMESERIES_CACHE_PATH = testDir;
 }
 
 function teardown() {
   delete process.env.OVERRIDE_DEFAULT_CACHE_PATH;
+  delete process.env.OVERRIDE_TIMESERIES_CACHE_PATH;
 }
 
 
@@ -107,6 +109,41 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
   teardown();
 });
 
+
+
+// NOTE: THIS TEST CURRENTLY FAILS
+// but speaking with Ryan Block, Larry D, and others,
+// caching will go a different direction.  Stopping work on this!
+test('caching.saveFileToCache works with false date (timeseries)', async t => {
+  setup();
+
+  $date = false
+
+  await caching.saveFileToCache($url, $type, $date, $csvData);
+
+  const fname = caching.getCachedFileName($url, $type);
+  const basename = fname.replace(/\.csv$/, '');
+
+  const metadataFileName = `metadata-${basename}.json`;
+  const metadataFile = path.join(testDir, metadataFileName);
+  t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
+
+  const m = fs.readFileSync(metadataFile, 'utf8');
+  console.log(m);
+  const actualMetadata = JSON.parse(m);
+
+  const expected = {
+    cachefile: fname,
+    url: $url,
+    cachedatetime: actualMetadata.cachedatetime,
+    md5: $csvDataMd5,
+    cachepath: fname
+  };
+  t.deepEqual(actualMetadata, expected);
+
+  t.end();
+  teardown();
+});
 
 /*
 TODO
