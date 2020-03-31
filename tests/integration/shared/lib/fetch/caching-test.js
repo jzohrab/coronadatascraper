@@ -67,7 +67,7 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
   const metadataFile = path.join(testDir, date, metadataFileName);
   t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
 
-  const metadata = fs.readFileSync(metadataFile, 'utf8');
+  const metadata = JSON.parse(fs.readFileSync(metadataFile, 'utf8'));
 
   const expected = {
     cachefile: fname,
@@ -81,6 +81,11 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
   t.end();
   teardown();
 });
+
+
+/*
+TODO - cache with huge PDF should still be OK.
+ */
 
 // Ensure teardown is done at the end!
 teardown();

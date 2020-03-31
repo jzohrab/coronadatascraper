@@ -140,6 +140,11 @@ export const saveFileToCache = async (url, type, date, data) => {
   const metadataFilePath = join(dir, `metadata-${base}.json`);
 
   const dataasync = fs.writeFile(filePath, data, { silent: true });
-  const metaasync = fs.writeFile(metadataFilePath, 'metadata', { silent: true });
+
+  const metadata = {
+    something: 'here'
+  };
+  
+  const metaasync = fs.writeJSON(metadataFilePath, metadata, { silent: true });
   return [ dataasync, metaasync ];
 };
