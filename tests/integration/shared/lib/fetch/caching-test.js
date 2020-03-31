@@ -70,16 +70,22 @@ test('caching.saveFileToCache metadata file contains expected data', async t => 
   const metadataFile = path.join(testDir, date, metadataFileName);
   t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
 
-  const metadata = JSON.parse(fs.readFileSync(metadataFile, 'utf8'));
+  const actualMetadata = JSON.parse(fs.readFileSync(metadataFile, 'utf8'));
+  console.log(actualMetadata);
 
+  // The metadata file contains the date the file was created.
+  // That's a hassle to test, so we'll just check that it's in fact a date.
+  const yearString = actualMetadata.cachedatetime.substring(0, 4);
+  t.equal(yearString, `${(new Date()).getFullYear()}`, 'date check');
+  
   const expected = {
     cachefile: fname,
     url: url,
-    cachedatetime: 'date time the file was written',
+    cachedatetime: actualMetadata.cachedatetime,
     md5: csvDataMd5,
     cachepath: path.join(date, fname)
   };
-  t.deepEqual(metadata, expected);
+  t.deepEqual(actualMetadata, expected);
 
   t.end();
   teardown();
