@@ -24,11 +24,11 @@ function setup() {
     }
   });
 
-  process.env.OVERRIDE_CACHE_PATH = testDir;
+  process.env.OVERRIDE_DEFAULT_CACHE_PATH = testDir;
 }
 
 function teardown() {
-  delete process.env.OVERRIDE_CACHE_PATH;
+  delete process.env.OVERRIDE_DEFAULT_CACHE_PATH;
 }
 
 test('caching.saveFileToCache creates file and metadata file', async t => {
@@ -39,14 +39,11 @@ test('caching.saveFileToCache creates file and metadata file', async t => {
   const type = 'csv';
   await caching.saveFileToCache(url, type, date, 'data,stuff');
   const fname = caching.getCachedFileName(url, type);
-
   const basename = fname.replace(/\.csv$/, '');
 
-  // Note: when OVERRIDE_CACHE_PATH is set, the files aren't stored in
-  // subdirectories named '$date'.
-  t.ok(fs.existsSync(path.join(testDir, fname)), `cache file ${fname} created`);
+  t.ok(fs.existsSync(path.join(testDir, date, fname)), `cache file ${fname} created`);
 
-  const metadataFile = path.join(testDir, `metadata-${basename}.json`);
+  const metadataFile = path.join(testDir, date, `metadata-${basename}.json`);
   t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
 
   t.end();
@@ -54,21 +51,36 @@ test('caching.saveFileToCache creates file and metadata file', async t => {
 });
 
 
-console.log('TODO: metadata file contains expected data');
+test('caching.saveFileToCache metadata file contains expected data', async t => {
+  setup();
 
-/*
+  const date = '2020-06-06';
+  const url = 'http://hi.com';
+  const type = 'csv';
 
-{
-    cachefile: {filename-with-extension},
-    url: {source url},
-    cachedatetime: date time cached,
-    md5: {md5 of file content},
+  await caching.saveFileToCache(url, type, date, 'data,stuff');
 
-    // These are 'nice-to-have', because the callers
-    // could derive this information from the above ...
-    fullpath: {cache-date-folder}/{cachefile}
-  },
- */
+  const fname = caching.getCachedFileName(url, type);
+  const basename = fname.replace(/\.csv$/, '');
+
+  const metadataFileName = `metadata-${basename}.json`;
+  const metadataFile = path.join(testDir, date, metadataFileName);
+  t.ok(fs.existsSync(metadataFile), `metadata file ${metadataFile} created`);
+
+  const metadata = fs.readFileSync(metadataFile, 'utf8');
+
+  const expected = {
+    cachefile: fname,
+    url: url,
+    cachedatetime: 'date time the file was written',
+    md5: '{md5 of file content}',
+    cachepath: `${path.join(date, metadataFileName)}`
+  };
+  t.equal(metadata, expected);
+
+  t.end();
+  teardown();
+});
 
 // Ensure teardown is done at the end!
 teardown();

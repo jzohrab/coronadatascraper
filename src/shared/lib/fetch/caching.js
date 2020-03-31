@@ -11,6 +11,11 @@ import * as datetime from '../datetime.js';
 import * as fs from '../fs.js';
 import log from '../log.js';
 
+/*
+Cach paths.
+The cache paths can be overridden with settings in process.env.
+See getCachedFolderPath.
+*/
 const DEFAULT_CACHE_PATH = 'coronadatascraper-cache';
 const TIMESERIES_CACHE_PATH = 'cache';
 
@@ -38,11 +43,22 @@ const getCachedFileNameBase = (url) => {
 /**
  * Get the folder path of cache at the given date
  * @param {*} date the date associated with this resource, or false if a timeseries data
+ *
+ * The cache path can be set 
  */
 const getCachedFolderPath = (date = false) => {
-  let cachePath = date === false ? TIMESERIES_CACHE_PATH : join(DEFAULT_CACHE_PATH, date);
-  // Rewire cache path for testing
+  let base = DEFAULT_CACHE_PATH;
+
+  // Allow changing the default cache path for testing.
+  if (process.env.OVERRIDE_DEFAULT_CACHE_PATH)
+    base = process.env.OVERRIDE_DEFAULT_CACHE_PATH;
+
+  let cachePath = date === false ? TIMESERIES_CACHE_PATH : join(base, date);
+
+  // Clobber everything if OVERRIDE_CACHE_PATH is set.
+  // This is necessary for tests/integration/scraper tests.
   if (process.env.OVERRIDE_CACHE_PATH) cachePath = process.env.OVERRIDE_CACHE_PATH;
+
   return cachePath;
 };
 
@@ -123,6 +139,7 @@ export const saveFileToCache = async (url, type, date, data) => {
   const filePath = join(dir, `${base}.${ext}`);
   const metadataFilePath = join(dir, `metadata-${base}.json`);
 
-  fs.writeFile(metadataFilePath, 'metadata', { silent: true });
-  return fs.writeFile(filePath, data, { silent: true });
+  const dataasync = fs.writeFile(filePath, data, { silent: true });
+  const metaasync = fs.writeFile(metadataFilePath, 'metadata', { silent: true });
+  return [ dataasync, metaasync ];
 };
