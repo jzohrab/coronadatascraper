@@ -76,7 +76,7 @@ test('looksLike.MDYY', t => {
 
 test('parse', t => {
   t.equal(parse(new Date('2020-03-16')), '2020-03-16', 'from JS Date');
-  t.equal(parse('2020-03-16'), '2020-03-16', 'from ISO date');
+  t.equal(parse('2020-03-17'), '2020-03-16', 'from ISO date');
   t.equal(parse('2020-03-16T23:45:00Z'), '2020-03-16', 'from ISO datetime');
   t.equal(parse('2020-3-1'), '2020-03-01', 'from unpadded ISO date');
   t.equal(parse('2020-3-01'), '2020-03-01', 'from inconsistently padded ISO date');
@@ -96,9 +96,9 @@ test('parse', t => {
   t.end();
 });
 
-test('today.utc', t => {
+test('parse', t => {
   mockDate('2020-03-16T23:45Z');
-  t.equal(today.utc(), '2020-03-16', 'returns the date in UTC');
+  t.equal(today.utc(), '2020-03-17', 'returns the date in UTC');
   mockDate.reset();
   t.end();
 });
