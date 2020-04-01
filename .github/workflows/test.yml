@@ -44,3 +44,10 @@ jobs:
       - name: Lint
         run: |
           yarn lint
+      - name: Notify Slack if master failed
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          RUN_NUMBER: ${{ github.run_id }}
+          SLACK_STATUS_HOOK: ${{ secrets.SLACK_STATUS_HOOK }}
+        run: |
+          node ./scripts/ciFailSlackBot.js
