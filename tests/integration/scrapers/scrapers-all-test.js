@@ -38,7 +38,9 @@ function scraperNameAndDateFromPath(s) {
   const scraper_name = parts.filter(s => !looksLike.isoDate(s)).join('/');
   const dt = parts.filter(s => looksLike.isoDate(s));
   const date = dt.length === 0 ? null : dt[0];
-  return { scraperName: scraper_name, date: date };
+  const ret = { scraperName: scraper_name, date: date };
+  console.log(`${s} => ${ret}`);
+  return ret;
 }
 
 // Remove geojson from scraper result
@@ -47,12 +49,14 @@ const stripFeatures = d => {
   return d;
 };
 
-const testDirs = fastGlob.sync(join(testdir, '**'), { onlyDirectories: true });
-console.log(testDirs);
-const scrnames = testDirs.map(s => scraperNameFromPath(s));
-console.log(scrnames);
-const x = testDirs.map(s => scraperNameAndDateFromPath(s));
-console.log(x);
+const testDirs = fastGlob.
+      sync(join(testdir, '**'), { onlyDirectories: true }).
+      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s));
+// console.log(testDirs);
+
+const scrapersAndDates = testDirs.map(s => scraperNameAndDateFromPath(s));
+// console.log(scrapersAndDates);
+
 
 /*
 describe('all scrapers', () => {
