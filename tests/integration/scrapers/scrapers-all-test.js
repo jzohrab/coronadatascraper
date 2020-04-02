@@ -15,7 +15,7 @@ const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-u
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
 // GO THROUGH THIS WHILE FIXING
-const SLICE_START = 2;
+const SLICE_START = 3;
 
 // import { looksLike } from '../../lib/iso-date.js';
 const looksLike = {
