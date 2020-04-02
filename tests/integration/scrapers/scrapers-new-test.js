@@ -1,40 +1,45 @@
-const imports = require('esm')(module);
-const { join } = require('path');
-const test = require('tape');
-const exec = require('child_process').execSync;
+import each from 'jest-each';
 
-const shared = join(process.cwd(), 'src', 'shared');
-const lib = join(shared, 'lib');
+import * as fs from '../../lib/fs.js';
+import * as schema from '../../lib/schema.js';
+import runScraper from '../../lib/run-scraper.js';
 
-const fs = imports(join(lib, 'fs.js'));
-const schema = imports(join(lib, 'schema.js'));
-const runScraper = imports('./run-scraper.js').default;
+const noScrapersTest = () => test('no scrapers modified', () => console.log('No scrapers modified, skipping tests'));
 
-const { CI, PR } = process.env;
-const command = CI && PR ? 'git diff --name-only origin/master' : 'git diff --name-only HEAD';
-const result = exec(command);
-const files = result.toString();
-if (files) {
-  const scrapers = files
-    .split('\n')
-    .filter(filePath =>
+describe('new scrapers', () => {
+  beforeAll(() => {
+    jest.setTimeout(300000);
+  });
+
+  afterAll(() => {
+    jest.setTimeout(5000);
+  });
+
+  if (process.env.FILES_MODIFIED) {
+    const scrapers = process.env.FILES_MODIFIED.split('\n').filter(filePath =>
       // Ignore any files or subdirectory in scrapers that starts with _
       filePath.match(/scrapers(?![^/])(?!.*\/_).*\.js$/gi)
-    )
-    .filter(filePath => !filePath.startsWith('tests/'));
+    );
 
-  if (scrapers.length > 0) {
-    test('Test updated scrapers', async t => {
-      t.plan(scrapers.length * 2);
-      for (const scraperPath of scrapers) {
+    if (scrapers.length > 0) {
+      each(scrapers).test('when "%s" is called, it does not fail', async scraperPath => {
         if (await fs.exists(scraperPath)) {
-          const scraper = imports(join(process.cwd(), scraperPath));
-          await runScraper(scraper);
-          const hasErrors = schema.schemaHasErrors(scraper.default, schema.schemas.scraperSchema);
-          t.notOk(hasErrors, 'Scraper had no errors');
-          t.pass('Scraper ran'); // Technically we don't need this test because the test would fail if the scraper did, but maybe someone will feel better
+          const location = (await import(scraperPath.replace('src/shared/scrapers', '../'))).default;
+
+          await runScraper(location);
         }
-      }
-    });
+      });
+      each(scrapers).test('scraper "%s" follows schema', async scraperPath => {
+        if (await fs.exists(scraperPath)) {
+          const source = (await import(scraperPath.replace('src/shared/scrapers', '../'))).default;
+
+          expect(schema.schemaHasErrors(source, schema.schemas.scraperSchema)).toBeFalsy();
+        }
+      });
+    } else {
+      noScrapersTest();
+    }
+  } else {
+    noScrapersTest();
   }
-}
+});
