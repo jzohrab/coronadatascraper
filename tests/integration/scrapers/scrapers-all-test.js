@@ -31,6 +31,16 @@ const testdir = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcac
 
 const scraperNameFromPath = s => s.replace(`${testdir}${path.sep}`, '').split(path.sep);
 
+// Splits folder path, returns hash.
+// e.g. 'X/Y/2020-03-04' => { scraperName: 'X/Y', date: '2020-03-04' }
+function scraperNameAndDateFromPath(s) {
+  const parts = s.replace(`${testdir}${path.sep}`, '').split(path.sep);
+  const scraper_name = parts.filter(s => !looksLike.isoDate(s)).join('/');
+  const dt = parts.filter(s => looksLike.isoDate(s));
+  const date = dt.length === 0 ? null : dt[0];
+  return { scraperName: scraper_name, date: date };
+}
+
 // Remove geojson from scraper result
 const stripFeatures = d => {
   delete d.feature;
@@ -41,6 +51,8 @@ const testDirs = fastGlob.sync(join(testdir, '**'), { onlyDirectories: true });
 console.log(testDirs);
 const scrnames = testDirs.map(s => scraperNameFromPath(s));
 console.log(scrnames);
+const x = testDirs.map(s => scraperNameAndDateFromPath(s));
+console.log(x);
 
 /*
 describe('all scrapers', () => {
