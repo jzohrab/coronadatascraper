@@ -15,7 +15,7 @@ const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-u
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
 // GO THROUGH THIS WHILE FIXING
-const SLICE_START = 3;
+const SLICE_START = 4;
 
 // import { looksLike } from '../../lib/iso-date.js';
 const looksLike = {
@@ -121,7 +121,9 @@ test('Parsers', async t => {
     }
 
     if (result) {
-      t.deepEqual(result.map(stripFeatures), expected.map(stripFeatures));
+      const actual = result.map(stripFeatures);
+      await fs.writeJSON(join(d, 'expected.json.actual'), actual);
+      t.deepEqual(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
     }
     else {
       t.fail(`should have had a result for ${sname} on ${date}`);
