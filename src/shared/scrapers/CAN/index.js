@@ -47,15 +47,30 @@ const scraper = {
     */
     '0': async function() {
       const data = await fetch.csv(this.url, false);
+      console.log("GOT DATA");
+      console.log(data);
+
+      const db = s => { console.log(s); };
 
       // FIXME when we roll out new TZ support!
       const fallback = process.env.USE_ISO_DATETIME ? new Date(datetime.now.at('America/Toronto')) : datetime.getDate();
+      db('a');
       let scrapeDate = process.env.SCRAPE_DATE ? new Date(`${process.env.SCRAPE_DATE} 12:00:00`) : fallback;
+      db('b');
       let scrapeDateString = datetime.getDDMMYYYY(scrapeDate);
+      db('c');
+      db(data)
+      db(data[data.length - 1]);
       const lastDateParts = data[data.length - 1].date.split('-');
+      db('d');
       const lastDateInTimeseries = new Date(`${lastDateParts[2]}-${lastDateParts[1]}-${lastDateParts[0]} 12:00:00`);
+      db('e');
       const firstDateParts = data[data.length - 1].date.split('-');
+      db('f');
       const firstDateInTimeseries = new Date(`${firstDateParts[2]}-${firstDateParts[1]}-${firstDateParts[0]}12:00:00`);
+      db('g');
+
+      console.log("02--------------");
 
       if (scrapeDate > lastDateInTimeseries) {
         console.error(
@@ -69,12 +84,17 @@ const scraper = {
         scrapeDateString = datetime.getDDMMYYYY(scrapeDate);
       }
 
+      console.log("03--------------");
+
       if (scrapeDate < firstDateInTimeseries) {
         throw new Error(`Timeseries starts later than SCRAPE_DATE ${scrapeDateString}`);
       }
 
+      console.log("04--------------");
+      
       const regions = [];
       for (const row of data) {
+        console.log("ROW = " + row);
         if (row.date === scrapeDateString) {
           const regionObj = {
             state: parse.string(row.prname),
@@ -90,6 +110,8 @@ const scraper = {
         }
       }
 
+      console.log("05--------------");
+      
       if (regions.length === 0) {
         throw new Error(`Timeseries does not contain a sample for SCRAPE_DATE ${scrapeDateString}`);
       }
