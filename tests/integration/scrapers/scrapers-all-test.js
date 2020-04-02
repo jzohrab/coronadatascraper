@@ -14,8 +14,8 @@ const runScraper = imports(join(process.cwd(), 'src', 'events', 'crawler', 'scra
 const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-url.js'));
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
-// TRY THIS
-get.get = (aoeu) => { console.log('hi'); }
+// GO THROUGH THIS WHILE FIXING
+const SLICE_START = 2;
 
 // import { looksLike } from '../../lib/iso-date.js';
 const looksLike = {
@@ -52,8 +52,8 @@ const stripFeatures = d => {
 const testDirs = fastGlob.
       sync(join(testdir, '**'), { onlyDirectories: true }).
       filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
-      slice(0, 1);
-// console.log(testDirs);
+      slice(SLICE_START, SLICE_START + 1);
+console.log(testDirs);
 
 // ONLY DOING ONE OF THEM
 
@@ -72,11 +72,7 @@ test('Parsers', async t => {
     const date = pair.date;
     const spath = join(scraperSourcePathRoot, sname, 'index.js');
 
-    console.log('********************************');
-    console.log('********************************');
-    console.log(sname);
-    console.log(date);
-    console.log(d);
+    console.log(`******** TEST ${sname} ON ${date} ********************`);
 
     // Read sample responses for this scraper and pass them to the mock `get` function.
     const sampleResponses = fastGlob.sync(join(d, '*')).filter(p => !p.includes('expected'));
@@ -87,25 +83,26 @@ test('Parsers', async t => {
       // MAGIC HERE:
       // The filenames are stored as the sanitized-url values.
       const sanitizedURL = path.basename(filePath);
-      console.log("FILE exists? " + fsBuiltIn.existsSync(filePath));
-      console.log("data: " + fsBuiltIn.readFileSync(filePath, 'UTF-8'));
       const content = await fs.readFile(filePath);
       getReturns[sanitizedURL] = content.toString();
     }
 
-    console.log("HERE ARE THE RETURNS:");
-    console.log(getReturns);
-
+    console.log("Fake returns and data sizes:");
+    console.log("{");
+    Object.keys(getReturns).forEach(k => {
+      console.log("  " + k + ": " + getReturns[k].length);
+    });
+    console.log("}");
+    
     get.get = async (url, type, date, options) => {
       console.log("CALLING FOR " + url);
       const sanurl = sanitize.sanitizeUrl(url);
       console.log("SANITIZED: " + sanurl);
-      console.log("HERE IS EVERYTHING:");
-      console.log(getReturns);
       const ret = getReturns[sanurl];
       console.log("DO WE HAVE RET?" + (ret !== null && ret !== undefined));
-      console.log(typeof(ret));
-      console.log("GOT " + ret);
+      if (ret === null || ret === undefined) {
+        console.log(`${sname}/${date}: missing data ${sanurl}`);
+      }
       return ret;
     };
 
@@ -116,16 +113,13 @@ test('Parsers', async t => {
 
     let result = null;
     try {
-      console.log("***** SCRAPING *******");
+      console.log(`SCRAPING FOR ${sname} ON ${date} ********************`);
       result = await runScraper.runScraper(scraperObj);
-      console.log("***** END SCRAPING *******");
     }
     catch (e) {
       t.fail(`error scraping: ${e}`);
     }
 
-    console.log("RESULT:");
-    console.log(result);
     if (result) {
       t.deepEqual(result.map(stripFeatures), expected.map(stripFeatures));
     }
