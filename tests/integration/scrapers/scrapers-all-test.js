@@ -123,7 +123,7 @@ async function runTest(t, d) {
   delete process.env.SCRAPE_DATE;
 
   if (result) {
-    await fs.writeJSON(join(d, 'actual.json'), result);
+    await fs.writeJSON(join(d, 'actual.json'), result, { log: false });
     const actual = result.map(stripFeatures);
     t.equal(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
   }
