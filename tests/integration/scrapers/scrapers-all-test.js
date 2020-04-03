@@ -7,7 +7,6 @@ const { join } = require('path');
 const test = require('tape');
 const fastGlob = require('fast-glob');
 const path = require('path');
-const fsBuiltIn = require('fs');
 const { EventEmitter } = require('events');
 
 const fs = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fs.js'));
@@ -15,15 +14,12 @@ const runScraper = imports(join(process.cwd(), 'src', 'events', 'crawler', 'scra
 const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-url.js'));
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
-
 // This suite automatically tests a scraper's results against its test
 // cases. To add test coverage for a scraper, see
 // docs/sources.md#testing-sources
 
-
 // The tests monkeypatch get.get, so make sure that's restored at the end!
 const oldGetGet = get.get;
-
 
 // Utility functions
 
@@ -34,26 +30,27 @@ function scraperNameAndDateFromPath(s) {
   const parts = s.split(path.sep);
 
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  const scraper_name = parts.filter(s => !dateRegex.test(s)).join(path.sep);
+  const name = parts.filter(s => !dateRegex.test(s)).join(path.sep);
   const dt = parts.filter(s => dateRegex.test(s));
 
   const date = dt.length === 0 ? null : dt[0];
-  const ret = { scraperName: scraper_name, date: date };
-  return ret;
+  return {
+    scraperName: name,
+    date: date
+  };
 }
 
 /** Run a single scraper test directory. */
 async function runTest(t, cacheRoot, testDirectory) {
-  const pair = scraperNameAndDateFromPath(testDirectory);
-  const scraperName = pair.scraperName;
-  const date = pair.date;
+  const [scraperName, date] = scraperNameAndDateFromPath(testDirectory);
 
   // Monkeypatch global get for this test.
+  // eslint-disable-next-line no-unused-vars
   get.get = async (url, type, date, options) => {
     const sanurl = sanitize.sanitizeUrl(url);
     const respFile = join(testDirectory, sanurl);
     // console.log(`  Call: ${url}\n  Sanitized: ${sanurl}\n  Response: ${respFile}`);
-    return await fs.readFile(join(cacheRoot, respFile));
+    return fs.readFile(join(cacheRoot, respFile));
   };
 
   const pathParts = [__dirname, '..', '..', '..', 'src', 'shared', 'scrapers', scraperName, 'index.js'];
@@ -69,7 +66,7 @@ async function runTest(t, cacheRoot, testDirectory) {
   }
   finally {
     delete process.env.SCRAPE_DATE;
-    get.get = oldGetGet
+    get.get = oldGetGet;
   }
 
   if (result) {
@@ -82,17 +79,18 @@ async function runTest(t, cacheRoot, testDirectory) {
     const fullExpected = await fs.readJSON(expectedPath);
 
     // Ignore features (for now?).
-    const removeFeatures = d => { delete d.feature; return d; };
+    const removeFeatures = d => {
+      delete d.feature;
+      return d;
+    };
     const actual = JSON.stringify(result.map(removeFeatures));
     const expected = JSON.stringify(fullExpected.map(removeFeatures));
-
     const msg = `${scraperName} on ${date}`;
     t.equal(actual, expected, msg);
   }
   else {
-    t.fail(`should have had a result for ${sname} on ${date}`);
+    t.fail(`should have had a result for ${scraperName} on ${date}`);
   }
-
 }
 
 // Mutex
@@ -141,11 +139,11 @@ class Lock {
 // Tests.
 
 const cachePath = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
-const testDirs = fastGlob.
-      sync(join(cachePath, '**'), { onlyDirectories: true }).
-      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
-      map(s => s.replace(`${cachePath}${path.sep}`, ''));
-// console.log(`${testDirs} =======================================================`);
+const testDirs = fastGlob
+  .sync(join(cachePath, '**'), { onlyDirectories: true })
+  .filter(s => /\d{4}-\d{2}-\d{2}$/.test(s))
+  .map(s => s.replace(`${cachePath}${path.sep}`, ''));
+// console.log(`======== ${testDirs} =======`);
 
 const lock = new Lock(testDirs.length);
 
@@ -155,6 +153,9 @@ test('scrapers-all-test, Parsers', async t => {
     await lock.acquire();
     try {
       await runTest(t, cachePath, d);
+    }
+    catch (e) {
+      t.fail(`Failure for ${d}: ${e}`);
     }
     finally {
       lock.release();

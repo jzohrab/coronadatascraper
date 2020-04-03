@@ -14,4 +14,4 @@ export const sanitizeUrl = function(s) {
     .replace(ext, '')
     .replace(/^https?:\/\//i, '')
     .replace(/[^a-z0-9]/gi, '_');
-}
+};

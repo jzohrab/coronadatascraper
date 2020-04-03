@@ -16,12 +16,12 @@ const result = exec(command);
 const files = result.toString();
 
 // Ignore any files or subdirectory in scrapers that starts with _
-scraperPathRegex= /src.shared.scrapers(?![^/])(?!.*\/_).*\.js$/gi;
-const scrapers = files.
-      split('\n').
-      filter(filePath => filePath.match(scraperPathRegex)).
-      filter(filePath => !filePath.startsWith('tests/')).
-      map(s => join(process.cwd(), s));
+const scraperPathRegex = /src.shared.scrapers(?![^/])(?!.*\/_).*\.js$/gi;
+const scrapers = files
+  .split('\n')
+  .filter(filePath => filePath.match(scraperPathRegex))
+  .filter(filePath => !filePath.startsWith('tests/'))
+  .map(s => join(process.cwd(), s));
 
 if (scrapers.length > 0) {
   test('Test updated scrapers', async t => {
