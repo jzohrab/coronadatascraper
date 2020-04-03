@@ -1,326 +1,262 @@
 [
   {
     "county": "Saguache County",
-    "cases": 0,
-    "population": 6837
+    "cases": 0
   },
   {
     "county": "Sedgwick County",
-    "cases": 0,
-    "population": 2275
+    "cases": 0
   },
   {
     "county": "Cheyenne County",
-    "cases": 0,
-    "population": 1862
+    "cases": 0
   },
   {
     "county": "Custer County",
-    "cases": 0,
-    "population": 4928
+    "cases": 0
   },
   {
     "county": "La Plata County",
-    "cases": 5,
-    "population": 56403
+    "cases": 5
   },
   {
     "county": "San Juan County",
-    "cases": 0,
-    "population": 762
+    "cases": 0
   },
   {
     "county": "Pitkin County",
-    "cases": 23,
-    "population": 17879
+    "cases": 23
   },
   {
     "county": "Park County",
-    "cases": 1,
-    "population": 18557
+    "cases": 1
   },
   {
     "county": "Alamosa County",
-    "cases": 0,
-    "population": 16184
+    "cases": 0
   },
   {
     "county": "Prowers County",
-    "cases": 0,
-    "population": 12078
+    "cases": 0
   },
   {
     "county": "Moffat County",
-    "cases": 0,
-    "population": 13181
+    "cases": 0
   },
   {
     "county": "Jefferson County",
-    "cases": 131,
-    "population": 579491
+    "cases": 131
   },
   {
     "county": "Summit County",
-    "cases": 9,
-    "population": 30973
+    "cases": 9
   },
   {
     "county": "Pueblo County",
-    "cases": 3,
-    "population": 167116
+    "cases": 3
   },
   {
     "county": "Boulder County",
-    "cases": 66,
-    "population": 325476
+    "cases": 66
   },
   {
     "county": "Denver County",
-    "cases": 262,
-    "population": 717797
+    "cases": 262
   },
   {
     "county": "Montrose County",
-    "cases": 4,
-    "population": 42260
+    "cases": 4
   },
   {
     "county": "Eagle County",
-    "cases": 147,
-    "population": 54863
+    "cases": 147
   },
   {
     "county": "San Miguel County",
-    "cases": 1,
-    "population": 8177
+    "cases": 1
   },
   {
     "county": "Costilla County",
-    "cases": 0,
-    "population": 3809
+    "cases": 0
   },
   {
     "county": "Broomfield County",
-    "cases": 10,
-    "population": 69453
+    "cases": 10
   },
   {
     "county": "Chaffee County",
-    "cases": 5,
-    "population": 20028
+    "cases": 5
   },
   {
     "county": "Crowley County",
-    "cases": 1,
-    "population": 5857
+    "cases": 1
   },
   {
     "county": "Fremont County",
-    "cases": 1,
-    "population": 47912
+    "cases": 1
   },
   {
     "county": "Huerfano County",
-    "cases": 1,
-    "population": 6854
+    "cases": 1
   },
   {
     "county": "Delta County",
-    "cases": 1,
-    "population": 30936
+    "cases": 1
   },
   {
     "county": "Garfield County",
-    "cases": 16,
-    "population": 59807
+    "cases": 16
   },
   {
     "county": "Rio Blanco County",
-    "cases": 0,
-    "population": 6305
+    "cases": 0
   },
   {
     "county": "Morgan County",
-    "cases": 3,
-    "population": 28503
+    "cases": 3
   },
   {
     "county": "Lincoln County",
-    "cases": 0,
-    "population": 5584
+    "cases": 0
   },
   {
     "county": "Montezuma County",
-    "cases": 0,
-    "population": 26159
+    "cases": 0
   },
   {
     "county": "Adams County",
-    "cases": 50,
-    "population": 511473
+    "cases": 50
   },
   {
     "county": "Mineral County",
-    "cases": 0,
-    "population": 777
+    "cases": 0
   },
   {
     "county": "Otero County",
-    "cases": 1,
-    "population": 18364
+    "cases": 1
   },
   {
     "county": "Phillips County",
-    "cases": 0,
-    "population": 4266
+    "cases": 0
   },
   {
     "county": "Ouray County",
-    "cases": 0,
-    "population": 4798
+    "cases": 0
   },
   {
     "county": "Bent County",
-    "cases": 0,
-    "population": 5819
+    "cases": 0
   },
   {
     "county": "Archuleta County",
-    "cases": 0,
-    "population": 13737
+    "cases": 0
   },
   {
     "county": "Routt County",
-    "cases": 9,
-    "population": 25683
+    "cases": 9
   },
   {
     "county": "Hinsdale County",
-    "cases": 1,
-    "population": 804
+    "cases": 1
   },
   {
     "county": "Weld County",
-    "cases": 107,
-    "population": 314251
+    "cases": 107
   },
   {
     "county": "Larimer County",
-    "cases": 61,
-    "population": 350362
+    "cases": 61
   },
   {
     "county": "Lake County",
-    "cases": 0,
-    "population": 7762
+    "cases": 0
   },
   {
     "county": "Rio Grande County",
-    "cases": 2,
-    "population": 11226
+    "cases": 2
   },
   {
     "county": "Gilpin County",
-    "cases": 0,
-    "population": 6097
+    "cases": 0
   },
   {
     "county": "Yuma County",
-    "cases": 2,
-    "population": 10029
+    "cases": 2
   },
   {
     "county": "Jackson County",
-    "cases": 0,
-    "population": 1396
+    "cases": 0
   },
   {
     "county": "Kit Carson County",
-    "cases": 1,
-    "population": 7157
+    "cases": 1
   },
   {
     "county": "Clear Creek County",
-    "cases": 3,
-    "population": 9663
+    "cases": 3
   },
   {
     "county": "Logan County",
-    "cases": 2,
-    "population": 21854
+    "cases": 2
   },
   {
     "county": "Washington County",
-    "cases": 1,
-    "population": 4729
+    "cases": 1
   },
   {
     "county": "Douglas County",
-    "cases": 67,
-    "population": 342842
+    "cases": 67
   },
   {
     "county": "Conejos County",
-    "cases": 0,
-    "population": 8136
+    "cases": 0
   },
   {
     "county": "El Paso County",
-    "cases": 137,
-    "population": 714395
+    "cases": 137
   },
   {
     "county": "Kiowa County",
-    "cases": 0,
-    "population": 1373
+    "cases": 0
   },
   {
     "county": "Teller County",
-    "cases": 7,
-    "population": 25060
+    "cases": 7
   },
   {
     "county": "Gunnison County",
-    "cases": 57,
-    "population": 17173
+    "cases": 57
   },
   {
     "county": "Baca County",
-    "cases": 0,
-    "population": 3547
+    "cases": 0
   },
   {
     "county": "Elbert County",
-    "cases": 3,
-    "population": 26218
+    "cases": 3
   },
   {
     "county": "Mesa County",
-    "cases": 6,
-    "population": 153630
+    "cases": 6
   },
   {
     "county": "Dolores County",
-    "cases": 0,
-    "population": 2053
+    "cases": 0
   },
   {
     "county": "Arapahoe County",
-    "cases": 119,
-    "population": 651342
+    "cases": 119
   },
   {
     "county": "Las Animas County",
-    "cases": 0,
-    "population": 14491
+    "cases": 0
   },
   {
     "county": "Grand County",
-    "cases": 2,
-    "population": 15474
+    "cases": 2
   },
   {
     "cases": 1328,
-    "population": 5695430
+    "deaths": 24
   }
 ]
