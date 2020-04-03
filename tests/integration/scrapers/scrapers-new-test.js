@@ -16,28 +16,37 @@ const result = exec(command);
 const files = result.toString();
 // console.log(files);
 
-if (files) {
-  // Ignore any files or subdirectory in scrapers that starts with _
-  scraperPathRegex= /src.shared.scrapers(?![^/])(?!.*\/_).*\.js$/gi;
-  const scrapers = files.
-        split('\n').
-        filter(filePath => filePath.match(scraperPathRegex)).
-        filter(filePath => !filePath.startsWith('tests/')).
-        map(s => join(process.cwd(), s));
-  
-  if (scrapers.length > 0) {
-    test('Test updated scrapers', async t => {
-      t.plan(scrapers.length * 2);
-      for (const scraperPath of scrapers) {
-        if (await fs.exists(scraperPath)) {
-          const scraper = imports(scraperPath).default;
-          await runScraper.runScraper(scraper);
-          t.pass('Scraper ran'); // Technically we don't need this test because the test would fail if the scraper did, but maybe someone will feel better
-
-          const hasErrors = schema.schemaHasErrors(scraper, schema.schemas.scraperSchema);
-          t.notOk(hasErrors, 'Scraper had no errors');
-        }
-      }
-    });
-  }
+if (!files) {
+  console.log('No scrapers changed, exiting');
+  return;
 }
+
+// Ignore any files or subdirectory in scrapers that starts with _
+scraperPathRegex= /src.shared.scrapers(?![^/])(?!.*\/_).*\.js$/gi;
+const scrapers = files.
+      split('\n').
+      filter(filePath => filePath.match(scraperPathRegex)).
+      filter(filePath => !filePath.startsWith('tests/')).
+      map(s => join(process.cwd(), s));
+
+if (scrapers.length == 0) {
+  console.log('No scrapers changed, exiting');
+  return;
+}
+
+test('Test updated scrapers', async t => {
+  t.plan(scrapers.length * 2);
+  for (const scraperPath of scrapers) {
+    if (await fs.exists(scraperPath)) {
+      const scraper = imports(scraperPath).default;
+      await runScraper.runScraper(scraper);
+
+      // Technically we don't need this test because the test would
+      // fail if the scraper did, but maybe someone will feel better.
+      t.pass('Scraper ran');
+
+      const hasErrors = schema.schemaHasErrors(scraper, schema.schemas.scraperSchema);
+      t.notOk(hasErrors, 'Scraper had no errors');
+    }
+  }
+});
