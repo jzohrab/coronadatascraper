@@ -8,6 +8,7 @@ const test = require('tape');
 const fastGlob = require('fast-glob');
 const path = require('path');
 const fsBuiltIn = require('fs');
+const { EventEmitter } = require('events');
 
 const fs = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fs.js'));
 const runScraper = imports(join(process.cwd(), 'src', 'events', 'crawler', 'scrape-data', 'run-scraper.js'));
@@ -23,6 +24,44 @@ console.log(SLICE_START);
 const looksLike = {
   isoDate: s => /^\d{4}-\d{2}-\d{2}$/.test(s) // YYYY-DD-MM
 };
+
+
+// https://medium.com/trabe/synchronize-cache-updates-in-node-js-with-a-mutex-d5b395457138
+class Lock {
+  constructor() {
+    this._locked = false;
+    this._ee = new EventEmitter();
+  }
+
+  acquire() {
+    return new Promise(resolve => {
+      // If nobody has the lock, take it and resolve immediately
+      if (!this._locked) {
+        // Safe because JS doesn't interrupt you on synchronous operations,
+        // so no need for compare-and-swap or anything like that.
+        this._locked = true;
+        return resolve();
+      }
+
+      // Otherwise, wait until somebody releases the lock and try again
+      const tryAcquire = () => {
+        if (!this._locked) {
+          this._locked = true;
+          this._ee.removeListener('release', tryAcquire);
+          return resolve();
+        }
+      };
+      this._ee.on('release', tryAcquire);
+    });
+  }
+
+  release() {
+    // Release the lock immediately
+    this._locked = false;
+    setImmediate(() => this._ee.emit('release'));
+  }
+}
+
 
 // jest.mock('../../lib/fetch/get.js');
 
@@ -141,9 +180,19 @@ async function runTest(t, d) {
 }
 
 
+const lock = new Lock();
+
 test('Parsers', async t => {
   t.plan(testDirs.length);
-  testDirs.forEach(async d => { await runTest(t, d); });
+  testDirs.forEach(async d => {
+    await lock.acquire();
+    try {
+      await runTest(t, d);
+    }
+    finally {
+      lock.release();
+    }
+  });
 });
 
 // Final cleanup.
