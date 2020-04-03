@@ -16,6 +16,90 @@ const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-u
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
 
+// This suite automatically tests a scraper's results against its test
+// cases. To add test coverage for a scraper, see
+// docs/sources.md#testing-sources
+
+
+// The tests monkeypatch get.get, so make sure that's restored at the end!
+const oldGetGet = get.get;
+
+
+// Utility functions
+
+/** Splits folder path into the scraper name and test date hash.
+ * e.g. 'X/Y/2020-03-04' => { scraperName: 'X/Y', date: '2020-03-04' }
+ */
+function scraperNameAndDateFromPath(s) {
+  const parts = s.split(path.sep);
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const scraper_name = parts.filter(s => !dateRegex.test(s)).join(path.sep);
+  const dt = parts.filter(s => dateRegex.test(s));
+
+  const date = dt.length === 0 ? null : dt[0];
+  const ret = { scraperName: scraper_name, date: date };
+  return ret;
+}
+
+/** Run a single scraper test directory. */
+async function runTest(t, cacheRoot, testDirectory) {
+  const pair = scraperNameAndDateFromPath(testDirectory);
+  const scraperName = pair.scraperName;
+  const date = pair.date;
+
+  // Monkeypatch global get for this test.
+  get.get = async (url, type, date, options) => {
+    const sanurl = sanitize.sanitizeUrl(url);
+    const respFile = join(testDirectory, sanurl);
+    // console.log(`  Call: ${url}\n  Sanitized: ${sanurl}\n  Response: ${respFile}`);
+    return await fs.readFile(join(cacheRoot, respFile));
+  };
+
+  const pathParts = [__dirname, '..', '..', '..', 'src', 'shared', 'scrapers', scraperName, 'index.js'];
+  const scraperObj = imports(join(...pathParts)).default;
+
+  let result = null;
+  try {
+    process.env.SCRAPE_DATE = date;
+    result = await runScraper.runScraper(scraperObj);
+  }
+  catch (e) {
+    t.fail(`${scraperName} on ${date}, error scraping: ${e}`);
+  }
+  finally {
+    delete process.env.SCRAPE_DATE;
+    get.get = oldGetGet
+  }
+
+  if (result) {
+    // Writing the actual scraper result so ppl can diff/investigate.
+    // These are ignored in .gitignore.
+    const actualFilepath = join(cacheRoot, testDirectory, 'actual.json');
+    await fs.writeJSON(actualFilepath, result, { log: false });
+
+    const expectedPath = join(cacheRoot, testDirectory, 'expected.json');
+    const fullExpected = await fs.readJSON(expectedPath);
+
+    // Ignore features (for now?).
+    const removeFeatures = d => { delete d.feature; return d; };
+    const actual = JSON.stringify(result.map(removeFeatures));
+    const expected = JSON.stringify(fullExpected.map(removeFeatures));
+
+    const msg = `${scraperName} on ${date}`;
+    t.equal(actual, expected, msg);
+  }
+  else {
+    t.fail(`should have had a result for ${sname} on ${date}`);
+  }
+
+}
+
+// Mutex
+
+// Each test folder modifies global state (get.get, and
+// process.env.SCRAPE_DATE), so we need to make sure that they're run
+// one at a time.  Global state is bad!
 
 // https://medium.com/trabe/synchronize-cache-updates-in-node-js-with-a-mutex-d5b395457138
 class Lock {
@@ -54,78 +138,7 @@ class Lock {
   }
 }
 
-
-
-// This suite automatically tests a scraper's results against its test
-// cases. To add test coverage for a scraper, see
-// docs/sources.md#testing-sources
-
-
-// Splits folder path, returns hash.
-// e.g. 'X/Y/2020-03-04' => { scraperName: 'X/Y', date: '2020-03-04' }
-function scraperNameAndDateFromPath(s) {
-  const parts = s.split(path.sep);
-
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  const scraper_name = parts.filter(s => !dateRegex.test(s)).join(path.sep);
-  const dt = parts.filter(s => dateRegex.test(s));
-
-  const date = dt.length === 0 ? null : dt[0];
-  const ret = { scraperName: scraper_name, date: date };
-  return ret;
-}
-
-async function runTest(t, cacheRoot, testDirectory) {
-  const pair = scraperNameAndDateFromPath(testDirectory);
-  const sname = pair.scraperName;
-  const date = pair.date;
-
-  get.get = async (url, type, date, options) => {
-    const sanurl = sanitize.sanitizeUrl(url);
-    const respFile = join(testDirectory, sanurl);
-    // console.log(`  Call: ${url}\n  Sanitized: ${sanurl}\n  Response: ${respFile}`);
-    return await fs.readFile(join(cacheRoot, respFile));
-  };
-
-  const scraperSourcePathRoot = join(__dirname, '..', '..', '..', 'src', 'shared', 'scrapers');
-  const spath = join(scraperSourcePathRoot, sname, 'index.js');
-  const scraperObj = imports(spath).default;
-
-  let result = null;
-  try {
-    process.env.SCRAPE_DATE = date;
-    result = await runScraper.runScraper(scraperObj);
-  }
-  catch (e) {
-    t.fail(`${sname} on ${date}, error scraping: ${e}`);
-  }
-  finally {
-    delete process.env.SCRAPE_DATE;
-  }
-
-  if (result) {
-    // Writing the actual scraper result so ppl can diff/investigate.
-    // These are ignored in .gitignore.
-    const actualFilepath = join(cacheRoot, testDirectory, 'actual.json');
-    await fs.writeJSON(actualFilepath, result, { log: false });
-
-    const expectedPath = join(cacheRoot, testDirectory, 'expected.json');
-    const fullExpected = await fs.readJSON(expectedPath);
-
-    // Ignore features (for now?).
-    const removeFeatures = d => { delete d.feature; return d; };
-    const actual = JSON.stringify(result.map(removeFeatures));
-    const expected = JSON.stringify(fullExpected.map(removeFeatures));
-
-    const msg = `${sname} on ${date} (actual.json file saved in ${testDirectory})`;
-    t.equal(actual, expected, msg);
-  }
-  else {
-    t.fail(`should have had a result for ${sname} on ${date}`);
-  }
-
-}
-
+// Tests.
 
 const cachePath = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
 
@@ -151,3 +164,4 @@ test('Parsers', async t => {
 
 // Final cleanup.
 delete process.env.SCRAPE_DATE;
+get.get = oldGetGet;
