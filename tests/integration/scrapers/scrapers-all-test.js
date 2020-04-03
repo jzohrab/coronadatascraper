@@ -124,9 +124,8 @@ test('Parsers', async t => {
     }
 
     if (result) {
-      await fs.writeJSON(join(d, 'expected.json.actual'), result);
+      await fs.writeJSON(join(d, 'actual.json'), result);
       const actual = result.map(stripFeatures);
-      const checkExpected = expected.map(stripFeatures);
       t.equal(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
     }
     else {
