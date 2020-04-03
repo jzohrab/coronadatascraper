@@ -15,15 +15,6 @@ const runScraper = imports(join(process.cwd(), 'src', 'events', 'crawler', 'scra
 const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-url.js'));
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
-// GO THROUGH THIS WHILE FIXING
-const SLICE_START = process.env.SLICE_START;
-console.log(SLICE_START);
-
-
-// import { looksLike } from '../../lib/iso-date.js';
-const looksLike = {
-  isoDate: s => /^\d{4}-\d{2}-\d{2}$/.test(s) // YYYY-DD-MM
-};
 
 
 // https://medium.com/trabe/synchronize-cache-updates-in-node-js-with-a-mutex-d5b395457138
@@ -63,15 +54,18 @@ class Lock {
 }
 
 
-// jest.mock('../../lib/fetch/get.js');
 
-// This suite automatically tests a scraper's results against its test cases. To add test coverage for
-// a scraper, see https://github.com/lazd/coronadatascraper/blob/master/docs/sources.md#testing-sources
+// This suite automatically tests a scraper's results against its test
+// cases. To add test coverage for a scraper, see
+// https://github.com/lazd/coronadatascraper/blob/master/docs/sources.md#testing-sources
 
 // Utility functions
 
-// e.g. `/coronadatascraper/src/shared/scrapers/USA/AK/tests` 🡒 `USA/AK`
 const testdir = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
+
+const looksLike = {
+  isoDate: s => /^\d{4}-\d{2}-\d{2}$/.test(s) // YYYY-DD-MM
+};
 
 // Splits folder path, returns hash.
 // e.g. 'X/Y/2020-03-04' => { scraperName: 'X/Y', date: '2020-03-04' }
@@ -94,11 +88,6 @@ const testDirs = fastGlob.
       sync(join(testdir, '**'), { onlyDirectories: true }).
       filter(s => /\d{4}-\d{2}-\d{2}$/.test(s));
 
-      // filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
-      // slice((SLICE_START * 1), (SLICE_START * 1) + 1);
-// console.log("RUNNING TESTS FOR: ");
-// console.log(testDirs);
-
 
 async function runTest(t, d) {
 
@@ -109,46 +98,13 @@ async function runTest(t, d) {
   const scraperSourcePathRoot = join(__dirname, '..', '..', '..', 'src', 'shared', 'scrapers');
   const spath = join(scraperSourcePathRoot, sname, 'index.js');
 
-  console.log(`******** TEST ${sname} ON ${date} ********************`);
-
-  /*
-  // Read sample responses for this scraper and pass them to the mock `get` function.
-  const sampleResponses = fastGlob.sync(join(d, '*')).filter(p => !p.includes('expected'));
-  console.log(sampleResponses);
-
-  let getReturns = {}
-  for (const filePath of sampleResponses) {
-    // MAGIC HERE:
-    // The filenames are stored as the sanitized-url values.
-    const sanitizedURL = path.basename(filePath);
-    const content = await fs.readFile(filePath);
-    getReturns[sanitizedURL] = content.toString();
-  }
-
-  console.log("Fake returns and data sizes:");
-  console.log("{");
-  Object.keys(getReturns).forEach(k => {
-    console.log("  " + k + ": " + getReturns[k].length);
-  });
-  console.log("}");
-  */
-  
   get.get = async (url, type, date, options) => {
-    console.log("CALLING FOR " + url);
     const sanurl = sanitize.sanitizeUrl(url);
-    console.log("SANITIZED: " + sanurl);
     const respFile = join(d, sanurl);
-    console.log("RESPONSE FILE: " + respFile);
+    // console.log("CALLING FOR " + url);
+    // console.log("SANITIZED: " + sanurl);
+    // console.log("RESPONSE FILE: " + respFile);
     return await fs.readFile(respFile);
-    /*
-      const ret = getReturns[sanurl];
-      console.log("DO WE HAVE RET?" + (ret !== null && ret !== undefined));
-      if (ret === null || ret === undefined) {
-      console.log(`${sname}/${date}: missing data ${sanurl}`);
-      console.log(`Have keys: ${Object.keys(getReturns)}`);
-      }
-      return ret;
-    */
   };
 
   const expected = await fs.readJSON(join(d, 'expected.json'));
@@ -158,9 +114,7 @@ async function runTest(t, d) {
 
   let result = null;
   try {
-    console.log(`>>>> START SCRAPING FOR ${sname} ON ${date} ********************`);
     result = await runScraper.runScraper(scraperObj);
-    console.log(`<<<< DONE  SCRAPING FOR ${sname} ON ${date} ********************`);
   }
   catch (e) {
     t.fail(`error scraping: ${e}`);
