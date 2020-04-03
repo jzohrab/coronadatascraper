@@ -141,15 +141,15 @@ class Lock {
 // Tests.
 
 const cachePath = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
-
 const testDirs = fastGlob.
       sync(join(cachePath, '**'), { onlyDirectories: true }).
       filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
       map(s => s.replace(`${cachePath}${path.sep}`, ''));
+// console.log(`${testDirs} =======================================================`);
 
 const lock = new Lock(testDirs.length);
 
-test('Parsers', async t => {
+test('scrapers-all-test, Parsers', async t => {
   t.plan(testDirs.length);
   testDirs.forEach(async d => {
     await lock.acquire();
