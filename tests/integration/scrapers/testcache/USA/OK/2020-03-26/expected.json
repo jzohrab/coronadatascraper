@@ -1,138 +1,168 @@
 [
   {
     "county": "Adair County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Bryan County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Canadian County",
-    "cases": 6
+    "cases": 6,
+    "deaths": 0
   },
   {
     "county": "Carter County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Cleveland County",
-    "cases": 39
+    "cases": 39,
+    "deaths": 3
   },
   {
     "county": "Comanche County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Craig County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Creek County",
-    "cases": 10
+    "cases": 10,
+    "deaths": 0
   },
   {
     "county": "Custer County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Delaware County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Garvin County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Grady County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Jackson County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Kay County",
-    "cases": 11
+    "cases": 11,
+    "deaths": 0
   },
   {
     "county": "Lincoln County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Logan County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Mayes County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "McClain County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Muskogee County",
-    "cases": 4
+    "cases": 4,
+    "deaths": 0
   },
   {
     "county": "Noble County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Oklahoma County",
-    "cases": 73
+    "cases": 73,
+    "deaths": 2
   },
   {
     "county": "Okmulgee County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Osage County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Ottawa County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Pawnee County",
-    "cases": 10
+    "cases": 10,
+    "deaths": 1
   },
   {
     "county": "Payne County",
-    "cases": 5
+    "cases": 5,
+    "deaths": 0
   },
   {
     "county": "Pontotoc County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Pottawatomie County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Sequoyah County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Stephens County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Tulsa County",
-    "cases": 41
+    "cases": 41,
+    "deaths": 1
   },
   {
     "county": "Wagoner County",
-    "cases": 6
+    "cases": 6,
+    "deaths": 0
   },
   {
     "county": "Washington County",
-    "cases": 5
-  },
-  {
-    "cases": 248
+    "cases": 5,
+    "deaths": 0
   },
   {
     "county": "Alfalfa County",
@@ -309,5 +339,9 @@
   {
     "county": "Woodward County",
     "cases": 0
+  },
+  {
+    "cases": 248,
+    "deaths": 7
   }
 ]
