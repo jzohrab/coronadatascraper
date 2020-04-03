@@ -19,9 +19,10 @@ const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js
 
 // https://medium.com/trabe/synchronize-cache-updates-in-node-js-with-a-mutex-d5b395457138
 class Lock {
-  constructor() {
+  constructor(maxListeners = 20) {
     this._locked = false;
     this._ee = new EventEmitter();
+    this._ee.setMaxListeners(maxListeners);
   }
 
   acquire() {
@@ -95,6 +96,8 @@ async function runTest(t, d) {
   const sname = pair.scraperName;
   const date = pair.date;
 
+  console.log("CALLING FOR " + sname);
+  
   const scraperSourcePathRoot = join(__dirname, '..', '..', '..', 'src', 'shared', 'scrapers');
   const spath = join(scraperSourcePathRoot, sname, 'index.js');
 
@@ -134,7 +137,7 @@ async function runTest(t, d) {
 }
 
 
-const lock = new Lock();
+const lock = new Lock(testDirs.length);
 
 test('Parsers', async t => {
   t.plan(testDirs.length);
