@@ -1,174 +1,217 @@
 [
   {
     "county": "Adair County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Bates County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Benton County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Bollinger County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Boone County",
-    "cases": 25
+    "cases": 25,
+    "deaths": 1
   },
   {
     "county": "Callaway County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Camden County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Cape Girardeau County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Carter County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Cass County",
-    "cases": 8
+    "cases": 8,
+    "deaths": 0
   },
   {
     "county": "Christian County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Clay County",
-    "cases": 5
+    "cases": 5,
+    "deaths": 0
   },
   {
     "county": "Clinton County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Cole County",
-    "cases": 8
+    "cases": 8,
+    "deaths": 0
   },
   {
     "county": "Cooper County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Dunklin County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Franklin County",
-    "cases": 4
+    "cases": 4,
+    "deaths": 0
   },
   {
     "county": "Greene County",
-    "cases": 25
+    "cases": 25,
+    "deaths": 3
   },
   {
     "county": "Henry County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Jackson County",
-    "cases": 95
+    "cases": 95,
+    "deaths": 1
   },
   {
     "county": "Jasper County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Jefferson County",
-    "cases": 10
+    "cases": 10,
+    "deaths": 0
   },
   {
     "county": "Johnson County",
-    "cases": 8
+    "cases": 8,
+    "deaths": 0
   },
   {
     "county": "Lafayette County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "McDonald County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Moniteau County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Montgomery County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "Newton County",
-    "cases": 3
+    "cases": 3,
+    "deaths": 0
   },
   {
     "county": "Pemiscot County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Perry County",
-    "cases": 4
+    "cases": 4,
+    "deaths": 0
   },
   {
     "county": "Platte County",
-    "cases": 5
+    "cases": 5,
+    "deaths": 0
   },
   {
     "county": "Pulaski County",
-    "cases": 4
+    "cases": 4,
+    "deaths": 0
   },
   {
     "county": "Ralls County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Randolph County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Scott County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Shelby County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "St. Charles County",
-    "cases": 22
+    "cases": 22,
+    "deaths": 1
   },
   {
     "county": "St. Francois County",
-    "cases": 2
+    "cases": 2,
+    "deaths": 0
   },
   {
     "county": "St. Louis County",
-    "cases": 230
+    "cases": 230,
+    "deaths": 2
   },
   {
     "county": "Stoddard County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "Taney County",
-    "cases": 1
+    "cases": 1,
+    "deaths": 0
   },
   {
     "county": "(unassigned)",
-    "cases": 10
+    "cases": 10,
+    "deaths": 0
   },
   {
-    "cases": 502
+    "cases": 502,
+    "deaths": 8
   },
   {
     "county": "Andrew County",
