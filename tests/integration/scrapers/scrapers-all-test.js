@@ -15,7 +15,9 @@ const sanitize = imports(join(process.cwd(), 'src', 'shared', 'lib', 'sanitize-u
 const get = imports(join(process.cwd(), 'src', 'shared', 'lib', 'fetch', 'get.js'));
 
 // GO THROUGH THIS WHILE FIXING
-const SLICE_START = 4;
+const SLICE_START = process.env.SLICE_START;
+console.log(SLICE_START);
+
 
 // import { looksLike } from '../../lib/iso-date.js';
 const looksLike = {
@@ -52,7 +54,8 @@ const stripFeatures = d => {
 const testDirs = fastGlob.
       sync(join(testdir, '**'), { onlyDirectories: true }).
       filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
-      slice(SLICE_START, SLICE_START + 1);
+      slice((SLICE_START * 1), (SLICE_START * 1) + 1);
+console.log("RUNNING TESTS FOR: ");
 console.log(testDirs);
 
 // ONLY DOING ONE OF THEM
@@ -121,9 +124,10 @@ test('Parsers', async t => {
     }
 
     if (result) {
+      await fs.writeJSON(join(d, 'expected.json.actual'), result);
       const actual = result.map(stripFeatures);
-      await fs.writeJSON(join(d, 'expected.json.actual'), actual);
-      t.deepEqual(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
+      const checkExpected = expected.map(stripFeatures);
+      t.equal(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
     }
     else {
       t.fail(`should have had a result for ${sname} on ${date}`);
