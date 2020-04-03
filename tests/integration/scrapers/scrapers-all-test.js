@@ -88,6 +88,7 @@ async function runTest(t, testDirectory) {
   get.get = async (url, type, date, options) => {
     const sanurl = sanitize.sanitizeUrl(url);
     const respFile = join(testDirectory, sanurl);
+    console.log(`  Call: ${url}\n  Sanitized: ${sanurl}\n  Response: ${respFile}`);
     /*
       console.log("CALLING FOR " + url);
       console.log("SANITIZED: " + sanurl);
