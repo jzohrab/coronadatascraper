@@ -14,7 +14,6 @@ const { CI, PR } = process.env;
 const command = CI && PR ? 'git diff --name-only origin/master' : 'git diff --name-only HEAD';
 const result = exec(command);
 const files = result.toString();
-// console.log(files);
 
 // Ignore any files or subdirectory in scrapers that starts with _
 scraperPathRegex= /src.shared.scrapers(?![^/])(?!.*\/_).*\.js$/gi;
@@ -24,21 +23,25 @@ const scrapers = files.
       filter(filePath => !filePath.startsWith('tests/')).
       map(s => join(process.cwd(), s));
 
-test('Test updated scrapers', async t => {
-  t.plan(scrapers.length * 2);
-  for (const scraperPath of scrapers) {
-    const scraperFilename = scraperPath.replace(/^.*?src.shared.scrapers/i, '');
-    if (await fs.exists(scraperPath)) {
-      const scraper = imports(scraperPath).default;
-      await runScraper.runScraper(scraper);
+if (scrapers.length > 0) {
+  test('Test updated scrapers', async t => {
+    t.plan(scrapers.length * 2);
+    for (const scraperPath of scrapers) {
+      const scraperFilename = scraperPath.replace(/^.*?src.shared.scrapers/i, '');
+      if (await fs.exists(scraperPath)) {
+        const scraper = imports(scraperPath).default;
+        await runScraper.runScraper(scraper);
 
-      // Technically we don't need this test because the test would
-      // fail if the scraper did, but maybe someone will feel better.
-      t.pass(`Scraper ${scraperFilename} ran`);
+        // Technically we don't need this test because the test would
+        // fail if the scraper did, but maybe someone will feel better.
+        t.pass(`Scraper ${scraperFilename} ran`);
 
-      const hasErrors = schema.schemaHasErrors(scraper, schema.schemas.scraperSchema);
-      t.notOk(hasErrors, `Scraper ${scraperFilename} had no errors`);
+        const hasErrors = schema.schemaHasErrors(scraper, schema.schemas.scraperSchema);
+        t.notOk(hasErrors, `Scraper ${scraperFilename} had no errors`);
+      }
     }
-  }
-  t.end();
-});
+    t.end();
+  });
+} else {
+  // console.log('scrapers-new-test: No scrapers changed');
+}
