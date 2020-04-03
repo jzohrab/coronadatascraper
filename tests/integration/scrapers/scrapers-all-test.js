@@ -36,13 +36,13 @@ function scraperNameAndDateFromPath(s) {
   const date = dt.length === 0 ? null : dt[0];
   return {
     scraperName: name,
-    date: date
+    date
   };
 }
 
 /** Run a single scraper test directory. */
 async function runTest(t, cacheRoot, testDirectory) {
-  const [scraperName, date] = scraperNameAndDateFromPath(testDirectory);
+  const { scraperName, date } = scraperNameAndDateFromPath(testDirectory);
 
   // Monkeypatch global get for this test.
   // eslint-disable-next-line no-unused-vars
@@ -60,11 +60,9 @@ async function runTest(t, cacheRoot, testDirectory) {
   try {
     process.env.SCRAPE_DATE = date;
     result = await runScraper.runScraper(scraperObj);
-  }
-  catch (e) {
+  } catch (e) {
     t.fail(`${scraperName} on ${date}, error scraping: ${e}`);
-  }
-  finally {
+  } finally {
     delete process.env.SCRAPE_DATE;
     get.get = oldGetGet;
   }
@@ -87,8 +85,7 @@ async function runTest(t, cacheRoot, testDirectory) {
     const expected = JSON.stringify(fullExpected.map(removeFeatures));
     const msg = `${scraperName} on ${date}`;
     t.equal(actual, expected, msg);
-  }
-  else {
+  } else {
     t.fail(`should have had a result for ${scraperName} on ${date}`);
   }
 }
@@ -153,11 +150,9 @@ test('scrapers-all-test, Parsers', async t => {
     await lock.acquire();
     try {
       await runTest(t, cachePath, d);
-    }
-    catch (e) {
+    } catch (e) {
       t.fail(`Failure for ${d}: ${e}`);
-    }
-    finally {
+    } finally {
       lock.release();
     }
   });
