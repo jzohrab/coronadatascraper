@@ -53,8 +53,10 @@ const stripFeatures = d => {
 
 const testDirs = fastGlob.
       sync(join(testdir, '**'), { onlyDirectories: true }).
-      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
-      slice((SLICE_START * 1), (SLICE_START * 1) + 1);
+      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s));
+
+      // filter(s => /\d{4}-\d{2}-\d{2}$/.test(s)).
+      // slice((SLICE_START * 1), (SLICE_START * 1) + 1);
 console.log("RUNNING TESTS FOR: ");
 console.log(testDirs);
 
@@ -101,12 +103,18 @@ test('Parsers', async t => {
       console.log("CALLING FOR " + url);
       const sanurl = sanitize.sanitizeUrl(url);
       console.log("SANITIZED: " + sanurl);
+      const respFile = join(d, sanurl);
+      console.log("RESPONSE FILE: " + respFile);
+      return await fs.readFile(respFile);
+      /*
       const ret = getReturns[sanurl];
       console.log("DO WE HAVE RET?" + (ret !== null && ret !== undefined));
       if (ret === null || ret === undefined) {
         console.log(`${sname}/${date}: missing data ${sanurl}`);
+        console.log(`Have keys: ${Object.keys(getReturns)}`);
       }
       return ret;
+      */
     };
 
     const expected = await fs.readJSON(join(d, 'expected.json'));
@@ -116,8 +124,9 @@ test('Parsers', async t => {
 
     let result = null;
     try {
-      console.log(`SCRAPING FOR ${sname} ON ${date} ********************`);
+      console.log(`>>>> START SCRAPING FOR ${sname} ON ${date} ********************`);
       result = await runScraper.runScraper(scraperObj);
+      console.log(`<<<< DONE  SCRAPING FOR ${sname} ON ${date} ********************`);
     }
     catch (e) {
       t.fail(`error scraping: ${e}`);
@@ -133,69 +142,8 @@ test('Parsers', async t => {
     }
 
     delete process.env.SCRAPE_DATE;
-
-    /*
-    // Read sample responses for this scraper and pass them to the mock `get` function.
-    const sampleResponses = glob(join(dateDir, '*')).filter(p => !p.includes('expected'));
-    for (const filePath of sampleResponses) {
-      const fileName = path.basename(filePath);
-      const source = { [fileName]: fs.readFile(filePath).toString() };
-      get.addSources(source);
-    }
-
-    process.env.SCRAPE_DATE = date;
-    const result = await runScraper.runScraper(scraperObj);
-    const expected = await fs.readJSON(join(dateDir, 'expected.json'));
-    if (result) expect(result.map(stripFeatures)).toEqual(expected.map(stripFeatures));
-    delete process.env.SCRAPE_DATE;
-    */
-
   });
 });
 
 // Final cleanup.
 delete process.env.SCRAPE_DATE;
-
-/*
-describe('all scrapers', () => {
-  const testDirs = fastGlob.sync(join(__dirname, '..', '**', 'tests'), { onlyDirectories: true });
-
-  for (const testDir of testDirs) {
-    const scraperName = scraperNameFromPath(testDir); // e.g. `USA/AK`
-
-    describe(`scraper: ${scraperName}`, () => {
-      // dynamically import the scraper
-      const scraperObj = require(join(testDir, '..', 'index.js')).default;
-      const datedResults = fastGlob.sync(join(testDir, '*'), { onlyDirectories: true });
-
-      for (const dateDir of datedResults) {
-        const date = path.basename(dateDir);
-        if (looksLike.isoDate(date)) {
-          describe(date, () => {
-            beforeAll(() => {
-              // Read sample responses for this scraper and pass them to the mock `get` function.
-              const sampleResponses = glob(join(dateDir, '*')).filter(p => !p.includes('expected'));
-              for (const filePath of sampleResponses) {
-                const fileName = path.basename(filePath);
-                const source = { [fileName]: fs.readFile(filePath).toString() };
-                get.addSources(source);
-              }
-            });
-            it(`returns expected data`, async () => {
-              process.env.SCRAPE_DATE = date;
-              const result = await runScraper.runScraper(scraperObj);
-              const expected = await fs.readJSON(join(dateDir, 'expected.json'));
-              if (result) expect(result.map(stripFeatures)).toEqual(expected.map(stripFeatures));
-            });
-          });
-        }
-      }
-
-      // clean up environment vars
-      afterEach(() => {
-        delete process.env.SCRAPE_DATE;
-      });
-    });
-  }
-});
-*/
