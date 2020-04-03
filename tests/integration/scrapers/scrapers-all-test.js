@@ -58,60 +58,46 @@ class Lock {
 
 // This suite automatically tests a scraper's results against its test
 // cases. To add test coverage for a scraper, see
-// https://github.com/lazd/coronadatascraper/blob/master/docs/sources.md#testing-sources
+// docs/sources.md#testing-sources
 
-// Utility functions
 
-const testdir = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
-
-const looksLike = {
-  isoDate: s => /^\d{4}-\d{2}-\d{2}$/.test(s) // YYYY-DD-MM
-};
+const cachePath = join(process.cwd(), 'tests', 'integration', 'scrapers', 'testcache');
 
 // Splits folder path, returns hash.
 // e.g. 'X/Y/2020-03-04' => { scraperName: 'X/Y', date: '2020-03-04' }
 function scraperNameAndDateFromPath(s) {
-  const parts = s.replace(`${testdir}${path.sep}`, '').split(path.sep);
-  const scraper_name = parts.filter(s => !looksLike.isoDate(s)).join(path.sep);
-  const dt = parts.filter(s => looksLike.isoDate(s));
+  const parts = s.replace(`${cachePath}${path.sep}`, '').split(path.sep);
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const scraper_name = parts.filter(s => !dateRegex.test(s)).join(path.sep);
+  const dt = parts.filter(s => dateRegex.test(s));
+
   const date = dt.length === 0 ? null : dt[0];
   const ret = { scraperName: scraper_name, date: date };
   return ret;
 }
 
-// Remove geojson from scraper result
-const stripFeatures = d => {
-  delete d.feature;
-  return d;
-};
-
-const testDirs = fastGlob.
-      sync(join(testdir, '**'), { onlyDirectories: true }).
-      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s));
-
-
-async function runTest(t, d) {
-
-  const pair = scraperNameAndDateFromPath(d);
+async function runTest(t, testDirectory) {
+  const pair = scraperNameAndDateFromPath(testDirectory);
   const sname = pair.scraperName;
   const date = pair.date;
 
-  console.log("CALLING FOR " + sname);
-  
   const scraperSourcePathRoot = join(__dirname, '..', '..', '..', 'src', 'shared', 'scrapers');
   const spath = join(scraperSourcePathRoot, sname, 'index.js');
 
   get.get = async (url, type, date, options) => {
     const sanurl = sanitize.sanitizeUrl(url);
-    const respFile = join(d, sanurl);
-    // console.log("CALLING FOR " + url);
-    // console.log("SANITIZED: " + sanurl);
-    // console.log("RESPONSE FILE: " + respFile);
+    const respFile = join(testDirectory, sanurl);
+    /*
+      console.log("CALLING FOR " + url);
+      console.log("SANITIZED: " + sanurl);
+      console.log("RESPONSE FILE: " + respFile);
+    */
     return await fs.readFile(respFile);
   };
 
-  const expected = await fs.readJSON(join(d, 'expected.json'));
-    
+  const fullExpected = await fs.readJSON(join(testDirectory, 'expected.json'));
+  
   const scraperObj = imports(spath).default;
   process.env.SCRAPE_DATE = date;
 
@@ -120,15 +106,22 @@ async function runTest(t, d) {
     result = await runScraper.runScraper(scraperObj);
   }
   catch (e) {
-    t.fail(`error scraping: ${e}`);
+    t.fail(`${sname} on ${date}, error scraping: ${e}`);
   }
 
   delete process.env.SCRAPE_DATE;
 
   if (result) {
-    await fs.writeJSON(join(d, 'actual.json'), result, { log: false });
-    const actual = result.map(stripFeatures);
-    t.equal(JSON.stringify(actual), JSON.stringify(expected.map(stripFeatures)));
+    // Writing the actual scraper result so ppl can diff/investigate.
+    // These are ignored in .gitignore.
+    await fs.writeJSON(join(testDirectory, 'actual.json'), result, { log: false });
+
+    // Ignore features (for now?).
+    const removeFeatures = d => { delete d.feature; return d; };
+    const actual = JSON.stringify(result.map(removeFeatures));
+    const expected = JSON.stringify(fullExpected.map(removeFeatures));
+
+    t.equal(actual, expected, `${sname} on ${date}`);
   }
   else {
     t.fail(`should have had a result for ${sname} on ${date}`);
@@ -136,6 +129,10 @@ async function runTest(t, d) {
 
 }
 
+
+const testDirs = fastGlob.
+      sync(join(cachePath, '**'), { onlyDirectories: true }).
+      filter(s => /\d{4}-\d{2}-\d{2}$/.test(s));
 
 const lock = new Lock(testDirs.length);
 
