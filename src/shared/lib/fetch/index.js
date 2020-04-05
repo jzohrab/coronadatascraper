@@ -115,7 +115,7 @@ export const tsv = async (scraper, url, date, options = {}) => {
  *  - disableSSL: disables SSL verification for this resource, should be avoided
  */
 export const pdf = async (scraper, url, date, options) => {
-  const body = await get(scrapeer, url, 'pdf', date, { ...options, toString: false, encoding: null });
+  const body = await get(scraper, url, 'pdf', date, { ...options, toString: false, encoding: null });
 
   if (!body) {
     return null;
@@ -194,7 +194,12 @@ const fetchHeadless = async url => {
  * @param {*} date the date associated with this resource, or false if a timeseries data
  * @param {*} alwaysRun fetches from URL even if resource is in cache, defaults to false
  */
-export const headless = async (scraper, url, date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(), options = {}) => {
+export const headless = async (
+  scraper,
+  url,
+  date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(),
+  options = {}
+) => {
   const { alwaysRun } = { alwaysRun: false, disableSSL: false, ...options };
 
   const cachedBody = await caching.getCachedFile(scraper, url, 'html', date);
@@ -241,7 +246,10 @@ export const getArcGISCSVURLFromOrgId = async function(scraper, serverNumber, or
  * @param {*} layerName the name of the layer to fetch data for, find this by examining requests
  */
 export const getArcGISCSVURL = async function(scraper, serverNumber, dashboardId, layerName) {
-  const dashboardManifest = await json(scraper, `https://maps.arcgis.com/sharing/rest/content/items/${dashboardId}?f=json`);
+  const dashboardManifest = await json(
+    scraper,
+    `https://maps.arcgis.com/sharing/rest/content/items/${dashboardId}?f=json`
+  );
   const { orgId } = dashboardManifest;
   return getArcGISCSVURLFromOrgId(scraper, serverNumber, orgId, layerName);
 };
