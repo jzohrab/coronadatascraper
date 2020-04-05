@@ -7,7 +7,6 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
-  _filepath: __filename,
   state: 'PA',
   country: 'USA',
   aggregate: 'county',
@@ -178,7 +177,7 @@ const scraper = {
     '2020-03-26': async function scraper() {
       this.url = 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx';
       this.type = 'table';
-      const $ = await fetch.page(this, this.url);
+      const $ = await fetch.page(this.url);
       const $countyTable = $('td:contains("County")').closest('table');
       const $trs = $countyTable.find('tbody > tr:not(:first-child)');
       let counties = [];
