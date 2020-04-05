@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'San Bernardino County',
   state: 'CA',
   country: 'USA',
   maintainers: [maintainers.jbencina],
   url: 'http://wp.sbcounty.gov/dph/coronavirus/',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const cases = parse.number(
       $('h3:contains("COVID-19 CASES")')
         .parent()

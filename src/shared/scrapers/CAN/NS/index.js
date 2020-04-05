@@ -7,6 +7,7 @@ import datetime from '../../../lib/datetime/old/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'Nova Scotia',
   country: 'CAN',
   url: 'https://novascotia.ca/coronavirus/COVID-19-cases.csv',
@@ -19,7 +20,7 @@ const scraper = {
     }
   ],
   async scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
 
     const headers = Object.keys(data[0]);
     if (headers[0] !== 'Date' || headers[1] !== 'Positive' || headers[2] !== 'Negative') {

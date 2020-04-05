@@ -27,6 +27,7 @@ const pivotTheTable = ($trs, $) => {
 };
 
 const scraper = {
+  _filepath: __filename,
   country: 'AUS',
   maintainers: [maintainers.camjc],
   priority: 2,
@@ -42,7 +43,7 @@ const scraper = {
   url: 'https://www.covid19.act.gov.au/updates/confirmed-case-information',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page('https://www.health.act.gov.au/about-our-health-system/novel-coronavirus-covid-19');
+      const $ = await fetch.page(this, 'https://www.health.act.gov.au/about-our-health-system/novel-coronavirus-covid-19');
       const $table = $('.statuscontent');
       const $trs = $table.find('div');
       const data = {
@@ -60,7 +61,7 @@ const scraper = {
       return getDataWithTestedNegativeApplied(data);
     },
     '2020-03-29': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('h2:contains("Cases") + table');
       const $trs = $table.find('tr');
 

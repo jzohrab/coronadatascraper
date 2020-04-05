@@ -4,6 +4,7 @@ import maintainers from '../../../lib/maintainers.js';
 import * as geography from '../../../lib/geography/index.js';
 
 const scraper = {
+  _filepath: __filename,
   county: 'St. Louis County',
   state: 'MO',
   country: 'USA',
@@ -20,8 +21,8 @@ const scraper = {
   type: 'table',
   maintainers: [maintainers.slezakbs],
   async scraper() {
-    this.url = await fetch.getArcGISCSVURLFromOrgId(2, 'w657bnjzrjguNyOy', 'StLouisCounty_Bdy_Geo');
-    const rows = await fetch.csv(this.url);
+    this.url = await fetch.getArcGISCSVURLFromOrgId(this, 2, 'w657bnjzrjguNyOy', 'StLouisCounty_Bdy_Geo');
+    const rows = await fetch.csv(this, this.url);
     const data = rows[0];
     return {
       county: geography.addCounty(this.county),

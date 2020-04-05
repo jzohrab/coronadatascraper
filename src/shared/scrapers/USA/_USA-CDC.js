@@ -6,6 +6,7 @@ import * as geography from '../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   sources: [
     {
@@ -29,7 +30,7 @@ const scraper = {
     return string;
   },
   async _scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
     const states = [];
     for (const stateData of data) {
       if (stateData.Name) {

@@ -10,6 +10,7 @@ import maintainers from '../../../lib/maintainers.js';
 const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'MA',
   country: 'USA',
   aggregate: 'county',
@@ -51,7 +52,7 @@ const scraper = {
         date
       ).getUTCDate()}-2020/download`;
 
-      const body = await fetch.pdf(this.url);
+      const body = await fetch.pdf(this, this.url);
 
       if (body === null) {
         throw new Error(`No data for ${date}`);
@@ -126,7 +127,7 @@ const scraper = {
       this.url =
         'https://services1.arcgis.com/TXaY625xGc0yvAuQ/arcgis/rest/services/COVID_CASES_MA/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&outFields=*';
       const counties = [];
-      const data = await fetch.json(this.url);
+      const data = await fetch.json(this, this.url);
 
       let onlySumDeaths = true;
       let sumDeaths = 0;

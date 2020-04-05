@@ -8,6 +8,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'ND',
   country: 'USA',
   url: 'https://www.health.nd.gov/diseases-conditions/coronavirus/north-dakota-coronavirus-cases',
@@ -89,7 +90,7 @@ const scraper = {
   },
   async scraper() {
     let counties = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     cheerioTableparser($);
     let $table = $('td:contains("Positive")').closest('table');
     if ($table.length === 0) {

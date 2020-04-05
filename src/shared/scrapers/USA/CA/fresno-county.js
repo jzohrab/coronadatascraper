@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Fresno County',
   state: 'CA',
   country: 'USA',
   url: 'https://www.co.fresno.ca.us/departments/public-health/covid-19',
   maintainers: [maintainers.jbencina],
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     return {
       cases: parse.number(
         $('li:contains("Total cases")')

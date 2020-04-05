@@ -5,13 +5,14 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'San Luis Obispo County',
   state: 'CA',
   country: 'USA',
   url: 'https://www.emergencyslo.org/en/covid19.aspx',
   type: 'paragraph',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
 
     let cases = $('td:contains("San Luis Obispo County")')
       .next()

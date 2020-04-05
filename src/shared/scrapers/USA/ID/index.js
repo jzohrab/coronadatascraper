@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'ID',
   country: 'USA',
   sources: [
@@ -67,7 +68,7 @@ const scraper = {
   ],
 
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
 
     const $th = $('th:contains("Public Health District")');
     const $table = $th.closest('table');

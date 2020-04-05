@@ -5,13 +5,14 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'GBR',
   state: 'England',
   url: 'https://www.arcgis.com/sharing/rest/content/items/b684319181f94875a6879bbc833ca3a6/data',
   aggregate: 'county',
   type: 'csv',
   async scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
     const counties = [];
     for (const utla of data) {
       const name = parse.string(utla.GSS_NM);

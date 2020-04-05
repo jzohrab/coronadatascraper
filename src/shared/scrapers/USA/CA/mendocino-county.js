@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Mendocino County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   url: 'https://www.mendocinocounty.org/community/novel-coronavirus',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const cases = parse.number(
         $('strong:contains("current cases of COVID-19")')
           .text()
@@ -22,13 +23,13 @@ const scraper = {
       return { cases };
     },
     '2020-03-18': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $strong = $('strong:contains("current case")');
       const cases = parse.number($strong.text().match(/(\d+) current/)[1]);
       return { cases };
     },
     '2020-03-23': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $outerLI = $('li:contains("Testing Numbers")');
       const $li = $outerLI.find('li:contains("Total Positives")');
       const cases = parse.number($li.text().split(':')[1]);

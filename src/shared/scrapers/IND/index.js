@@ -7,6 +7,7 @@ import populationState from './populationState.json';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'IND',
   url: 'https://www.mohfw.gov.in/', // dashaputra.com/goi
   type: 'table',
@@ -15,7 +16,7 @@ const scraper = {
   // Scrape MOHFW.GOV.IN for State, Cases, Deaths, Recovered
   async scraper() {
     this.url = 'https://www.mohfw.gov.in/';
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
 
     const $table = $('#state-data');
     const $trs = $table.find('tbody > tr');

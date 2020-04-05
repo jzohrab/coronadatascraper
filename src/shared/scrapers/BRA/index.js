@@ -6,6 +6,7 @@ import * as transform from '../../lib/transform.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'BRA',
   type: 'list',
   priority: 1,
@@ -60,7 +61,7 @@ const scraper = {
   async scraper() {
     const response = [];
     const ufs = this._ufs;
-    const $ = await fetch.headless(this.url); // , false
+    const $ = await fetch.headless(this, this.url); // , false
 
     $.root()
       .find('.list-itens .teste')

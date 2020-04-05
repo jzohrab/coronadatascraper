@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'CA',
   country: 'USA',
   priority: 1,
@@ -23,7 +24,7 @@ const scraper = {
     }
   ],
   async scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
     const counties = [];
     for (const stateData of data) {
       const stateObj = { county: geography.addCounty(stateData.county) };

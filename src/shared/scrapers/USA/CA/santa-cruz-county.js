@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Santa Cruz County',
   state: 'CA',
   country: 'USA',
   maintainers: [maintainers.jbencina],
   url: 'http://www.santacruzhealth.org/HSAHome/HSADivisions/PublicHealth/CommunicableDiseaseControl/Coronavirus.aspx',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $h2 = $('p:contains("Total Confirmed Cases")').nextAll('h2');
     if ($h2.html() === null) {
       throw new Error('H2 not found');

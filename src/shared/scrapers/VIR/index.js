@@ -2,6 +2,7 @@ import * as fetch from '../../lib/fetch/index.js';
 import * as parse from '../../lib/parse.js';
 
 const scraper = {
+  _filepath: __filename,
   country: 'VIR',
   type: 'table',
   url: 'https://doh.vi.gov/covid19usvi',
@@ -25,7 +26,7 @@ const scraper = {
     };
 
     try {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $widget = $('div.widget:has(div.title-box:has(h1:contains(COVID-19 Cases)))');
       const $paragraphs = $widget.find('div.block-content > p');
 

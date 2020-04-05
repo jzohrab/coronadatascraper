@@ -33,13 +33,14 @@ const countryLevelMap = {
 };
 
 const scraper = {
+  _filepath: __filename,
   country: 'ITA',
   url: 'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv',
   timeseries: true,
   aggregate: 'state',
   priority: 1,
   async scraper() {
-    const data = await fetch.csv(this.url, false);
+    const data = await fetch.csv(this, this.url, false);
     // FIXME when we roll out new TZ support!
     const fallback = process.env.USE_ISO_DATETIME ? datetime.now.at('Europe/Rome') : datetime.getDate();
     const scrapeDate = process.env.SCRAPE_DATE ? new Date(process.env.SCRAPE_DATE) : fallback;

@@ -6,6 +6,7 @@ import * as transform from '../../../lib/transform.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'GBR',
   state: 'Scotland',
   url: 'https://www.gov.scot/coronavirus-covid-19/',
@@ -20,7 +21,7 @@ const scraper = {
       }
 
       const counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('tbody').first();
       $table.children('tr').each((i, item) => {
         const columns = $(item).children('td');
@@ -38,7 +39,7 @@ const scraper = {
     },
     '2020-03-29': async function() {
       const counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('td:contains("Positive cases")').closest('table');
       $table.find('tr:not(:first-child)').each((i, tr) => {
         const $tr = $(tr);

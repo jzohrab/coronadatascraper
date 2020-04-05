@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Kings County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   url:
     'https://www.countyofkings.com/departments/health-welfare/public-health/coronavirus-disease-2019-covid-19/-fsiteid-1',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const cases = parse.number(
       $('h3:contains("Confirmed Cases")')
         .text()

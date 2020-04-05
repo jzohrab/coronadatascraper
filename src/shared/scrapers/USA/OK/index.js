@@ -10,6 +10,7 @@ import * as rules from '../../../lib/rules.js';
 // updated to include deaths in timeseries
 
 const scraper = {
+  _filepath: __filename,
   state: 'OK',
   country: 'USA',
   type: 'table',
@@ -117,7 +118,7 @@ const scraper = {
   ],
   async scraper() {
     let counties = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $("table[summary='COVID-19 Cases by County']").first();
 
     const $trs = $table.find('tbody').find('tr');

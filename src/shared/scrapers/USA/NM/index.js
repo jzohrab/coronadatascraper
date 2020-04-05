@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'NM',
   country: 'USA',
   sources: [
@@ -22,7 +23,7 @@ const scraper = {
 
   async scraper() {
     const counties = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $('td:contains("County")').closest('table');
     const $trs = $table.find('tbody > tr');
     $trs.each((index, tr) => {

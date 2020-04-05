@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Sacramento County',
   state: 'CA',
   country: 'USA',
   maintainers: [maintainers.jbencina],
   url: 'https://www.saccounty.net/COVID-19/Pages/default.aspx',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $('th:contains("Confirmed")').closest('table');
     const $tds = $table.find('tr:nth-child(2) > td');
     return {

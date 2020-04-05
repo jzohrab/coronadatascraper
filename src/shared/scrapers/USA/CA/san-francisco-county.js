@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'San Francisco County',
   state: 'CA',
   country: 'USA',
@@ -15,7 +16,7 @@ const scraper = {
   async scraper() {
     let deaths;
     let cases;
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $h2 = $('h2:contains("Cases in San Francisco")');
     {
       const $p = $h2.nextAll('*:contains("Cases:")');

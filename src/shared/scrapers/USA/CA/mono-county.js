@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Mono County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   url: 'https://monocovid19-monomammoth.hub.arcgis.com/',
   scraper: {
     '0': async function() {
-      const $ = await fetch.headless(this.url);
+      const $ = await fetch.headless(this, this.url);
       const cases = parse.number(
         $('h4:contains("POSITIVE")')
           .first()
@@ -24,7 +25,7 @@ const scraper = {
       return { cases };
     },
     '2020-03-19': async function() {
-      const $ = await fetch.headless(this.url);
+      const $ = await fetch.headless(this, this.url);
       const cases = parse.number(
         $('h4:contains("POSITIVECASES")')
           .first()

@@ -5,6 +5,7 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Clark County',
   state: 'NV',
   country: 'USA',
@@ -19,7 +20,7 @@ const scraper = {
   type: 'table',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $h1 = $('h1:contains("Total Cases:")');
       const regexCases = /Total Cases: (\d+)/;
       const cases = parse.number(regexCases.exec($h1[0].children[0].data)[1]);
@@ -31,7 +32,7 @@ const scraper = {
       };
     },
     '2020-03-25': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       const casesText = $('*:contains("Total Cases:")').text();
       const regexCases = /Total Cases: (\d+)/;

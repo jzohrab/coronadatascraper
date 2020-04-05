@@ -10,6 +10,7 @@ import { DeprecatedError } from '../../../lib/errors.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'NH',
   country: 'USA',
   sources: [
@@ -35,7 +36,7 @@ const scraper = {
   ],
   scraper: {
     '0': async function() {
-      const body = await fetch.pdf(this.url);
+      const body = await fetch.pdf(this, this.url);
       const rows = pdfUtils.asWords(body, 0, 1000).map(row => row[0]);
 
       const counties = [];
@@ -76,7 +77,7 @@ const scraper = {
       return counties;
     },
     '2020-3-31': async function() {
-      await fetch.pdf(this.url);
+      await fetch.pdf(this, this.url);
       throw new DeprecatedError('New Hampshire stopped reporting county-level data as of 2020/3/31');
     }
   }

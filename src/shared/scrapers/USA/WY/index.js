@@ -8,6 +8,7 @@ import * as geography from '../../../lib/geography/index.js';
 // Set county to this if you only have state data, but this isn't the entire state
 // const UNASSIGNED = '(unassigned)';
 const scraper = {
+  _filepath: __filename,
   state: 'WY',
   country: 'USA',
   aggregate: 'county',
@@ -23,7 +24,7 @@ const scraper = {
   maintainers: [maintainers.lazd],
   async scraper() {
     const counties = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $p = $('strong:contains("Cases by County")').parent();
 
     const items = $p.html().split('<br>');

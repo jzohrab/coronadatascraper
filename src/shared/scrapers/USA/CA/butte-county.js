@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Butte County',
   state: 'CA',
   country: 'USA',
@@ -19,7 +20,7 @@ const scraper = {
   url: 'https://www.buttecounty.net/publichealth',
   maintainers: [maintainers.jbencina],
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const cases = parse.number(
       $('td:contains("Positive COVID-19 Tests")')
         .next()

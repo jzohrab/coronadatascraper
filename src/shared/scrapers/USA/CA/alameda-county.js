@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Alameda County',
   state: 'CA',
   country: 'USA',
@@ -20,7 +21,7 @@ const scraper = {
   type: 'paragraph',
   maintainers: [maintainers.jbencina],
   async scraper() {
-    const $ = await fetch.headless(this.url);
+    const $ = await fetch.headless(this, this.url);
     const $el = $('p:contains("Positive Cases")');
     const matches = $el.html().match(/Positive Cases:.*?(\d+).*/);
     return { cases: parse.number(matches[1]) };

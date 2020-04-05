@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Placer County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   url: 'https://www.placer.ca.gov/6448/Cases-in-Placer',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('p:contains("Confirmed COVID-19 Cases in Placer County")')
         .nextAll('table')
         .first();
@@ -35,7 +36,7 @@ const scraper = {
       };
     },
     '3/28/2020': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       return {
         cases: parse.number(
           $('td:contains("Cases")')

@@ -9,6 +9,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'VA',
   country: 'USA',
   aggregate: 'county',
@@ -227,7 +228,7 @@ const scraper = {
           endURL = endURL.slice(0, name.lastIndexOf(' '));
         }
         const pdfUrl = pdfBaseURL + endURL;
-        const pdfScrape = await fetch.pdf(pdfUrl);
+        const pdfScrape = await fetch.pdf(this, pdfUrl);
 
         if (pdfScrape) {
           let pdfText = '';
@@ -251,7 +252,7 @@ const scraper = {
         }
       }
     } else {
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       this.type = 'csv';
 
       data.forEach(location => {

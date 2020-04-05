@@ -9,6 +9,7 @@ import * as rules from '../../lib/rules.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'CAN',
   sources: [
     {
@@ -25,7 +26,7 @@ const scraper = {
     /*
     '0': async function() {
       this.url = 'https://www.canada.ca/en/public-health/services/diseases/2019-novel-coronavirus-infection.html';
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('h2:contains("Current situation")')
         .nextAll('table')
         .first();
@@ -46,7 +47,7 @@ const scraper = {
     },
     */
     '0': async function() {
-      const data = await fetch.csv(this.url, false);
+      const data = await fetch.csv(this, this.url, false);
 
       // FIXME when we roll out new TZ support!
       const fallback = process.env.USE_ISO_DATETIME ? new Date(datetime.now.at('America/Toronto')) : datetime.getDate();

@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'UT',
   country: 'USA',
   aggregate: 'county',
@@ -103,7 +104,7 @@ const scraper = {
     '0': async function() {
       this.url = 'https://coronavirus.utah.gov/latest/';
       this.type = 'table';
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       let counties = [];
       const $table = $('th:contains("District")').closest('table');
       const $trs = $table.find('tbody > tr');
@@ -125,7 +126,7 @@ const scraper = {
     '2020-03-19': async function() {
       this.url = 'https://coronavirus-dashboard.utah.gov/';
       this.type = 'table';
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       let counties = [];
 
       const script = $('script[type="application/json"]').html();

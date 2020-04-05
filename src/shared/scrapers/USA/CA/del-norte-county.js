@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Del Norte County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   maintainers: [maintainers.jbencina],
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const cases = parse.number(
         $('font:contains("Number of Confirmed Cases")')
           .first()
@@ -45,7 +46,7 @@ const scraper = {
       };
     },
     '2020-03-18': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const cases = parse.number(
         $('font:contains("Number of Positive")')
           .first()

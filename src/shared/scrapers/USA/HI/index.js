@@ -4,6 +4,7 @@ import * as parse from '../../../lib/parse.js';
 import * as transform from '../../../lib/transform.js';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   state: 'HI',
   priority: 1,
@@ -29,7 +30,7 @@ const scraper = {
       this.url = 'https://health.hawaii.gov/docd/advisories/novel-coronavirus-2019/';
       this.type = 'table';
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('*:contains("Novel Coronavirus in Hawaii")').closest('table');
       const $trs = $table.find('tr');
 
@@ -80,7 +81,7 @@ const scraper = {
       this.type = 'list';
       let counties = [];
 
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $list = $('dd:contains("Honolulu County")')
         .parent()
         .find('dd');

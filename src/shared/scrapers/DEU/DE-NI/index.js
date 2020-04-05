@@ -3,6 +3,7 @@ import * as parse from '../../../lib/parse.js';
 
 const scraper = {
   ...sharedSchema,
+  _filepath: __filename,
   country: 'DEU',
   state: 'DE-NI', // ISO 3166 notation
   scraper: defaultScraperDEU,

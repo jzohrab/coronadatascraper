@@ -6,6 +6,7 @@ import * as parse from '../../lib/parse.js';
 const { looksLike } = datetime;
 
 const scraper = {
+  _filepath: __filename,
   country: 'ESP',
   url: 'https://github.com/datadista/datasets/tree/master/COVID%2019',
   priority: 1,
@@ -60,7 +61,7 @@ const scraper = {
   async scraper() {
     const rawData = {};
     for (const { name, url } of this._endpoints) {
-      rawData[name] = await fetch.csv(url, false);
+      rawData[name] = await fetch.csv(this, url, false);
     }
 
     // `rawData` looks like this:

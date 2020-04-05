@@ -5,6 +5,7 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Washoe County',
   state: 'NV',
   country: 'USA',
@@ -20,7 +21,7 @@ const scraper = {
   type: 'table',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $span = $('span:contains("COVID-19 Case Count in Washoe County")');
       const regexCases = /COVID-19 Case Count in Washoe County: (\d+)/;
       const regexRecovered = /COVID-19 Cases Who Fully Recovered: (\d+)/;
@@ -39,10 +40,10 @@ const scraper = {
       };
     },
     '2020-03-27': async function() {
-      this.url = await fetch.getArcGISCSVURL('', 'a54a945cac82424fa4928139ee83f911', 'Cases_current');
+      this.url = await fetch.getArcGISCSVURL(this, '', 'a54a945cac82424fa4928139ee83f911', 'Cases_current');
       this.type = 'csv';
 
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       for (const row of data) {
         return {
           cases: parse.number(row.confirmed),

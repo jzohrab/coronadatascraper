@@ -6,6 +6,7 @@ import * as transform from '../../lib/transform.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   url: 'https://covidtracking.com/api/states',
   type: 'json',
@@ -21,7 +22,7 @@ const scraper = {
   aggregate: 'state',
   priority: -0.5,
   async scraper() {
-    const data = await fetch.json(this.url);
+    const data = await fetch.json(this, this.url);
 
     const regions = [];
 

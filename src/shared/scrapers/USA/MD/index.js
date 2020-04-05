@@ -8,6 +8,7 @@ import datetime from '../../../lib/datetime/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'MD',
   country: 'USA',
   aggregate: 'county',
@@ -22,7 +23,7 @@ const scraper = {
       this.url = 'https://coronavirus.maryland.gov/';
       this.type = 'paragraph';
       const counties = [];
-      const $ = await fetch.headless(this.url);
+      const $ = await fetch.headless(this, this.url);
       const paragraph = $('p:contains("Number of Confirmed Cases:")')
         .next('p')
         .text();
@@ -44,7 +45,7 @@ const scraper = {
     '2020-03-17': async function() {
       this.type = 'csv';
       this.url = 'https://opendata.arcgis.com/datasets/3d9ca88970dd4689a701354d7fa6830b_0.csv';
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         let countyName;
@@ -72,7 +73,7 @@ const scraper = {
         'MD_COVID19_Case_Counts_by_County'
       );
 
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         let countyName;

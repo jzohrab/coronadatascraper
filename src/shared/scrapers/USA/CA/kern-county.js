@@ -5,6 +5,7 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Kern County',
   state: 'CA',
   country: 'USA',
@@ -12,14 +13,14 @@ const scraper = {
   type: 'table',
   scraper: {
     '0': async function() {
-      let $ = await fetch.headless(this.url);
+      let $ = await fetch.headless(this, this.url);
       let cases = 0;
       let tested = 0;
 
       // Pull out and fetch the embedded iframe
       const frameURL = $('iframe').attr('src');
 
-      $ = await fetch.headless(frameURL);
+      $ = await fetch.headless(this, frameURL);
 
       const getVal = function(title) {
         const val = parse.number(

@@ -6,6 +6,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'MT',
   country: 'USA',
   url:
@@ -73,7 +74,7 @@ const scraper = {
   ],
 
   async scraper() {
-    const data = await fetch.json(this.url);
+    const data = await fetch.json(this, this.url);
     let counties = [];
 
     for (const record of data.features) {

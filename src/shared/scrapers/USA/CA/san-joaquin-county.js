@@ -6,6 +6,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'San Joaquin County',
   state: 'CA',
   country: 'USA',
@@ -13,7 +14,7 @@ const scraper = {
   url: 'http://www.sjcphs.org/coronavirus.aspx#res',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       this.type = 'paragraph';
       const h3 = $('h6:contains("confirmed cases of COVID-19")')
         .first()
@@ -22,7 +23,7 @@ const scraper = {
       return { cases };
     },
     '2020-03-17': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       this.type = 'table';
       const $table = $('h3:contains("San Joaquin County COVID-19 Numbers at a Glance")').closest('table');
       const $headers = $table.find('tbody > tr:nth-child(2) > td');

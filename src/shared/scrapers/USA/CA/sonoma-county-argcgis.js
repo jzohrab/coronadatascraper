@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   state: 'CA',
   url: 'https://opendata.arcgis.com/datasets/06fcfe6147574a75afea97a1f7565dc7_0.csv',
@@ -18,7 +19,7 @@ const scraper = {
     }
   ],
   async scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
     const counties = [];
     for (const county of data) {
       counties.push({

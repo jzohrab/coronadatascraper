@@ -7,6 +7,7 @@ import maintainers from '../../../lib/maintainers.js';
 const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'AR',
   country: 'USA',
   url:
@@ -98,7 +99,7 @@ const scraper = {
     'Yell County'
   ],
   async scraper() {
-    const data = await fetch.json(this.url);
+    const data = await fetch.json(this, this.url);
     let counties = [];
 
     for (const countyData of data.features) {

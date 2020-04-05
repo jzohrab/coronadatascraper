@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'SD',
   country: 'USA',
   sources: [
@@ -89,7 +90,7 @@ const scraper = {
   scraper: {
     '0': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $th = $('h2:contains("South Dakota Counties with COVID-19 Cases")');
       const $table = $th.next('table');
       const $trs = $table.find('tbody > tr');
@@ -106,7 +107,7 @@ const scraper = {
     },
     '2020-03-19': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('caption:contains("SOUTH DAKOTA COUNTIES WITH COVID-19 CASES")').closest('table');
       const $trs = $table.find('tbody > tr');
       $trs.each((index, tr) => {
@@ -125,7 +126,7 @@ const scraper = {
     },
     '2020-03-23': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('caption:contains("SD COUNTY OF RESIDENCE")').closest('table');
       const $trs = $table.find('tbody > tr');
       $trs.each((index, tr) => {

@@ -2,6 +2,7 @@ import * as fetch from '../../lib/fetch/index.js';
 import * as parse from '../../lib/parse.js';
 
 const scraper = {
+  _filepath: __filename,
   country: 'KOR',
   aggregate: 'state', // Special cities have equal status to states.
   type: 'table',
@@ -88,7 +89,7 @@ const scraper = {
   },
   async scraper() {
     const states = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $('table.num');
 
     if ($table.length === 0) throw new Error('Table not found');

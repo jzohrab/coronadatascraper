@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Riverside County',
   state: 'CA',
   country: 'USA',
   maintainers: [maintainers.jbencina],
   url: 'https://www.rivcoph.org/coronavirus',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $el = $('p:contains("Confirmed cases:")').first();
     const matches = $el.text().match(/Confirmed cases:.*?(\d+)/);
     return { cases: parse.number(matches[1]) };

@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'MS',
   country: 'USA',
   sources: [
@@ -104,7 +105,7 @@ const scraper = {
   ],
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('h3:contains("Mississippi Cases")')
         .nextAll('table')
         .first();
@@ -128,7 +129,7 @@ const scraper = {
       return counties;
     },
     '2020-03-15': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('h4:contains("All Mississippi cases to date")')
         .nextAll('table')
         .first();
@@ -150,7 +151,7 @@ const scraper = {
       return counties;
     },
     '2020-03-20': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       // Pick the last one, because older pages had a table of "new cases"
       // before the table of "total cases"

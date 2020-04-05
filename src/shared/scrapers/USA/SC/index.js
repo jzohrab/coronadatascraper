@@ -8,6 +8,7 @@ import datetime from '../../../lib/datetime/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'SC',
   country: 'USA',
   url:
@@ -71,7 +72,7 @@ const scraper = {
 
   scraper: {
     '0': async function() {
-      const data = await fetch.json(this.url);
+      const data = await fetch.json(this, this.url);
       let counties = [];
 
       for (const record of data.features) {
@@ -101,7 +102,7 @@ const scraper = {
         '3732035614af4246877e20c3a496e397',
         'Covid19_Cases_Centroid_SharingView'
       );
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       let counties = [];
       for (const county of data) {
         counties.push({
@@ -123,7 +124,7 @@ const scraper = {
         '3732035614af4246877e20c3a496e397',
         'COVID19_County_Polygon_SharingView2' // they started updating this view
       );
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       let counties = [];
       for (const county of data) {
         if (datetime.scrapeDateIsBefore(county.Date_)) {

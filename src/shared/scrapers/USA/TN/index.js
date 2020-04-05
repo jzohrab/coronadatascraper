@@ -8,6 +8,7 @@ import * as geography from '../../../lib/geography/index.js';
 const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'TN',
   country: 'USA',
   sources: [
@@ -133,7 +134,7 @@ const scraper = {
   scraper: {
     '0': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('th:contains("Case Count")').closest('table');
       const $trs = $table.find('tbody > tr:not(:last-child)');
 
@@ -182,7 +183,7 @@ const scraper = {
     },
     '2020-03-21': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $table = $('th:contains("Count")').closest('table');
       const $trs = $table.find('tbody > tr:not(:last-child)'); // skip grand total
 
@@ -224,7 +225,7 @@ const scraper = {
     },
     '2020-3-31': async function() {
       let counties = [];
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       cheerioTableparser($);
       const $table = $('td:contains("Blount")').closest('table');
       const data = $table.parsetable(false, false, true);

@@ -12,6 +12,7 @@ const POPULATION_REMAP = {
 };
 
 const scraper = {
+  _filepath: __filename,
   country: 'RUS',
   aggregate: 'state',
   url: 'https://yandex.ru/maps/api/covid?csrfToken=',
@@ -42,7 +43,7 @@ const scraper = {
       const csrfCookies = csrfRequestResponse.cookies;
       const { csrfToken } = csrfRequestResponse.body;
 
-      const { data } = await fetch.json(`${this.url}${csrfToken}`, undefined, { cookies: csrfCookies });
+      const { data } = await fetch.json(this, `${this.url}${csrfToken}`, undefined, { cookies: csrfCookies });
 
       const ruEntries = data.items.filter(({ ru }) => ru);
       return ruEntries

@@ -5,6 +5,7 @@ import * as parse from '../../../lib/parse.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'DC',
   country: 'USA',
   sources: [
@@ -16,7 +17,7 @@ const scraper = {
   type: 'paragraph',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       let cases = 0;
       cases += parse.number(
@@ -42,7 +43,7 @@ const scraper = {
       };
     },
     '2020-03-17': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       let cases = 0;
       cases += parse.number(
@@ -68,7 +69,7 @@ const scraper = {
       };
     },
     '2020-04-01': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       let cases = 0;
       cases += parse.number(

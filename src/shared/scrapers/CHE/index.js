@@ -7,6 +7,7 @@ import * as transfrom from '../../lib/transform.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'CHE',
   url: 'https://github.com/daenuprobst/covid19-cases-switzerland/',
   timeseries: true,
@@ -50,9 +51,9 @@ const scraper = {
     const demographicsURL =
       'https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/demographics.csv';
 
-    const casesData = await fetch.csv(casesURL, false);
-    const deathsData = await fetch.csv(deathsURL, false);
-    const demographicsData = await fetch.csv(demographicsURL, false);
+    const casesData = await fetch.csv(this, casesURL, false);
+    const deathsData = await fetch.csv(this, deathsURL, false);
+    const demographicsData = await fetch.csv(this, demographicsURL, false);
 
     let date = datetime.getYYYYMMDD();
     if (process.env.SCRAPE_DATE) {

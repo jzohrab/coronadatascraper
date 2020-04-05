@@ -14,6 +14,7 @@ const labelFragmentsByKey = [
 ];
 
 const scraper = {
+  _filepath: __filename,
   country: 'AUS',
   maintainers: [maintainers.camjc],
   priority: 2,
@@ -28,7 +29,7 @@ const scraper = {
   type: 'table',
   url: 'https://ww2.health.wa.gov.au/Articles/A_E/Coronavirus/COVID19-statistics',
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $('table:first-of-type');
     const $trs = $table.find('tbody > tr:not(:first-child)');
     const data = {};

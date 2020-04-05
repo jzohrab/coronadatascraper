@@ -2,6 +2,7 @@ import * as fetch from '../../lib/fetch/index.js';
 import * as parse from '../../lib/parse.js';
 
 const scraper = {
+  _filepath: __filename,
   country: 'PRI',
   type: 'table',
   timeseries: false,
@@ -19,7 +20,7 @@ const scraper = {
     }
   ],
   async scraper() {
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     const $table = $('th:contains("CONFIRMADOS")').closest('table');
     if ($table.length === 0) {
       throw new Error('Table not found');

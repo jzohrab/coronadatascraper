@@ -6,6 +6,7 @@ import * as transform from '../../../lib/transform.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   state: 'NJ',
   aggregate: 'county',
@@ -17,7 +18,7 @@ const scraper = {
   scraper: {
     '0': async function() {
       this.url = 'https://opendata.arcgis.com/datasets/8840fd8ac1314f5188e6cf98b525321c_0.csv';
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         counties.push({
@@ -31,7 +32,7 @@ const scraper = {
     },
     '2020-03-19': async function() {
       this.url = 'https://opendata.arcgis.com/datasets/84737ef7f760486293b6afa536f028e0_0.csv';
-      const data = await fetch.csv(this.url);
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         counties.push({
@@ -43,8 +44,8 @@ const scraper = {
       return counties;
     },
     '2020-03-25': async function() {
-      this.url = await fetch.getArcGISCSVURL(7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
-      const data = await fetch.csv(this.url);
+      this.url = await fetch.getArcGISCSVURL(this, 7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         counties.push({
@@ -56,8 +57,8 @@ const scraper = {
       return counties;
     },
     '2020-03-31': async function() {
-      this.url = await fetch.getArcGISCSVURL(7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
-      const data = await fetch.csv(this.url);
+      this.url = await fetch.getArcGISCSVURL(this, 7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         counties.push({
@@ -70,8 +71,8 @@ const scraper = {
       return counties;
     },
     '2020-04-01': async function() {
-      this.url = await fetch.getArcGISCSVURL(7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
-      const data = await fetch.csv(this.url);
+      this.url = await fetch.getArcGISCSVURL(this, 7, 'ec4bffd48f7e495182226eee7962b422', 'DailyCaseCounts');
+      const data = await fetch.csv(this, this.url);
       const counties = [];
       for (const county of data) {
         counties.push({

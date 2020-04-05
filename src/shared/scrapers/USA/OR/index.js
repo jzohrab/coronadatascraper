@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'OR',
   country: 'USA',
   sources: [
@@ -60,7 +61,7 @@ const scraper = {
   scraper: {
     '0': async function() {
       let counties = [];
-      const $ = await fetch.headless(this.url);
+      const $ = await fetch.headless(this, this.url);
       const $table = $('table[summary="Cases by County in Oregon for COVID-19"]');
       const $trs = $table.find('tbody > tr:not(:first-child):not(:last-child)');
       $trs.each((index, tr) => {
@@ -81,7 +82,7 @@ const scraper = {
     },
     '2020-03-18': async function() {
       let counties = [];
-      const $ = await fetch.headless(this.url);
+      const $ = await fetch.headless(this, this.url);
       const $table = $('th:contains("County")').closest('table');
       const $trs = $table.find('tbody > tr:not(:last-child)');
       $trs.each((index, tr) => {

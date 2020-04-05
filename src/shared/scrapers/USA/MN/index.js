@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'MN', // Minnesota!
   country: 'USA',
   sources: [
@@ -115,7 +116,7 @@ const scraper = {
     '0': async function() {
       this.url = 'https://www.health.state.mn.us/diseases/coronavirus/situation.html';
       this.type = 'table';
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
 
       const $th = $('th:contains("County")');
       const $table = $th.closest('table');
@@ -149,7 +150,7 @@ const scraper = {
       this.url =
         'https://services1.arcgis.com/RQG3sksSXcoDoIfj/arcgis/rest/services/MN_COVID19_County_Tracking_Public_View/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&outFields=*';
       this.type = 'json';
-      const data = await fetch.json(this.url);
+      const data = await fetch.json(this, this.url);
 
       data.features.forEach(item => {
         const cases = item.attributes.COVID19POS || 0;

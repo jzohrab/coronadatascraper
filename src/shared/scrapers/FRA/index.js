@@ -5,6 +5,7 @@ import datetime from '../../lib/datetime/index.js';
 import { features } from './features.json';
 
 const scraper = {
+  _filepath: __filename,
   country: 'FRA',
   url: 'https://raw.githubusercontent.com/opencovid19-fr/data/master/dist/chiffres-cles.csv',
   timeseries: true,
@@ -15,7 +16,7 @@ const scraper = {
     Martinique: 376480
   },
   async scraper() {
-    const data = await fetch.csv(this.url, false);
+    const data = await fetch.csv(this, this.url, false);
 
     const latestDate = data
       .map(d => d.date)

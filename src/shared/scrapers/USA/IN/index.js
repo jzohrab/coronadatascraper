@@ -7,6 +7,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   state: 'IN',
   priority: 1,
@@ -18,7 +19,7 @@ const scraper = {
     'St Joseph': 'St. Joseph'
   },
   async scraper() {
-    const data = await fetch.csv(this.url);
+    const data = await fetch.csv(this, this.url);
     const counties = [];
     for (const county of data) {
       let countyName = parse.string(county.COUNTYNAME);

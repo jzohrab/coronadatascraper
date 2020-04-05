@@ -16,6 +16,7 @@ const scraper = {
   url: 'https://github.com/CSSEGISandData/COVID-19',
   timeseries: true,
   priority: -1,
+  _filepath: __filename,
   country: '_JHU', // every location needs to have a valid country
   scraperTz: 'America/Los_Angeles',
   curators: [
@@ -146,9 +147,9 @@ const scraper = {
       }
 
       const urls = getOldData ? this._urlsOld : this._urls;
-      const cases = await fetch.csv(urls.cases, false);
-      const deaths = await fetch.csv(urls.deaths, false);
-      const recovered = await fetch.csv(urls.recovered, false);
+      const cases = await fetch.csv(this, urls.cases, false);
+      const deaths = await fetch.csv(this, urls.deaths, false);
+      const recovered = await fetch.csv(this, urls.recovered, false);
 
       const countries = [];
       let date = Object.keys(cases[0]).pop();
@@ -251,9 +252,9 @@ const scraper = {
     },
     '2020-03-24': async function() {
       const urls = this._urlsNew;
-      const cases = await fetch.csv(urls.cases, false);
-      const deaths = await fetch.csv(urls.deaths, false);
-      const recovered = await fetch.csv(urls.recovered, false);
+      const cases = await fetch.csv(this, urls.cases, false);
+      const deaths = await fetch.csv(this, urls.deaths, false);
+      const recovered = await fetch.csv(this, urls.recovered, false);
 
       const countries = [];
       let date = Object.keys(cases[0]).pop();

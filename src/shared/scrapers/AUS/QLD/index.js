@@ -4,13 +4,14 @@ import * as fetch from '../../../lib/fetch/index.js';
 import maintainers from '../../../lib/maintainers.js';
 
 async function getCurrentArticlePage(listUrl) {
-  const $ = await fetch.page(listUrl);
+  const $ = await fetch.page(this, listUrl);
   const anchors = $('#content h3:first-of-type > a');
   const currentArticleUrl = anchors[0].attribs.href;
   return fetch.page(currentArticleUrl);
 }
 
 const scraper = {
+  _filepath: __filename,
   country: 'AUS',
   maintainers: [maintainers.camjc],
   priority: 2,

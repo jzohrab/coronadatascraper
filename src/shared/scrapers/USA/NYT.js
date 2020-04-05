@@ -7,6 +7,7 @@ import datetime from '../../lib/datetime/index.js';
 const scraper = {
   url: 'https://github.com/nytimes/covid-19-data',
   type: 'csv',
+  _filepath: __filename,
   country: 'USA',
   timeseries: true,
   aggregate: 'county',
@@ -22,7 +23,7 @@ const scraper = {
   ],
   async scraper() {
     this.url = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv';
-    const data = await fetch.csv(this.url, false);
+    const data = await fetch.csv(this, this.url, false);
 
     // FIXME when we roll out new TZ support!
     const fallback = process.env.USE_ISO_DATETIME ? new Date(datetime.now.at('America/New_York')) : datetime.getDate();

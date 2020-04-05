@@ -6,13 +6,14 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Contra Costa County',
   state: 'CA',
   country: 'USA',
   url: 'https://www.coronavirus.cchealth.org/',
   maintainers: [maintainers.jbencina],
   async scraper() {
-    const $ = await fetch.headless(this.url);
+    const $ = await fetch.headless(this, this.url);
     const cases = parse.number(
       $('h1:contains("TOTAL")')
         .parent()

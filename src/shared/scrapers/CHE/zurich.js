@@ -6,13 +6,14 @@ import datetime from '../../lib/datetime/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   country: 'CHE',
   county: 'Zurich',
   url:
     'https://raw.githubusercontent.com/openZH/covid_19/master/fallzahlen_kanton_total_csv/COVID19_Fallzahlen_Kanton_ZH_total.csv',
   timeseries: true,
   async scraper() {
-    const data = await fetch.csv(this.url, false);
+    const data = await fetch.csv(this, this.url, false);
     const scrapeDate = process.env.SCRAPE_DATE ? datetime.getYYYYMMDD(process.env.SCRAPE_DATE) : datetime.getYYYYMMDD();
 
     let currentData = data[data.length - 1];

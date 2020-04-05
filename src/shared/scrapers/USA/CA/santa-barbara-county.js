@@ -7,6 +7,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Santa Barbara County',
   state: 'CA',
   country: 'USA',
@@ -15,7 +16,7 @@ const scraper = {
   type: 'paragraph',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       let cases = 0;
 
       cases += parse.number(
@@ -30,7 +31,7 @@ const scraper = {
     '2020-03-26': async function() {
       this.type = 'table';
 
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       cheerioTableparser($);
 
       let $table = $('td:contains("City or Area")').closest('table');

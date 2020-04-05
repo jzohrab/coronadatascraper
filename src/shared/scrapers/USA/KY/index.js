@@ -5,6 +5,7 @@ import * as transform from '../../../lib/transform.js';
 import * as geography from '../../../lib/geography/index.js';
 
 const scraper = {
+  _filepath: __filename,
   country: 'USA',
   state: 'KY',
   priority: 1,
@@ -26,7 +27,7 @@ const scraper = {
     }
   ],
   async scraper() {
-    const $ = await fetch.headless(this.url);
+    const $ = await fetch.headless(this, this.url);
 
     const counties = [];
 

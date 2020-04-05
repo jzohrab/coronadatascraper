@@ -7,6 +7,7 @@ import maintainers from '../../../lib/maintainers.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   county: 'Sonoma County',
   state: 'CA',
   country: 'USA',
@@ -14,7 +15,7 @@ const scraper = {
   url: 'https://socoemergency.org/emergency/novel-coronavirus/novel-coronavirus-in-sonoma-county/',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this.url);
+      const $ = await fetch.page(this, this.url);
       const $th = $('th:contains("Total in Sonoma County")');
       const $table = $th.closest('table');
       const $td = $table.find('td:last-child');
@@ -22,7 +23,7 @@ const scraper = {
       return { cases };
     },
     '2020-03-28': async function() {
-      await fetch.page(this.url);
+      await fetch.page(this, this.url);
       throw new DeprecatedError('Sonoma switched to ArcGIS, which is handled by another scraper');
     }
   }

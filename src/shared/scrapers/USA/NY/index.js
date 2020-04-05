@@ -8,6 +8,7 @@ import * as geography from '../../../lib/geography/index.js';
 // const UNASSIGNED = '(unassigned)';
 
 const scraper = {
+  _filepath: __filename,
   state: 'NY',
   country: 'USA',
   aggregate: 'county',
@@ -84,7 +85,7 @@ const scraper = {
   async scraper() {
     this.url = 'https://health.data.ny.gov/api/views/xdss-u53e/rows.csv?accessType=DOWNLOAD';
     this.type = 'csv';
-    const data = await fetch.csv(this.url, false);
+    const data = await fetch.csv(this, this.url, false);
 
     const dateField = 'Test Date';
 
@@ -151,7 +152,7 @@ export default scraper;
       ? 'https://www.health.ny.gov/diseases/communicable/coronavirus/'
       : 'https://coronavirus.health.ny.gov/county-county-breakdown-positive-cases';
     let counties = [];
-    const $ = await fetch.page(this.url);
+    const $ = await fetch.page(this, this.url);
     let $table;
     if (datetime.scrapeDateIsBefore('2020-03-17')) {
       $table = $('#case_count_table');
@@ -191,7 +192,7 @@ export default scraper;
     counties.push(transform.sumData(counties));
 
     try {
-      const pdfScrape = await fetch.pdf(this._boroughURL);
+      const pdfScrape = await fetch.pdf(this, this._boroughURL);
       Object.keys(this._boroughs).forEach(name => {
         const valIndex = pdfScrape.findIndex(ele => ele.text === name);
 
