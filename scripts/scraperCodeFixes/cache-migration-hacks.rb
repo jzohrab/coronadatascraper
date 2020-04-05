@@ -6,8 +6,9 @@
 # - run `ruby cache-migration-hacks.rb WRITE [FILENAME]`
 #
 # WRITE is either true or false.
-# - true to overwrite source files
-# - false to dump to console
+# - 'true' to overwrite source files
+# - 'false' to dump to console
+# - 'mute' to not print or save (useful to see the changes that would happen)
 #
 # FILENAME: name of the file to work with.  If missing,
 # do all files.
@@ -132,16 +133,20 @@ files.each do |f|
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
 
-  if (WRITE == 'true') then
+  case(WRITE)
+  when 'true' then
     File.open(fpath, 'w') { |p| p.puts(src) }
-  else
+  when 'false' then
     puts
     puts "Result:"
     puts "-" * 50
     puts src
     puts "-" * 50
     puts
+  when 'mute' then
+    puts ''
   end
+
 end
 puts "END MUTATION ===================================="
 puts
