@@ -59,6 +59,11 @@ def add_filename_to_scraper_this(src)
     return src
   end
 
+  if (src =~ /filepath: __filename/)
+    puts "  * skipping adding _filepath, already added"
+    return src
+  end
+
   spaces = m[1].gsub("\n", '')
   loctype = m[2]
   puts "  * adding filepath above #{loctype}"
@@ -69,15 +74,20 @@ def add_filename_to_scraper_this(src)
   src
 end
 
+
 def add_this_to_fetch_calls(src)
   matches = src.scan(FETCH_RE)
   # puts "add this: #{matches.inspect}"
   matches.each do |m|
     raise "bad re? #{m}" if m.size != 3
     wholeline, before, after = m
-    newline = "#{before}this, #{after}"
-    puts "  * \"#{wholeline}\" => \"#{newline}\""
-    src = src.gsub(wholeline, newline)
+    if (after =~ /this, /) then
+      puts "  * 'this, ' already in \"#{wholeline}\", skipping"
+    else
+      newline = "#{before}this, #{after}"
+      puts "  * \"#{wholeline}\" => \"#{newline}\""
+      src = src.gsub(wholeline, newline)
+    end
   end
   src
 end
