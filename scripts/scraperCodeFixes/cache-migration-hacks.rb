@@ -31,6 +31,12 @@ end
 
 def add_filename_to_scraper_this(src)
   m = src.match(LOCATION_RE)
+  # puts "add filename: #{m.inspect}"
+  if (m.nil?) then
+    puts "  skipping adding filepath (no match for RE)"
+    return src
+  end
+
   spaces = m[1].gsub("\n", '')
   loctype = m[2]
   puts "  adding filepath above #{loctype}"
@@ -43,6 +49,7 @@ end
 
 def add_this_to_fetch_calls(src)
   matches = src.scan(FETCH_RE)
+  # puts "add this: #{matches.inspect}"
   matches.each do |m|
     raise "bad re? #{m}" if m.size != 3
     wholeline, before, after = m
@@ -77,6 +84,7 @@ puts "END VALIDATION ===================================="
 # During dev, just do one file.
 # add_filename_to_scraper_this(scraper_dir, files[0])
 # files = [files[0]]
+# files = ['DEU/_shared.js']
 
 puts "MUTATION ========================================"
 files.each do |f|
@@ -86,6 +94,6 @@ files.each do |f|
   src = File.read(fpath)
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
-  File.open(fpath, 'w') { |p| p.puts(src) }
+  # File.open(fpath, 'w') { |p| p.puts(src) }
 end
 puts "END MUTATION ===================================="
