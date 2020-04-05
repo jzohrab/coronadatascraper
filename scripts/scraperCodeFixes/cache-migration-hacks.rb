@@ -1,4 +1,14 @@
-# Hack all of the scraper files
+# Hack all of the scraper files.
+# To use, cd into this directory,
+# and run `ruby cache-migration-hacks.rb`
+
+
+# Skip some files.
+# Not bothering to try to determine these programmatically.
+IGNORE_FILES = %w(
+AUS/_shared/get-data-with-tested-negative-applied.js
+AUS/_shared/get-key.js
+)
 
 
 LOCATION_RE = /(\s*)(city|county|state|country):/
@@ -7,13 +17,6 @@ METHODS = 'page|json|csv|tsv|pdf|headless|getArcGISCSVURLFromOrgId|getArcGISCSVU
 # The fancy RE below splits a line like "await fetch.csv(this.url)"
 # into ["await fetch.csv(this.url)", "await fetch.csv(", "this.url)"]
 FETCH_RE = /((await\s+.*?\.(?:#{METHODS})\s*\()(.*\)))/
-
-# Skip some files.
-# Not bothering to try to determine these programmatically.
-IGNORE_FILES = %w(
-AUS/_shared/get-data-with-tested-negative-applied.js
-AUS/_shared/get-key.js
-)
 
 
 # Print warnings only for each file f in scraper_dir.
