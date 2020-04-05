@@ -6,19 +6,19 @@
 # - run `ruby cache-migration-hacks.rb WRITE [FILENAME]`
 #
 # WRITE is either true or false.
-# - 'true' to overwrite source files
-# - 'false' to dump to console
+# - 'save' to overwrite source files
+# - 'print' to dump to console
 # - 'mute' to not print or save (useful to see the changes that would happen)
 #
 # FILENAME: name of the file to work with.  If missing,
 # do all files.
 #
 # eg.,
-#   ruby cache-migration-hacks.rb true DEU/_shared.js
+#   ruby cache-migration-hacks.rb print DEU/_shared.js
 
 if (ARGV.size < 1) then
   puts "usage: ruby cache-migration-hacks.rb WRITE [FILENAME]"
-  puts "where WRITE = true or false"
+  puts "where WRITE = save/print/mute"
   return
 end
 
@@ -144,9 +144,9 @@ files.each do |f|
   src = add_this_to_fetch_calls(src)
 
   case(WRITE)
-  when 'true' then
+  when 'save' then
     File.open(fpath, 'w') { |p| p.puts(src) }
-  when 'false' then
+  when 'print' then
     puts
     puts "Result:"
     puts "-" * 50
