@@ -5,7 +5,7 @@
 
 import path from 'path';
 import crypto from 'crypto';
-import fsBuiltIn from 'fs'
+import fsBuiltIn from 'fs';
 
 import join from '../join.js';
 import datetime from '../datetime/index.js';
@@ -75,18 +75,17 @@ export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8')
 
   const cacheCheck = {
     scraperPath: scraper._filepath,
-    date: date,
+    date,
     requestedUrl: url,
     cacheFilePath: filePath,
     cacheFileExists: cacheExists,
-    type: type,
+    type
   };
 
   // Write data to aid in cache migration.
-  const newData = JSON.stringify(cacheCheck, null, 2) + ",\n";
-  fsBuiltIn.appendFile(join(process.cwd(), 'scripts', 'cacheMigration', 'cacheCalls.txt'), newData, (err) => {
-    if(err)
-      throw err;
+  const newData = `${JSON.stringify(cacheCheck, null, 2)},\n`;
+  fsBuiltIn.appendFile(join(process.cwd(), 'scripts', 'cacheMigration', 'cacheCalls.txt'), newData, err => {
+    if (err) throw err;
   });
   // console.error(cacheCheck);
 

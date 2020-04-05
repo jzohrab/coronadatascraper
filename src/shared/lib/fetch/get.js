@@ -33,7 +33,13 @@ needle.defaults({
  *  - toString: returns data as a string instead of buffer, defaults to true
  *  - encoding: encoding to use when retrieving files from cache, defaults to utf8
  */
-export const get = async (scraper, url, type, date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(), options = {}) => {
+export const get = async (
+  scraper,
+  url,
+  type,
+  date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(),
+  options = {}
+) => {
   const { alwaysRun, disableSSL, toString, encoding, cookies, headers } = {
     alwaysRun: false,
     disableSSL: false,

@@ -2,7 +2,7 @@
  * Registered in package.json, usage:
  * yarn fetchOnly --date '2020-03-28' --onlyUseCache
  */
- 
+
 const imports = require('esm')(module);
 
 const argv = imports('./cli/cli-args.js').default;
@@ -23,8 +23,7 @@ async function fetchAndScrape(date, options = {}) {
   };
 
   // Crawler
-  const output = await fetchSources({ date, report, options })
-    .then(scrapeData);
+  const output = await fetchSources({ date, report, options }).then(scrapeData);
   return output;
 }
 
@@ -35,5 +34,4 @@ fetchAndScrape(argv.date, argv)
     throw e;
   });
 
-
-console.log("REMOVE THIS WHEN CACHE MIGRATED");
+console.log('REMOVE THIS WHEN CACHE MIGRATED');
