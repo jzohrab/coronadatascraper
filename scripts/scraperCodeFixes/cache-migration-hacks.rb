@@ -1,7 +1,28 @@
 # Hack all of the scraper files.
-# To use, cd into this directory,
-# and run `ruby cache-migration-hacks.rb`
+#
+# USAGE:
+#
+# - cd into this directory,
+# - run `ruby cache-migration-hacks.rb WRITE [FILENAME]`
+#
+# WRITE is either true or false.
+# - true to overwrite source files
+# - false to dump to console
+#
+# FILENAME: name of the file to work with.  If missing,
+# do all files.
+#
+# eg.,
+#   ruby cache-migration-hacks.rb true DEU/_shared.js
 
+if (ARGV.size < 1) then
+  puts "usage: ruby cache-migration-hacks.rb WRITE [FILENAME]"
+  puts "where WRITE = true or false"
+  return
+end
+
+WRITE = ARGV[0].to_s.downcase
+FILENAME = (ARGV.size > 1) ? ARGV[1] : nil
 
 # Skip some files.
 # Not bothering to try to determine these programmatically.
@@ -33,13 +54,13 @@ def add_filename_to_scraper_this(src)
   m = src.match(LOCATION_RE)
   # puts "add filename: #{m.inspect}"
   if (m.nil?) then
-    puts "  skipping adding filepath (no match for RE)"
+    puts "  * skipping adding filepath (no match for RE)"
     return src
   end
 
   spaces = m[1].gsub("\n", '')
   loctype = m[2]
-  puts "  adding filepath above #{loctype}"
+  puts "  * adding filepath above #{loctype}"
   add_code = "
 #{spaces}_filepath: __filename,
 #{spaces}#{loctype}:"
@@ -54,7 +75,7 @@ def add_this_to_fetch_calls(src)
     raise "bad re? #{m}" if m.size != 3
     wholeline, before, after = m
     newline = "#{before}this, #{after}"
-    puts "  \"#{wholeline}\" => \"#{newline}\""
+    puts "  * \"#{wholeline}\" => \"#{newline}\""
     src = src.gsub(wholeline, newline)
   end
   src
@@ -74,6 +95,19 @@ files -= IGNORE_FILES
 # puts "Post remove count: #{files.count}"
 puts "#{files.size} scraper files."
 
+
+if (!FILENAME.nil?) then
+  if (!files.include?(FILENAME)) then
+    puts "#{FILENAME} is not in the list of scraper files:"
+    puts files.map { |s| "   #{s}" }
+    return
+  else
+    files = [FILENAME]
+  end
+end
+
+files.sort!
+
 puts "VALIDATION ========================================"
 files.each do |f|
   validate(scraper_dir, f)
@@ -88,12 +122,26 @@ puts "END VALIDATION ===================================="
 
 puts "MUTATION ========================================"
 files.each do |f|
-  puts '-' * 20
+  puts
+  puts '=' * 50
   puts f
+  puts '-' * 50
+  puts
   fpath = File.join(scraper_dir, f)
   src = File.read(fpath)
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
-  # File.open(fpath, 'w') { |p| p.puts(src) }
+
+  if (WRITE == 'true') then
+    File.open(fpath, 'w') { |p| p.puts(src) }
+  else
+    puts
+    puts "Result:"
+    puts "-" * 50
+    puts src
+    puts "-" * 50
+    puts
+  end
 end
 puts "END MUTATION ===================================="
+puts
