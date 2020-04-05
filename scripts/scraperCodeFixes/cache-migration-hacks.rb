@@ -137,11 +137,11 @@ files.each do |f|
   puts '=' * 50
   puts f
   puts '-' * 50
-  puts
   fpath = File.join(scraper_dir, f)
   src = File.read(fpath)
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
+  puts
 
   case(WRITE)
   when 'save' then
