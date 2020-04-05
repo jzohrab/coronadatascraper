@@ -62,14 +62,26 @@ export const getCachedFilePath = (url, type, date = false) => {
   If we are able to fetch this URL (because it is a timeseries or we are requesting today's data), the function
   returns `CACHE_MISS`.
 
+  * @param {*} scraper the scraper requesting the file
   * @param {*} url URL of the cached resource
   * @param {*} type type of the cached resource
   * @param {*} date the date associated with this resource, or false if a timeseries data
   * @param {*} encoding for the resource to access, default to utf-8
 */
-export const getCachedFile = async (url, type, date, encoding = 'utf8') => {
+export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8') => {
   const filePath = getCachedFilePath(url, type, date);
+  const cacheExists = await fs.exists(filePath);
 
+  const cacheCheck = {
+    scraperPath: scraper._filepath,
+    date: date,
+    requestedUrl: url,
+    cacheFilePath: filePath,
+    cacheFileExists: cacheExists,
+    type: type,
+  };
+  console.log(cacheCheck);
+  
   if (await fs.exists(filePath)) {
     log('  ⚡️ Cache hit for %s from %s', url, filePath);
     return fs.readFile(filePath, encoding);

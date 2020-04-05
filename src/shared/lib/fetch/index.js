@@ -21,14 +21,15 @@ const READ_TIMEOUT = 30000;
 
 /**
  * Load the webpage at the given URL and return a Cheerio object
+ * @param {*} scraper the scraper object
  * @param {*} url URL of the resource
  * @param {*} date the date associated with this resource, or false if a timeseries data
  * @param {*} options customizable options:
  *  - alwaysRun: fetches from URL even if resource is in cache, defaults to false
  *  - disableSSL: disables SSL verification for this resource, should be avoided
  */
-export const page = async (url, date, options = {}) => {
-  const body = await get(url, 'html', date, options);
+export const page = async (scraper, url, date, options = {}) => {
+  const body = await get(scraper, url, 'html', date, options);
 
   if (!body) {
     return null;

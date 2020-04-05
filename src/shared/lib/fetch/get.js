@@ -23,6 +23,7 @@ needle.defaults({
 
 /**
  * Fetch whatever is at the provided URL. Use cached version if available.
+ * @param {*} scraper the scraper object
  * @param {*} url URL of the resource
  * @param {*} type type of the resource
  * @param {*} date the date associated with this resource, or false if a timeseries data
@@ -32,7 +33,7 @@ needle.defaults({
  *  - toString: returns data as a string instead of buffer, defaults to true
  *  - encoding: encoding to use when retrieving files from cache, defaults to utf8
  */
-export const get = async (url, type, date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(), options = {}) => {
+export const get = async (scraper, url, type, date = datetime.old.scrapeDate() || datetime.old.getYYYYMD(), options = {}) => {
   const { alwaysRun, disableSSL, toString, encoding, cookies, headers } = {
     alwaysRun: false,
     disableSSL: false,
@@ -43,7 +44,7 @@ export const get = async (url, type, date = datetime.old.scrapeDate() || datetim
     ...options
   };
 
-  const cachedBody = await caching.getCachedFile(url, type, date, encoding);
+  const cachedBody = await caching.getCachedFile(scraper, url, type, date, encoding);
   if (process.env.ONLY_USE_CACHE) return cachedBody;
 
   if (cachedBody === caching.CACHE_MISS || alwaysRun) {
