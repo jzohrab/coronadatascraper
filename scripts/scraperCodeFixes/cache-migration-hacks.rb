@@ -83,7 +83,6 @@ files.each do |f|
   src = File.read(fpath)
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
-
-  puts src
+  File.open(fpath, 'w') { |p| p.puts(src) }
 end
 puts "END MUTATION ===================================="
