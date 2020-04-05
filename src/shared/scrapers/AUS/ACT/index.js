@@ -43,7 +43,8 @@ const scraper = {
   url: 'https://www.covid19.act.gov.au/updates/confirmed-case-information',
   scraper: {
     '0': async function() {
-      const $ = await fetch.page(this, 'https://www.health.act.gov.au/about-our-health-system/novel-coronavirus-covid-19');
+      const url0 = 'https://www.health.act.gov.au/about-our-health-system/novel-coronavirus-covid-19';
+      const $ = await fetch.page(this, url0);
       const $table = $('.statuscontent');
       const $trs = $table.find('div');
       const data = {
