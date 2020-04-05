@@ -82,14 +82,13 @@ export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8')
     type: type,
   };
 
-  // Dumping this to error, can redirect that stream specifically;
-  // also append to cacheCalls.txt
+  // Write data to aid in cache migration.
   const newData = JSON.stringify(cacheCheck, null, 2) + ",\n";
-  fsBuiltIn.appendFile(join(process.cwd(), 'cacheCalls.txt'), newData, (err) => {
+  fsBuiltIn.appendFile(join(process.cwd(), 'scripts', 'cacheMigration', 'cacheCalls.txt'), newData, (err) => {
     if(err)
       throw err;
   });
-  console.error(cacheCheck);
+  // console.error(cacheCheck);
 
   if (await fs.exists(filePath)) {
     log('  ⚡️ Cache hit for %s from %s', url, filePath);
