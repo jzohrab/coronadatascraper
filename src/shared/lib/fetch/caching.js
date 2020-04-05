@@ -5,6 +5,7 @@
 
 import path from 'path';
 import crypto from 'crypto';
+import fsBuiltIn from 'fs'
 
 import join from '../join.js';
 import datetime from '../datetime/index.js';
@@ -80,8 +81,16 @@ export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8')
     cacheFileExists: cacheExists,
     type: type,
   };
-  console.log(cacheCheck);
-  
+
+  // Dumping this to error, can redirect that stream specifically;
+  // also append to cacheCalls.txt
+  const newData = JSON.stringify(cacheCheck, null, 2) + ",\n";
+  fsBuiltIn.appendFile(join(process.cwd(), 'cacheCalls.txt'), newData, (err) => {
+    if(err)
+      throw err;
+  });
+  console.error(cacheCheck);
+
   if (await fs.exists(filePath)) {
     log('  ⚡️ Cache hit for %s from %s', url, filePath);
     return fs.readFile(filePath, encoding);
