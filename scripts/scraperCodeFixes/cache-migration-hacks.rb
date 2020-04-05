@@ -76,7 +76,7 @@ puts "END VALIDATION ===================================="
 
 # During dev, just do one file.
 # add_filename_to_scraper_this(scraper_dir, files[0])
-files = [files[0]]
+# files = [files[0]]
 
 puts "MUTATION ========================================"
 files.each do |f|
