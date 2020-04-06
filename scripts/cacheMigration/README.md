@@ -1,11 +1,59 @@
-# Code changes
+# Cache migration helper
+
+Summary:
+
+* A set of code changes (manual) to the code to prepare for collecting
+  cache calls
+
+* A script to automatically change all scraper files to use the
+  updated API
+
+* A set of scripts to run full scrapes for all dates stored in
+  coronadatascraper-cache, collecting and analyzing the cache calls
+  and errors.
+
+Output:
+
+A json-like list of cache calls, in `cacheCalls.txt`:
+
+```
+{
+  "scraperPath": "/Users/jeff/Documents/Projects/coronadatascraper/src/shared/scrapers/JHU.js",
+  "date": false,
+  "requestedUrl": "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/fe22260f2e5e1f7326f3164d27ccaef48c183cb5/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+  "cacheFilePath": "cache/fa0f1bd8fcd92941f184259c971debeb.csv",
+  "cacheFileExists": false,
+  "type": "csv"
+},
+... etc
+```
+
+A script that compares `cacheCalls.txt` records to the actual cache
+files, giving an overall effectiveness for this exercise:
+
+```
+ruby compare-log-to-actual-files.rb
+
+... [SNIP: lots of output listing files in the cache that weren't used] ...
+coronadatascraper-cache/2020-4-5/fd720fcec1f166b73b7aa9e30a1f125b.html
+coronadatascraper-cache/2020-4-5/febbf477f754042ac1e4ce6deb1f0831.html
+
+  total files in cache:                           3115
+  can be migrated:                                2100
+  still unknown, unused during cache-only scrape:  1015
+```
+
+(As at this time, my cache only contained files up to March 31)
+
+
+## Code changes
 
 * Added `--onlyUseCache` flag, which sets a process.env var which get and fetch respect.
-* Changed the fetch and get methods: all calls must pass `this` (eg, $ = fetch.page(this, url ...)
-* All Cache calls get appended to `cacheCalls.txt` in this directory (ignored by git)
+* Changed the fetch and get methods: all calls must pass `this` (eg, `$ = fetch.page(this, url ...)`)
+* All cache calls get appended to `cacheCalls.txt` in this directory (ignored by git)
 
 
-# Scripts to make changes to scrapers
+## Scripts to make changes to scrapers
 
 Summary (see notes for each script)
 
@@ -15,7 +63,7 @@ Summary (see notes for each script)
 4. Run `check_log.sh`
 
 
-## cache-migration-hacks.rb
+### cache-migration-hacks.rb
 
 This adds `_filepath` to scrapers, and changes all calls to fetch to include `this`
 
@@ -30,7 +78,7 @@ After running this, can run yarn and check `cacheCalls.txt`
 $ yarn fetchOnly --date '2020-03-28' --onlyUseCache --location 'PA, USA'
 ```
 
-### Debugging and manual hacks.
+#### Debugging and manual hacks.
 
 Some of the code can't be changed via regex, too messy.  So, debugging is manual:
 
@@ -42,7 +90,7 @@ git commit -m "MANUAL FIX to scraper xxx"
 ```
 
 
-## run-dates.sh
+### run-dates.sh
 
 This script loops through all the folders in the cache, and runs `yarn
 start` for each date.  `log.txt` is written in root, and
@@ -53,7 +101,7 @@ cd projectRoot
 ./scripts/cacheMigration/run-dates.sh
 ```
 
-## compare-log-to-actual-files.rb
+### compare-log-to-actual-files.rb
 
 This compares the files used (recorded in `cacheCalls.txt` to actual
 cache files, see what's included, and what's missing.
@@ -63,7 +111,7 @@ cd projectRoot
 ruby scripts/cacheMigration/compare-log-to-actual-files.rb
 ```
 
-# check_log.sh
+### check_log.sh
 
 This checks the logs for anything bad which indicates that the the code changes in `cache-migration-hacks.rb` weren't quite good enough!
 
