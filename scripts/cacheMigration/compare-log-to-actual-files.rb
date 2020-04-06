@@ -50,7 +50,11 @@ unused_files = all_files - files_returned
 puts "The following #{unused_files.size} files were NOT INCLUDED in cacheCalls.txt"
 puts
 puts unused_files
-puts "\n(#{unused_files.size} files)"
 
-# puts '*' * 60
-# puts unused_files.select { |s| s =~ /-25/ }
+report = [
+  "total files in cache:                           #{files.size}",
+  "can be migrated:                                #{cache_hits.size}",
+  "still unknown, unused during cache-only scrape:  #{unused_files.size}"
+]
+puts
+report.each { |s| puts "  #{s}" }
