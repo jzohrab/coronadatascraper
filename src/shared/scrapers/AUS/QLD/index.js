@@ -3,13 +3,6 @@ import * as parse from '../../../lib/parse.js';
 import * as fetch from '../../../lib/fetch/index.js';
 import maintainers from '../../../lib/maintainers.js';
 
-async function getCurrentArticlePage(obj, listUrl) {
-  const $ = await fetch.page(obj, listUrl);
-  const anchors = $('#content h3:first-of-type > a');
-  const currentArticleUrl = anchors[0].attribs.href;
-  return fetch.page(obj, currentArticleUrl);
-}
-
 const scraper = {
   _filepath: __filename,
   country: 'AUS',
@@ -25,9 +18,15 @@ const scraper = {
   state: 'iso2:AU-QLD',
   type: 'paragraph',
   url: 'https://www.health.qld.gov.au/news-events/doh-media-releases',
+  _getCurrentArticlePage: async listUrl => {
+    const $ = await fetch.page(this, listUrl);
+    const anchors = $('#content h3:first-of-type > a');
+    const currentArticleUrl = anchors[0].attribs.href;
+    return fetch.page(this, currentArticleUrl);
+  },
   scraper: {
     '0': async function() {
-      const $ = await getCurrentArticlePage(this, this.url);
+      const $ = await this._getCurrentArticlePage(this.url);
       const paragraph = $('#content h2:first-of-type + p').text();
       const { casesString } = paragraph.match(/state total to (?<casesString>\d+)./).groups;
       return {
@@ -35,7 +34,7 @@ const scraper = {
       };
     },
     '2020-03-24': async function() {
-      const $ = await getCurrentArticlePage(this, this.url);
+      const $ = await this._getCurrentArticlePage(this.url);
       const $table = $('#content table');
       const $totalRow = $table.find('tbody > tr:last-child');
       const data = {
