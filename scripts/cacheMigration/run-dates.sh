@@ -6,7 +6,11 @@ do
     echo "Running $dt"
     cmd="yarn fetchOnly --date '$dt' --onlyUseCache"
     echo $cmd
-    `$cmd`
+    echo "   ... running, piping output to log.txt"
+    echo "===============================" >> log.txt
+    echo "$dt" >> log.txt
+    `$cmd >> log.txt 2>&1`
 done
 
-echo "Done, please check cacheCalls.txt."
+
+echo "Done, please check scripts/cacheMigration/cacheCalls.txt and log.txt."
