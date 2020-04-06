@@ -46,14 +46,24 @@ coronadatascraper-cache/2020-4-5/febbf477f754042ac1e4ce6deb1f0831.html
 (As at this time, my cache only contained files up to March 31)
 
 
-## 1. Code changes
+## 0. Prep
 
-* Added `--onlyUseCache` flag, which sets a process.env var which get and fetch respect.
-* Changed the fetch and get methods: all calls must pass `this` (eg, `$ = fetch.page(this, url ...)`)
+* Check out a new branch off of upstream/master
+* merge in branch jzohrab/prep-cache-call-logging
+  * This branch does code changes, preps some scrapers for
+    auto-migration, and adds the scripts noted in the next part.
+  
+
+## 1. jzohrab/prep-cache-call-logging, Code changes
+
+* Adds `--onlyUseCache` flag, which sets a process.env var which get and fetch respect.
+* Changes the fetch and get methods: all calls must pass `this` (eg, `$ = fetch.page(this, url ...)`)
 * All cache calls get appended to `cacheCalls.txt` in this directory (ignored by git)
+* Prepares some scrapers for the cache-migration-hacks.rb script
+* Adds some scripts for data analysis
 
 
-## 2. Change scrapers
+## 2. Run script to change scrapers
 
 The script `cache-migration-hacks.rb` adds `_filepath` to scrapers,
 and changes all calls to fetch to include `this`.
@@ -78,6 +88,8 @@ yarn fetchOnly --date '2020-3-24' --onlyUseCache --location 'iso2:AU-QLD, AUS'
 # note errors, fix ...
 # git add
 git commit -m "MANUAL FIX to scraper xxx"
+
+
 ```
 
 ## 3. Run scrapes and analyze data
