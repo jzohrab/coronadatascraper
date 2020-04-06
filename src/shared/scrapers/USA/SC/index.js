@@ -98,6 +98,7 @@ const scraper = {
     },
     '2020-03-25': async function() {
       this.url = await fetch.getArcGISCSVURL(
+        this,
         2,
         '3732035614af4246877e20c3a496e397',
         'Covid19_Cases_Centroid_SharingView'
@@ -120,6 +121,7 @@ const scraper = {
     },
     '2020-03-28': async function() {
       this.url = await fetch.getArcGISCSVURL(
+        this,
         2,
         '3732035614af4246877e20c3a496e397',
         'COVID19_County_Polygon_SharingView2' // they started updating this view

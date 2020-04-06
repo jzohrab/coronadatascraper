@@ -68,6 +68,7 @@ const scraper = {
       // 2020-3-24 is the last day this was updated
       this.type = 'csv';
       this.url = await fetch.getArcGISCSVURL(
+        this,
         '',
         'c34e541dd8b742d993159dbebb094d8b',
         'MD_COVID19_Case_Counts_by_County'
