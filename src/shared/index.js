@@ -13,6 +13,13 @@ import cleanLocations from '../events/processor/clean-locations/index.js';
 import writeData from '../events/processor/write-data/index.js';
 import datetime from './lib/datetime/index.js';
 
+/** Filter all sources (scrapers) on version. */
+async function filterSources(args, sourceVersion = '') {
+  args.sources = args.sources.filter(s => (s.scraperType || '') === sourceVersion);
+  console.log(`For version = "${sourceVersion}", count = ${args.sources.length}`);
+  return args;
+}
+
 /**
  * Entry file while we're still hosted on GitHub
  */
@@ -36,6 +43,7 @@ async function generate(date, options = {}) {
 
   // Crawler
   const output = await fetchSources({ date, report, options })
+    .then(args => filterSources(args, ''))
     .then(scrapeData)
     // processor
     .then(rateSources)
@@ -51,3 +59,26 @@ async function generate(date, options = {}) {
 }
 
 export default generate;
+
+export async function crawl(date, options = {}) {
+  options = { findFeatures: true, findPopulations: true, writeData: true, ...options };
+
+  if (date) {
+    process.env.SCRAPE_DATE = date;
+  } else {
+    delete process.env.SCRAPE_DATE;
+  }
+
+  if (options.quiet) {
+    process.env.LOG_LEVEL = 'off';
+  }
+
+  // JSON used for reporting
+  const report = {
+    date: date || datetime.getYYYYMD()
+  };
+
+  // Crawler
+  await fetchSources({ date, report, options }).then(args => filterSources(args, 'crawl-and-scrape'));
+  //        .then(crawlData);
+}

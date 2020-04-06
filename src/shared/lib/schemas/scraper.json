@@ -11,6 +11,10 @@
     "sources": { "type": "array" },
     "scraperTz": { "type": "string" },
     "curators": { "type": "array" },
+    "scraperType": {
+      "type": "string",
+      "default": ""
+    },
     "country": {
       "type": "string"
     },
