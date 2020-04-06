@@ -38,34 +38,25 @@ ruby compare-log-to-actual-files.rb
 coronadatascraper-cache/2020-4-5/fd720fcec1f166b73b7aa9e30a1f125b.html
 coronadatascraper-cache/2020-4-5/febbf477f754042ac1e4ce6deb1f0831.html
 
-  total files in cache:                           3115
+  total files in cache:                           3007
   can be migrated:                                2100
-  still unknown, unused during cache-only scrape:  1015
+  still unknown, unused during cache-only scrape:  907
 ```
 
 (As at this time, my cache only contained files up to March 31)
 
 
-## Code changes
+## 1. Code changes
 
 * Added `--onlyUseCache` flag, which sets a process.env var which get and fetch respect.
 * Changed the fetch and get methods: all calls must pass `this` (eg, `$ = fetch.page(this, url ...)`)
 * All cache calls get appended to `cacheCalls.txt` in this directory (ignored by git)
 
 
-## Scripts to make changes to scrapers
+## 2. Change scrapers
 
-Summary (see notes for each script)
-
-1. Run `cache-migration-hacks.rb`
-2. Run `run-dates.sh`
-3. Run `compare-log-to-actual-files.rb`
-4. Run `check_log.sh`
-
-
-### cache-migration-hacks.rb
-
-This adds `_filepath` to scrapers, and changes all calls to fetch to include `this`
+The script `cache-migration-hacks.rb` adds `_filepath` to scrapers,
+and changes all calls to fetch to include `this`.
 
 ```
 cd scripts/cacheMigration
@@ -88,6 +79,14 @@ yarn fetchOnly --date '2020-3-24' --onlyUseCache --location 'iso2:AU-QLD, AUS'
 # git add
 git commit -m "MANUAL FIX to scraper xxx"
 ```
+
+## 3. Run scrapes and analyze data
+
+Summary (see notes for each script):
+
+1. Run `run-dates.sh`
+2. Run `compare-log-to-actual-files.rb`
+3. Run `check_log.sh`
 
 
 ### run-dates.sh
