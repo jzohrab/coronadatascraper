@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run this in the project root directory!
 
-for dt in `ls -1 coronadatascraper-cache/ | grep 2[4]`
+for dt in `ls -1 coronadatascraper-cache/`
 do
     echo "Running $dt"
     cmd="yarn fetchOnly --date '$dt' --onlyUseCache"
