@@ -86,12 +86,48 @@ const scraper = {
     'Wyoming County',
     'York County'
   ],
+  crawler: {
+    // Option: always require a fully-spelled out source.
+    '0': [
+      {
+        'url': 'https://www.health.pa.gov/topics/disease/Pages/Coronavirus.aspx',
+        'type': 'page',
+        'cacheKey': 'A'
+      }
+    ],
+
+    // Option: if they only have 1 data source for a time, they can
+    // simplify the call to just the hash, and drop the cacheKey.
+    '2020-04-44': {
+      'url': '...',
+      'type': 'page'
+    }
+
+    // Option: multiple data sources.  Specified as an array b/c the
+    // fetch and save mult be atomic.  cacheKey ensures sources can be
+    // determined reliably when fetching the set from the cache.
+    '2020-05-55': [
+      {
+        'url': 'x',
+        'type': 'page',
+        'cacheKey': 'A'
+      },
+      {
+        'url': '5',
+        'type': 'json',
+        'cacheKey': 'B'
+      }
+    ]
+  },
+
+  // Each scraper just gets source data and scrapes it.  The
+  // controlling program fetches the latest data from the cache, and
+  // determines the appropriate scraper it should use.
   scraper: {
-    '0': async function scraper() {
-      this.url = 'https://www.health.pa.gov/topics/disease/Pages/Coronavirus.aspx';
+    '0': async function scraper(data) {
       this.type = 'list';
-      const $ = await fetch.page(this.url);
       let counties = [];
+      const $ = data['A']
       const $lis = $('li:contains("Counties impacted to date include")')
         .nextAll('ul')
         .first()
@@ -113,10 +149,10 @@ const scraper = {
       counties = geography.addEmptyRegions(counties, this._counties, 'county');
       return counties;
     },
-    '2020-03-16': async function scraper() {
-      this.url = 'https://www.health.pa.gov/topics/disease/Pages/Coronavirus.aspx';
+    '2020-03-16': async function scraper(data) {
+      // OPTION: if data only contains one source, it's just the actual data.
+      const $ = data;
       this.type = 'table';
-      const $ = await fetch.page(this.url);
       const $table = $('table.ms-rteTable-default').first();
       const $trs = $table.find('tbody > tr');
       let counties = [];
@@ -132,11 +168,8 @@ const scraper = {
       counties = geography.addEmptyRegions(counties, this._counties, 'county');
       return counties;
     },
-    '2020-03-17': async function scraper() {
-      this.url = 'https://www.health.pa.gov/topics/disease/Pages/Coronavirus.aspx';
+    '2020-03-17': async function scraper($) {
       this.type = 'table';
-      const $ = await fetch.page(this.url);
-      const $table = $('table.ms-rteTable-default').eq(1);
       const $trs = $table.find('tbody > tr');
       let counties = [];
       $trs.each((index, tr) => {
@@ -151,10 +184,11 @@ const scraper = {
       counties = geography.addEmptyRegions(counties, this._counties, 'county');
       return counties;
     },
-    '2020-03-18': async function scraper() {
-      this.url = 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx';
+    '2020-03-18': async function scraper(data) {
+      // OPTION: multiple data sources, returned and keyed by cacheKey:
+      const $ = data['A'];
+      
       this.type = 'table';
-      const $ = await fetch.page(this.url);
       const $countyTable = $('th:contains("County")').closest('table');
       const $trs = $countyTable.find('tbody > tr:not(:first-child)');
       let counties = [];
@@ -175,10 +209,8 @@ const scraper = {
       counties = geography.addEmptyRegions(counties, this._counties, 'county');
       return counties;
     },
-    '2020-03-26': async function scraper() {
-      this.url = 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx';
+    '2020-03-26': async function scraper($) {
       this.type = 'table';
-      const $ = await fetch.page(this.url);
       const $countyTable = $('td:contains("County")').closest('table');
       const $trs = $countyTable.find('tbody > tr:not(:first-child)');
       let counties = [];
