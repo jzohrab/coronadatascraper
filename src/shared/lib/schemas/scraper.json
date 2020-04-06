@@ -15,6 +15,9 @@
       "type": "string",
       "default": ""
     },
+    "sourcecodepath": {
+      "type": "string"
+    },
     "country": {
       "type": "string"
     },

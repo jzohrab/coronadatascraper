@@ -16,6 +16,10 @@ export default async args => {
   const sources = await Promise.all(filePaths.map(filePath => require(filePath))).then(modules => [
     ...modules.map((module, index) => ({ _path: filePaths[index], ...module.default }))
   ]);
+  // Add source code path
+  sources.forEach((s, i) => {
+    s.sourcecodepath = filePaths[i];
+  });
   log(`✅ Fetched ${sources.length} scrapers!`);
 
   return { ...args, sources };
