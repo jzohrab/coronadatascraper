@@ -15,6 +15,9 @@ end
 # Remove cruft from the cacheCalls data.
 def clean_output(hsh)
   ret = hsh.clone
+  if (ret['scraperPath'].nil?)
+    raise hsh.inspect
+  end
   ret['scraperPath'].gsub!(/^.*?src/, 'src')
   ret.delete('cacheFileExists')
   return ret
