@@ -1,5 +1,7 @@
 # coding: utf-8
-# Finds all files in the cache containing russian characters.
+# Finds all files in the cache containing russian characters,
+# prints some analysis,
+# prints some github commands to console, which should then be used on the cache.
 
 require 'digest/md5'
 
