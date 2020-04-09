@@ -145,11 +145,7 @@ raise "Failed check" if (files.size != discards.size + keeps.size)
 # CSRF token hashed file name: 
 csrf_request_hashed_filename = "89f568b588147682c6bab1f349e5e6f4.json"
 final_request_hashed_filename = "34f7e5d800fd897c41ca76188592e22f.json"
-csrf_request_hashed_file_content = "{
-  \"comment1\":\"FAKE TOKEN generated for Russian cache backfilling, GH issue 730\",
-  \"comment2\":\"With this fake token, the ACTUAL url call cache filename is #{final_request_hashed_filename}\"
-  \"csrfToken\":\"5a1c7218333fe6a612bf6cef50ae7d234f8f1880:1586462598\"
-}"
+csrf_request_hashed_file_content = "{\"comment1\":\"FAKE TOKEN generated for Russian cache backfilling, GH issue 730\",\"comment2\":\"With this fake token, the ACTUAL url call cache filename is #{final_request_hashed_filename}\",\"csrfToken\":\"5a1c7218333fe6a612bf6cef50ae7d234f8f1880:1586462598\"}"
 
 # Add a fake CSRF request cached response, and rename the kept file so
 # it is as if the request for it had used the fake CSRF cached file.
