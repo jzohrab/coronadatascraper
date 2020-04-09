@@ -81,9 +81,58 @@ dates_with_multiple_digests.each_pair do |dt, dgs|
   puts
 end
 
-  
-# Choosing the following special files for dates that have more than one digest:
-# 2020-4-1/a728f1b70ec618f43afbd3874e7a4f69.json
-# 2020-4-2/2028e345249ba35fab1cd4ffdc1e838d.json
-# 2020-4-3/891368865c5a565f8585ff7262c56256.json
-# 2020-4-6/5aee8f0cfd029d240d51721c6a48cc1b.json
+date_digests = {}
+files.map { |f| f[:date] }.sort.uniq. each do |dt|
+  dg_keys = files.select { |f| f[:date] == dt }.map { |f| f[:hexdigest] }.sort.uniq
+  hsh = {}
+  dg_keys.each do |dg|
+    hsh[dg] = files.select { |f| f[:date] == dt && f[:hexdigest] == dg }.map { |f| f[:relpath] }
+  end
+  date_digests[dt] = hsh
+end
+
+
+# Determine what to do with each entry.
+actions = []
+date_digests.keys.each do |dt|
+  dgs = date_digests[dt].keys
+  if (dgs.count == 1) then
+    dg = dgs[0]
+    puts dt
+    puts dg
+    candidates = date_digests[dt][dg]
+    actions << [:keep, candidates[0]]
+    candidates[1..-1].each { |c| actions << [:discard, c] }
+  else
+    # Choosing the following special files for dates that have more
+    # than one digest:
+    keep = [
+      '2020-4-1/a728f1b70ec618f43afbd3874e7a4f69.json',
+      '2020-4-2/2028e345249ba35fab1cd4ffdc1e838d.json',
+      '2020-4-3/891368865c5a565f8585ff7262c56256.json',
+      '2020-4-6/5aee8f0cfd029d240d51721c6a48cc1b.json'
+    ]
+    dgs.each do |dg|
+      puts dt
+      puts dg
+      candidates = date_digests[dt][dg]
+      candidates.each do |c|
+        if keep.include?(c) then
+          actions << [:keep, c]
+        else
+          actions << [:discard, c]
+        end
+      end
+    end
+  end
+end
+puts actions
+
+# Split up, generate git script.
+discards = actions.select { |action, fname| action == :discard }
+keeps = actions.select { |action, fname| action != :discard }
+
+# Double-check
+puts "Check: " + [files.size, discards.size, keeps.size].inspect
+raise "Failed check" if (files.size != discards.size + keeps.size)
+
