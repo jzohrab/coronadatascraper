@@ -4,6 +4,9 @@
 require 'digest/md5'
 
 CACHEDIR = File.join(__dir__, '..', '..', 'coronadatascraper-cache')
+# puts CACHEDIR
+# return
+
 files = []
 russian_files = []
 
@@ -136,3 +139,28 @@ keeps = actions.select { |action, fname| action != :discard }
 puts "Check: " + [files.size, discards.size, keeps.size].inspect
 raise "Failed check" if (files.size != discards.size + keeps.size)
 
+
+# CSRF token hashed file name: 
+csrf_request_hashed_filename = "89f568b588147682c6bab1f349e5e6f4.json"
+final_request_hashed_filename = "34f7e5d800fd897c41ca76188592e22f.json"
+csrf_request_hashed_file_content = "{
+  \"comment1\":\"FAKE TOKEN generated for Russian cache backfilling, GH issue 730\",
+  \"comment2\":\"With this fake token, the ACTUAL url call cache filename is #{final_request_hashed_filename}\"
+  \"csrfToken\":\"5a1c7218333fe6a612bf6cef50ae7d234f8f1880:1586462598\"
+}"
+
+# Add a fake CSRF request cached response, and rename the kept file so
+# it is as if the request for it had used the fake CSRF cached file.
+puts "\n\nFINAL SET OF GIT COMMANDS (run in coronadatascraper-cache) AND FILE WRITES:"
+keeps.each do |action, filename|
+  # puts filename
+  d, f = filename.split('/')
+  fake_csrf_fname = File.expand_path(File.join(CACHEDIR, d, csrf_request_hashed_filename))
+  # puts fake_csrf_fname
+  File.open(fake_csrf_fname, 'w') { |f| f.puts csrf_request_hashed_file_content }
+  puts "git add #{fake_csrf_fname}   # fake csrf"
+  puts "git mv #{filename} #{File.join(d, final_request_hashed_filename)}  # response"
+end
+discards.each do |action, filename|
+  puts "git rm #{filename}  # unused"
+end
