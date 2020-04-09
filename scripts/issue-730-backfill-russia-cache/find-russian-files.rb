@@ -65,14 +65,14 @@ dg_dates.each_key do |dg|
 end
 
 puts "\n\nDATES WITH >1 DIGEST:"
-check_dates = {}
+dates_with_multiple_digests = {}
 date_digests.each_pair do |dt, dgs|
   if (dgs.size > 1) then
-    check_dates[dt] = dgs
+    dates_with_multiple_digests[dt] = dgs
   end
 end
 puts "#{'md5'.ljust(35)}#{'#'.ljust(5)}#{'sample'.ljust(30)}"
-check_dates.each_pair do |dt, dgs|
+dates_with_multiple_digests.each_pair do |dt, dgs|
   puts "#{dt}:"
   dgs.each do |dg|
     all_files = files.select { |r| r[:hexdigest] == dg }
@@ -82,3 +82,8 @@ check_dates.each_pair do |dt, dgs|
 end
 
   
+# Choosing the following special files for dates that have more than one digest:
+# 2020-4-1/a728f1b70ec618f43afbd3874e7a4f69.json
+# 2020-4-2/2028e345249ba35fab1cd4ffdc1e838d.json
+# 2020-4-3/891368865c5a565f8585ff7262c56256.json
+# 2020-4-6/5aee8f0cfd029d240d51721c6a48cc1b.json
