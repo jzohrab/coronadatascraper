@@ -63,3 +63,22 @@ dg_dates.each_key do |dg|
   raise "Digest #{dg} found in multiple dates #{dates}" if (dates.length != 1)
   puts "#{dg}: #{dates}"
 end
+
+puts "\n\nDATES WITH >1 DIGEST:"
+check_dates = {}
+date_digests.each_pair do |dt, dgs|
+  if (dgs.size > 1) then
+    check_dates[dt] = dgs
+  end
+end
+puts "#{'md5'.ljust(35)}#{'#'.ljust(5)}#{'sample'.ljust(30)}"
+check_dates.each_pair do |dt, dgs|
+  puts "#{dt}:"
+  dgs.each do |dg|
+    all_files = files.select { |r| r[:hexdigest] == dg }
+    puts "#{dg.ljust(35)}#{all_files.size.to_s.ljust(5)}#{all_files[0][:relpath].ljust(30)}"
+  end
+  puts
+end
+
+  
