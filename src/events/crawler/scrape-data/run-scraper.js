@@ -118,11 +118,15 @@ const runScraperRecordErrors = async (locations, location, errors) => {
   try {
     const data = await runScraper(location);
     // TODO - mutex this?
+    // TODO - move this out -- separate running the scraper and fetching
+    // the data to processing the data.
     addData(locations, location, data);
   } catch (err) {
     log.error('  ❌ Error processing %s: ', geography.getName(location), err);
 
     // TODO - mutex this?
+    // TODO - move this out as well -- this method should return [ result, error ],
+    // and then the post-processing could iterate through that.
     errors.push({
       name: geography.getName(location),
       url: location.url,
