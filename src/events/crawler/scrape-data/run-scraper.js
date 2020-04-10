@@ -113,28 +113,45 @@ export async function runScraper(location) {
   throw new Error('Why on earth is the scraper for %s a %s?', geography.getName(location), typeof scraper);
 }
 
+// TODO - likely need to have mutex for shared structs location, errors
+const runScraperRecordErrors = async (locations, location, errors) => {
+  try {
+    const data = await runScraper(location);
+    // TODO - mutex this?
+    addData(locations, location, data);
+  } catch (err) {
+    log.error('  ❌ Error processing %s: ', geography.getName(location), err);
+
+    // TODO - mutex this?
+    errors.push({
+      name: geography.getName(location),
+      url: location.url,
+      type: err.name,
+      err: err.toString()
+    });
+
+    reporter.logError('scraper failure', 'scraper failed', err.toString(), 'critical', location);
+  }
+};
+
 const runScrapers = async args => {
   const { sources } = args;
 
+  const locationsWithScrapers = sources.filter(loc => loc.scraper);
+
   const locations = [];
   const errors = [];
-  for (const location of sources) {
-    if (location.scraper) {
-      try {
-        addData(locations, location, await runScraper(location));
-      } catch (err) {
-        log.error('  ❌ Error processing %s: ', geography.getName(location), err);
 
-        errors.push({
-          name: geography.getName(location),
-          url: location.url,
-          type: err.name,
-          err: err.toString()
-        });
+  // Hack shortcut.
+  // return { ...args, locations, scraperErrors: errors };
 
-        reporter.logError('scraper failure', 'scraper failed', err.toString(), 'critical', location);
-      }
-    }
+  const numLocations = locationsWithScrapers.length;
+  const batchSize = 50;
+  for (let i = 0; i < numLocations; i += batchSize) {
+    const requests = locationsWithScrapers
+      .slice(i, i + batchSize)
+      .map(location => runScraperRecordErrors(locations, location, errors));
+    await Promise.all(requests).catch(e => console.log(`Error processing batch ${i} - ${e}`));
   }
 
   return { ...args, locations, scraperErrors: errors };
