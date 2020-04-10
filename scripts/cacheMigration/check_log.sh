@@ -15,6 +15,10 @@ echo "Count of 'Cache miss' NOT for 'filepath: cache':"
 grep "Cache miss for" log.txt | grep -v "filepath: cache/" | wc -l
 
 echo
+echo "Count of 'localDate.getUTCMonth is not a function':"
+grep "localDate.getUTCMonth is not a function" log.txt | wc -l
+
+echo
 echo "Count of filepath errors (need to fix instrumentation)"
 grep "_filepath" log.txt | wc -l
 

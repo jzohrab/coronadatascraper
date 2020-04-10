@@ -4,6 +4,13 @@
 
 require 'json'
 
+
+ROOTDIR = File.join(__dir__, '..', '..')
+
+
+##################################
+# Utils
+
 # The cacheCalls file isn't actually valid json: we have to strip off
 # a final comma, and put everything in [ ].
 # Totally lazy hack.
@@ -24,6 +31,122 @@ def clean_output(hsh)
   return ret
 end
 
+
+## CLEANUP UTILS
+
+def delete_bad_json_files(unused_files)
+  json = unused_files.select { |f| f =~ /json$/ }
+
+  data = json.map do |f|
+    content = File.read(File.join(ROOTDIR, f))
+    stripContent = content.split("\n").map { |s| s.strip }.join("").gsub(' ', '')
+    errMatch =
+      (stripContent =~ /{"error":{"code":(499|403|400)/) ||
+      (stripContent =~ /404: Not Found/)
+
+    {
+      filename: f,
+      content: content,
+      length: content.size,
+      is_error: !errMatch.nil?
+    }
+  end
+
+  data.sort! { |a, b| a[:length] <=> b[:length] }
+
+  bad_json = data.select { |d| d[:is_error] }
+  puts "\n# DELETE ERROR JSON FILES:"
+  bad_json.each do |d|
+    puts "git rm #{d[:filename]}"
+  end
+end
+
+
+def delete_txt_files(unused_files)
+  txt = unused_files.select { |f| f =~ /txt$/ }
+  puts "\n# DELETE .txt FILES:"
+  txt.each do |f|
+    puts "git rm #{f}"
+  end
+end
+
+
+def delete_bad_html_files(unused_files)
+  html = unused_files.select { |f| f =~ /html$/ }
+
+  data = html.map do |f|
+    content = File.read(File.join(ROOTDIR, f))
+    stripContent = content.split("\n").map { |s| s.strip }.join("").gsub(' ', '')
+    errMatch =
+      (stripContent =~ /Objectmoved/i) ||
+      (stripContent =~ /DocumentMoved/i) ||
+      (stripContent =~ /301MovedPermanently/i) ||
+      (stripContent =~ /404: Not Found/)
+
+    {
+      filename: f,
+      content: stripContent,
+      length: stripContent.size,
+      is_error: !errMatch.nil?
+    }
+  end
+
+  data = data.sort { |a, b| a[:length] <=> b[:length] }
+
+  # data.each do |d|
+  #   puts '-' * 40
+  #   puts d[:filename]
+  #   puts d[:length]
+  #   puts d[:content][0..100]
+  # end
+  
+  bad_html = data.select { |d| d[:is_error] }
+  puts "\n# DELETE BAD HTML FILES:"
+  bad_html.each do |d|
+    puts "git rm #{d[:filename]}"
+  end
+end
+
+
+def delete_bad_csv_files(unused_files)
+  files = unused_files.select { |f| f =~ /csv$/ }
+
+  data = files.map do |f|
+    content = File.read(File.join(ROOTDIR, f))
+    stripContent = content.split("\n").map { |s| s.strip }.join("").gsub(' ', '')
+    errMatch =
+      (stripContent =~ /404:NotFound/i) ||
+      (stripContent =~ /DocumentMoved/i) ||
+      (stripContent =~ /"status":"Failed"/i) ||
+      (stripContent =~ /"status":"queued","generating":{"csv":"queued"}/)
+
+    {
+      filename: f,
+      content: content,
+      length: content.size,
+      is_error: !errMatch.nil?
+    }
+  end
+
+  data = data.sort { |a, b| a[:length] <=> b[:length] }
+
+  #  data.each do |d|
+  #    puts '-' * 40
+  #    puts d[:filename]
+  #    puts d[:length]
+  #    puts d[:content][0..100]
+  #  end
+  
+  bad_files = data.select { |d| d[:is_error] }
+  puts "\n# DELETE BAD CSV FILES:"
+  bad_files.each do |d|
+    puts "git rm #{d[:filename]}"
+  end
+end
+
+
+#########################################################3
+# Analysis
 
 j = get_cachecalls_json()
 
@@ -61,19 +184,6 @@ counts = counts.to_a.select { |f, c| c > 1 }.sort { |a, b| a[1] <=> b[1] }.rever
 counts.each { |f, c| puts "#{'%02d' % c}: #{'% 38s' % f} (e.g. #{unused_files.map { |f| f.gsub(/coronadatascraper-cache\//, '') }.select{ |s| s =~ /#{f}/ }[0] })" }
 puts
 
-puts
-puts "Russian files (should be discarded?)"
-russian_chars = "населением"
-russian_files =
-  files.
-    map { |f| File.join(cachedir, f) }.
-    select { |f| f =~ /json$/ }.
-    select { |f| File.read(f) =~ /[#{russian_chars}]/ }.
-    map { |f| f.gsub(/.*coronadatascraper-cache\//, '') }
-puts russian_files
-puts "#{russian_files.size} Russian files (should be discarded?)"
-puts
-
 
 report = [
   "total files in cache:                           #{files.size}",
@@ -82,3 +192,18 @@ report = [
 ]
 puts
 report.each { |s| puts "  #{s}" }
+
+################################################
+# CACHE CLEANUP
+
+puts "\n\n"
+puts "=" * 55
+puts "Suggested cache cleanup:"
+
+
+puts "\n\n\n"
+puts "# #{unused_files.size} unused"
+delete_bad_json_files(unused_files)
+delete_txt_files(unused_files)
+delete_bad_html_files(unused_files)
+delete_bad_csv_files(unused_files)

@@ -5,6 +5,8 @@
 
 const imports = require('esm')(module);
 
+delete process.env.USE_OLD_DATETIME;
+
 const argv = imports('./cli/cli-args.js').default;
 const clearAllTimeouts = imports('./utils/timeouts.js').default;
 const fetchSources = imports('../events/crawler/get-sources/index.js').default;

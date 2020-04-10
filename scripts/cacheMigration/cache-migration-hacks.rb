@@ -38,7 +38,7 @@ METHODS = 'page|raw|json|jsonAndCookies|csv|tsv|pdf|headless|getArcGISCSVURLFrom
 
 # The fancy RE below splits a line like "await fetch.csv(this.url)"
 # into ["await fetch.csv(this.url)", "await fetch.csv(", "this.url)"]
-FETCH_RE = /((await\s+.*?\.(?:#{METHODS})\s*\()(.*\)))/
+FETCH_RE = /((await\s+.*?\.(?:#{METHODS})\s*\()(.*))/
 
 
 # Print warnings only for each file f in scraper_dir.
@@ -110,6 +110,19 @@ def postmigration_AU_QLD_stuff(src)
   src
 end
 
+
+def post_migration_check(src)
+  matches = src.scan(FETCH_RE)
+  # puts "add this: #{matches.inspect}"
+  matches.each do |m|
+    raise "bad re? #{m}" if m.size != 3
+    wholeline, before, after = m
+    if (after !~ /this, /) then
+      puts "  ??? Missing 'this' in fetch call in \"#{wholeline}\" ???"
+    end
+  end
+end
+
 ########################################
 
 scraper_dir = File.join(__dir__, '..', '..', 'src', 'shared', 'scrapers')
@@ -159,6 +172,8 @@ files.each do |f|
   src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
   src = postmigration_AU_QLD_stuff(src)
+
+  post_migration_check(src)
   puts
 
   case(WRITE)
