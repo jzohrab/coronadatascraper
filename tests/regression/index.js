@@ -55,12 +55,20 @@ const cacheDate = latestCompleteCacheDate();
 
 const execSync = imports('child_process').execSync;
 
-// import { execSync } from 'child_process';  // replace ^ if using ES modules
+
+function runCommand(cmd) {
+  execSync(cmd, {stdio: 'inherit'});
+}
+
+// First run of reports, going through public interface.
+// For stdio 'inherit', see
+// https://stackoverflow.com/questions/30134236/use-child-process-execsync-but-keep-output-in-console
+runCommand(`yarn start --date ${cacheDate} --outputSuffix test${cacheDate} --useOnlyCache`);
 
 
-var output = '';
-output = execSync('ls', { encoding: 'utf-8' });  // the default is 'buffer'
-console.log('Output was:\n', output);
+// var output = '';
+// output = execSync('ls', { encoding: 'utf-8' });  // the default is 'buffer'
+// console.log('Output was:\n', output);
 
 // Update things
 // git submodule update --remote
