@@ -47,6 +47,12 @@ const { argv } = yargs
     type: 'string',
     default: 'HEAD'
   })
+  .option('writeTo', {
+    alias: 'w',
+    description: 'Write to dir',
+    type: 'string',
+  })
+  .demand('writeTo', 'Please specify directory to write to')
   .help();
 
 console.log(argv);
@@ -63,8 +69,12 @@ function runCommand(cmd) {
 // First run of reports, going through public interface.
 // For stdio 'inherit', see
 // https://stackoverflow.com/questions/30134236/use-child-process-execsync-but-keep-output-in-console
-runCommand(`yarn start --date ${cacheDate} --outputSuffix test${cacheDate} --useOnlyCache`);
+const baseCmd = `yarn start --date ${cacheDate} --useOnlyCache --writeTo ${argv.writeTo}`;
+runCommand(baseCmd);
 
+// Check out the other branch
+// run command to another report location
+// compar the files
 
 // var output = '';
 // output = execSync('ls', { encoding: 'utf-8' });  // the default is 'buffer'
