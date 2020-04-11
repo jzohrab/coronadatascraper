@@ -38,8 +38,8 @@ METHODS = 'page|raw|json|jsonAndCookies|csv|tsv|pdf|headless|getArcGISCSVURLFrom
 
 # The fancy RE below splits a line like "await fetch.csv(this.url)"
 # into ["await fetch.csv(this.url)", "await fetch.csv(", "this.url)"]
+# It can screw up in some cases, so we add a hack.
 FETCH_RE = /((await\s+.*?\.(?:#{METHODS})\s*\()(.*))/
-
 
 # Print warnings only for each file f in scraper_dir.
 def validate(scraper_dir, f)
@@ -76,6 +76,8 @@ end
 
 
 def add_this_to_fetch_calls(src)
+  original_src = "CLONE: #{src}"
+
   matches = src.scan(FETCH_RE)
   # puts "add this: #{matches.inspect}"
   matches.each do |m|
@@ -89,6 +91,12 @@ def add_this_to_fetch_calls(src)
       src = src.gsub(wholeline, newline)
     end
   end
+
+  if (original_src !~ /this, this,/ && src =~ /this, this,/) then
+    src = src.gsub('this, this,', 'this, ')
+  end
+  # raise "have 'this, this'" if (src =~ /this, this,/)
+
   src
 end
 
@@ -140,7 +148,7 @@ puts "#{files.size} scraper files."
 if (!FILENAME.nil?) then
   if (!files.include?(FILENAME)) then
     puts "#{FILENAME} is not in the list of scraper files:"
-    puts files.map { |s| "   #{s}" }
+    puts files.sort.map { |s| "   #{s}" }
     return
   else
     files = [FILENAME]
@@ -170,9 +178,11 @@ files.each do |f|
   fpath = File.join(scraper_dir, f)
   src = File.read(fpath)
   src = add_filename_to_scraper_this(src)
+  raise "BAD this, this, 1" if (src =~ /this, this,/)
   src = add_this_to_fetch_calls(src)
+  raise "BAD this, this, 2" if (src =~ /this, this,/)
   src = postmigration_AU_QLD_stuff(src)
-
+  
   post_migration_check(src)
   puts
 
