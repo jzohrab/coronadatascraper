@@ -10,8 +10,46 @@ const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 
 
-async function compareReports(base, other) {
-  
+/** Filter function */
+function notContainedIn(arr) {
+  return function arrNotContains(element) {
+    return arr.indexOf(element) === -1;
+  };
+}
+
+/** Compare dirs.
+ * Returns array reporting differences.
+ */
+function compareReports(left, right) {
+  let ret = [];
+
+  const fnames = d => {
+    return glob(path.join(d, '**', '*.*'))
+      .map(s => s.replace(`${d}${path.sep}`, '')).
+      sort();
+  };
+  const leftFiles = fnames(left);
+  const rightFiles = fnames(right);
+  // console.log(leftFiles);
+  // console.log(rightFiles);
+
+  const allFiles = leftFiles.concat(rightFiles);
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+  var uniques = allFiles.filter(onlyUnique);
+  // console.log(uniques);
+
+  const reportMissing = (files, folderName) => {
+    const missing = uniques.filter(notContainedIn(files));
+    missing.forEach(f => {
+      ret.push(`${f} missing in ${folderName}`);
+    });
+  };
+  reportMissing(leftFiles, left);
+  reportMissing(rightFiles, right);
+
+  return ret;
 }
 
 const { argv } = yargs
@@ -29,6 +67,7 @@ const { argv } = yargs
   .demand(['base', 'other'], 'Please specify both directories')
   .help();
 
-console.log(argv);
+// console.log(argv);
 
-compareReports(argv.base, argv.other);
+const differences = compareReports(argv.base, argv.other);
+console.log(differences);
