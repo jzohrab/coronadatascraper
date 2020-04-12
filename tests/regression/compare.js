@@ -11,9 +11,9 @@ const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 
 
 /** Filter function */
-function notContainedIn(arr) {
-  return function arrNotContains(element) {
-    return arr.indexOf(element) === -1;
+function containedIn(arr, expected) {
+  return function arrContains(element) {
+    return (expected == (arr.indexOf(element) >= 0));
   };
 }
 
@@ -38,16 +38,21 @@ function compareReports(left, right) {
     return self.indexOf(value) === index;
   }
   var uniques = allFiles.filter(onlyUnique);
-  // console.log(uniques);
+  console.log("UNIQUES");
+  console.log(uniques);
 
   const reportMissing = (files, folderName) => {
-    const missing = uniques.filter(notContainedIn(files));
+    const missing = uniques.filter(containedIn(files, false));
     missing.forEach(f => {
       ret.push(`${f} missing in ${folderName}`);
     });
   };
   reportMissing(leftFiles, left);
   reportMissing(rightFiles, right);
+
+  const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
+  console.log("COMMON");
+  console.log(commonFiles);
 
   return ret;
 }
