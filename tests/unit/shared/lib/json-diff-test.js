@@ -91,11 +91,8 @@ test('hash pointing to diff length arrays are different', t => {
   diffShouldBe(t, ['/a array length: 3 != 4']);
 });
 
-/*
 test('hash pointing to arrays in different order are different', t => {
   lhs = { 'a': [1, 2, 3, 4] };
   rhs = { 'a': [1, 3, 2, 4] };
   diffShouldBe(t, ['/a value: [1, 2, 3, 4] != [1, 3, 2, 4]']);
 });
-
-*/
