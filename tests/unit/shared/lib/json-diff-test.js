@@ -48,3 +48,9 @@ test('diff values child object', t => {
   rhs = { 'a': 'apple', 'b': { 'a': 'axe', 'c': 'cat' } };
   diffShouldBe(t, ['/b/a value: ant != axe']);
 });
+
+test('can compare strings', t => {
+  lhs = 'hi';
+  rhs = 'there';
+  diffShouldBe(t, ['hi != there']);
+}
