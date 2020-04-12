@@ -1,5 +1,10 @@
 export default function jsonDiff(left, right) {
 
+  function isPrimitive(arg) {
+    var type = typeof arg;
+    return arg == null || (type != "object" && type != "function");
+  }
+  
   /** Iterates through the left and right, pushes errors (differences)
    * onto errs. */
   function _jsonDiffIter(left, right, currPath, errs) {
