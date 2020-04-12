@@ -9,6 +9,7 @@ const glob = require('fast-glob').sync;
 const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 const jsonDiff = imports(path.join(lib, 'diffing', 'json-diff.js'));
+const stringDiff = imports(path.join(lib, 'diffing', 'string-diff.js'));
 
 /** Compare two json files. */
 function compareJson(leftFname, rightFname, formatters) {
@@ -39,8 +40,9 @@ function compareCsv(leftFname, rightFname) {
 
   const minLength = (left.length < right.length) ? left.length : right.length;
   for (var i = 0; i < minLength; ++i) {
-    if (left[i] != right[i])
-      errs.push(`Line ${i}: "${left[i]}" != "${right[i]}"`);
+    const diff = stringDiff.stringDiff(left[i], right[i]);
+    if (diff.column !== null)
+      errs.push(`Line ${i}, col ${diff.column}: "${diff.left}" != "${diff.right}"`);
     if (errs.length >= 10)
       break;
   }
