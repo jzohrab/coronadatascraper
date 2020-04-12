@@ -52,5 +52,5 @@ test('diff values child object', t => {
 test('can compare strings', t => {
   lhs = 'hi';
   rhs = 'there';
-  diffShouldBe(t, ['hi != there']);
-}
+  diffShouldBe(t, ['value: hi != there']);
+});

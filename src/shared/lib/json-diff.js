@@ -15,7 +15,7 @@ export default function jsonDiff(left, right) {
 
     if(isPrimitive(left) && isPrimitive(right)) {
       if (left != right) {
-        errs.push(`${currPath} value: ${left} != ${right}`);
+        errs.push(`${currPath} value: ${left} != ${right}`.trim());
         return;
       }
     }
