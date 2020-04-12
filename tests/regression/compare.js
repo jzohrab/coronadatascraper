@@ -8,7 +8,7 @@ const yargs = imports('yargs');
 const glob = require('fast-glob').sync;
 const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
-const jsonDiff = imports(path.join(lib, 'json-diff.js'));
+const jsonDiff = imports(path.join(lib, 'diffing', 'json-diff.js'));
 
 /** Compare two json files. */
 function compareJson(leftFname, rightFname, formatters) {
