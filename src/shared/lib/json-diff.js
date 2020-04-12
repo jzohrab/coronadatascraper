@@ -88,7 +88,7 @@ function _jsonDiffIter(lhs, rhs, currPath, errs, maxErrors) {
 
 
 /** The diff function. */
-export default function jsonDiff(left, right, maxErrors = 10) {
+export function jsonDiff(left, right, maxErrors = 10) {
   const errs = [];
   _jsonDiffIter(left, right, '', errs, maxErrors);
   return errs;

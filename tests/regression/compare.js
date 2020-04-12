@@ -8,7 +8,7 @@ const yargs = imports('yargs');
 const glob = require('fast-glob').sync;
 const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
-
+const jsonDiff = imports(path.join(lib, 'json-diff.js'));
 
 /** Filter function */
 function containedIn(arr, expected) {
@@ -24,9 +24,13 @@ function compareJson(leftFname, rightFname, errs) {
   }
   const left = loadJson(leftFname);
   const right = loadJson(rightFname);
-  if (deepEqual(left, right))
-    return;
-  errs.push(`${leftFname} content != ${rightFname} content`);
+  const diffs = jsonDiff.jsonDiff(left, right, 10);
+  if (diffs.length > 0) {
+    errs.push(`${leftFname} content != ${rightFname} content (some errs listed below)`);
+  }
+  diffs.forEach(d => {
+    errs.push(`  ${d}`);
+  });
 }
 
 /** Compare two files.
