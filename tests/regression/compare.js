@@ -17,6 +17,31 @@ function containedIn(arr, expected) {
   };
 }
 
+/** Compare two json files. */
+function compareJson(leftFname, rightFname, errs) {
+  const loadJson = f => {
+    return JSON.parse(fs.readFileSync(f, 'utf8'));
+  }
+  const left = loadJson(leftFname);
+  const right = loadJson(rightFname);
+  if (deepEqual(left, right))
+    return;
+  errs.push(`${leftFname} content != ${rightFname} content`);
+}
+
+/** Compare two files.
+ * Pushes differences onto errs.
+ */
+function compareFiles(leftFname, rightFname, errs) {
+  const ext = path.extname(leftFname);
+  if (ext === '.json') {
+    compareJson(leftFname, rightFname, errs);
+  }
+  else {
+    console.log("CAN'T HANDLE THIS");
+  }
+}
+
 /** Compare dirs.
  * Returns array reporting differences.
  */
@@ -53,6 +78,10 @@ function compareReports(left, right) {
   const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
   // console.log("COMMON");
   // console.log(commonFiles);
+
+  commonFiles.forEach(f => {
+    compareFiles(path.join(left, f), path.join(right, f), ret);
+  });
 
   return ret;
 }
