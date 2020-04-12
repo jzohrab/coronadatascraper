@@ -38,8 +38,8 @@ function compareReports(left, right) {
     return self.indexOf(value) === index;
   }
   var uniques = allFiles.filter(onlyUnique);
-  console.log("UNIQUES");
-  console.log(uniques);
+  // console.log("UNIQUES");
+  // console.log(uniques);
 
   const reportMissing = (files, folderName) => {
     const missing = uniques.filter(containedIn(files, false));
@@ -51,8 +51,8 @@ function compareReports(left, right) {
   reportMissing(rightFiles, right);
 
   const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
-  console.log("COMMON");
-  console.log(commonFiles);
+  // console.log("COMMON");
+  // console.log(commonFiles);
 
   return ret;
 }
