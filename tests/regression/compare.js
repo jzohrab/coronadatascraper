@@ -10,27 +10,14 @@ const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 const jsonDiff = imports(path.join(lib, 'json-diff.js'));
 
-/** Filter function */
-function containedIn(arr, expected) {
-  return function arrContains(element) {
-    return (expected == (arr.indexOf(element) >= 0));
-  };
-}
-
 /** Compare two json files. */
-function compareJson(leftFname, rightFname, errs) {
+function compareJson(leftFname, rightFname) {
   const loadJson = f => {
     return JSON.parse(fs.readFileSync(f, 'utf8'));
   }
   const left = loadJson(leftFname);
   const right = loadJson(rightFname);
-  const diffs = jsonDiff.jsonDiff(left, right, 10);
-  if (diffs.length > 0) {
-    errs.push(`${leftFname} content != ${rightFname} content (some errs listed below)`);
-  }
-  diffs.forEach(d => {
-    errs.push(`  ${d}`);
-  });
+  return jsonDiff.jsonDiff(left, right, 10);
 }
 
 /** Compare two files.
@@ -38,12 +25,24 @@ function compareJson(leftFname, rightFname, errs) {
  */
 function compareFiles(leftFname, rightFname, errs) {
   const ext = path.extname(leftFname);
+  console.log(`\n${leftFname} vs ${rightFname}`);
   if (ext === '.json') {
-    compareJson(leftFname, rightFname, errs);
+    const errs = compareJson(leftFname, rightFname);
+    if (errs.length === 0)
+      console.log('  equal');
+    else
+      errs.forEach(e => { console.log(`* ${e}`); });
   }
   else {
-    console.log("CAN'T HANDLE THIS");
+    console.log(`CAN'T HANDLE THIS: ${leftFname}`);
   }
+}
+
+/** Filter function */
+function containedIn(arr, expected) {
+  return function arrContains(element) {
+    return (expected == (arr.indexOf(element) >= 0));
+  };
 }
 
 /** Compare dirs.
@@ -59,16 +58,13 @@ function compareReports(left, right) {
   };
   const leftFiles = fnames(left);
   const rightFiles = fnames(right);
-  // console.log(leftFiles);
-  // console.log(rightFiles);
-
+  const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
+  
   const allFiles = leftFiles.concat(rightFiles);
   function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
   }
   var uniques = allFiles.filter(onlyUnique);
-  // console.log("UNIQUES");
-  // console.log(uniques);
 
   const reportMissing = (files, folderName) => {
     const missing = uniques.filter(containedIn(files, false));
@@ -79,9 +75,7 @@ function compareReports(left, right) {
   reportMissing(leftFiles, left);
   reportMissing(rightFiles, right);
 
-  const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
-  // console.log("COMMON");
-  // console.log(commonFiles);
+
 
   commonFiles.forEach(f => {
     compareFiles(path.join(left, f), path.join(right, f), ret);
