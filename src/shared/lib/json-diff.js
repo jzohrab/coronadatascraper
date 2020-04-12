@@ -8,7 +8,6 @@ export default function jsonDiff(left, right) {
   /** Iterates through the left and right, pushes errors (differences)
    * onto errs. */
   function _jsonDiffIter(left, right, currPath, errs) {
-    errs.push('hi');
 
     if(left == right) {
         return;
@@ -21,16 +20,16 @@ export default function jsonDiff(left, right) {
       }
     }
 
-    const leftKeys = Object.keys(left).sort().toString();
-    const rightKeys = Object.keys(right).sort().toString();
-    if(leftKeys !== rightKeys) {
-      errs.push(`${currPath} keys: [${leftKeys}] != [${rightKeys}]}`);
+    const leftKeys = Object.keys(left).sort();
+    const rightKeys = Object.keys(right).sort();
+    if(leftKeys.toString() !== rightKeys.toString()) {
+      errs.push(`${currPath}/ keys: [${leftKeys}] != [${rightKeys}]`);
       return;
     }
 
     // compare objects with same keys
     leftKeys.forEach(k => {
-      _jsonDiffIter(left[k], right[k], `${currPath}/`, errs);
+      _jsonDiffIter(left[k], right[k], `${currPath}/${k}`, errs);
     });
 
   }

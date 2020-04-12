@@ -40,11 +40,11 @@ test('diff hash keys at root', t => {
 test('diff hash keys at child object', t => {
   lhs = { 'a': 'apple', 'b': { 'a': 'apple', 'c': 'cat' } };
   rhs = { 'a': 'apple', 'b': { 'b': 'bat', 'c': 'cat' } };
-  diffShouldBe(t, ['/b/ keys: [a, c] != [b, c]']);
+  diffShouldBe(t, ['/b/ keys: [a,c] != [b,c]']);
 });
 
 test('diff values child object', t => {
   lhs = { 'a': 'apple', 'b': { 'a': 'ant', 'c': 'cat' } };
   rhs = { 'a': 'apple', 'b': { 'a': 'axe', 'c': 'cat' } };
-  diffShouldBe(t, ['/b/; value: ant != axe']);
+  diffShouldBe(t, ['/b/a value: ant != axe']);
 });
