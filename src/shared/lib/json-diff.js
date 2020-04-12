@@ -50,47 +50,82 @@ function isDictionary(arg) {
   if(arg.constructor != Object) return false;
   return true;
 };
-  
+
+/** Return the new path to show to the user, if the current path
+ * matches any of the formaters. */
+function reformatCurrPath(hsh, currPath, formatters) {
+  var newPath = currPath;
+  for (var i = 0; i < formatters.length; ++i) {
+    const [re, formattingFunction] = formatters[i];
+    const m = newPath.match(re);
+    // console.log(`newPath: "${newPath}"; re: ${re}; m: ${m}`);
+    if (m !== null) {
+      newPath = formattingFunction(hsh, m);
+      break;
+    }
+  }
+  return newPath;
+}
+
 /** Recursion through the lhs and rhs, pushing errors (differences)
  * onto errs, up to maxErrors. */
-function _jsonDiffIter(lhs, rhs, currPath, errs, maxErrors) {
+function _jsonDiffIter(lhs, rhs, currPath, errs, maxErrors, formatters) {
   
   if (errs.length === maxErrors)
     return;
-  
+
+  const newPath = reformatCurrPath(lhs, currPath, formatters);
+
   if(isPrimitive(lhs) && isPrimitive(rhs)) {
     if (lhs !== rhs) {
-      errs.push(`${currPath} value: ${lhs} != ${rhs}`.trim());
+      errs.push(`${newPath} value: ${lhs} != ${rhs}`.trim());
     }
   }
   else if (Array.isArray(lhs) && Array.isArray(rhs)) {
     if (lhs.length !== rhs.length) {
-      errs.push(`${currPath} array length: ${lhs.length} != ${rhs.length}`.trim());
+      errs.push(`${newPath} array length: ${lhs.length} != ${rhs.length}`.trim());
     } else {
       for (var i = 0; i < lhs.length; ++i) {
-        _jsonDiffIter(lhs[i], rhs[i], `${currPath}[${i}]`, errs, maxErrors);
+        _jsonDiffIter(lhs[i], rhs[i], `${newPath}[${i}]`, errs, maxErrors, formatters);
       }
     }
   } else if (isDictionary(lhs) && isDictionary(rhs)) {
     const lhsKeys = Object.keys(lhs).sort();
     const rhsKeys = Object.keys(rhs).sort();
     if(lhsKeys.toString() !== rhsKeys.toString()) {
-      errs.push(`${currPath}/ keys: [${lhsKeys}] != [${rhsKeys}]`);
+      errs.push(`${newPath}/ keys: [${lhsKeys}] != [${rhsKeys}]`);
     } else {
       lhsKeys.forEach(k => {
-        _jsonDiffIter(lhs[k], rhs[k], `${currPath}/${k}`, errs, maxErrors);
+        _jsonDiffIter(lhs[k], rhs[k], `${newPath}/${k}`, errs, maxErrors, formatters);
       });
     }
   } else {
-    errs.push(`${currPath} value: type difference (array vs hash)`);
+    errs.push(`${newPath} value: type difference (array vs hash)`);
   }
 }
 
 
+/** The formatter keys are simplified strings.  Make them regexes.
+ * e.g., "^([\d+]/c)[(\d+)]$" => /^(\[\d+\]\/c)\[(\d+)\]$" */
+function convertFormatterKeysToRegexes(formatters) {
+  const ret = []
+  Object.keys(formatters).forEach(k => {
+    const restring = k
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]')
+          .replace(/\//g, '\/');
+    // console.log(`${k} => ${restring}`);
+    const re = new RegExp(restring);
+    ret.push([re, formatters[k]]);
+  });
+  return ret;
+}
+
 /** The diff function. */
-export function jsonDiff(left, right, maxErrors = 10) {
+export function jsonDiff(left, right, maxErrors = 10, formatters = {}) {
   const errs = [];
-  _jsonDiffIter(left, right, '', errs, maxErrors);
+  const useFormatters = convertFormatterKeysToRegexes(formatters);
+  _jsonDiffIter(left, right, '', errs, maxErrors, useFormatters);
   return errs;
 }
 

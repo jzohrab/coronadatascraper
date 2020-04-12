@@ -142,7 +142,41 @@ test('documentation example', t => {
   ];
   diffShouldBe(t, expected);
 });
-     
+
+test.only('can use formatters to add details to path output', t => {
+  lhs = [
+    { 'a': 'apple',
+      'b': 'bat',
+      'c': [
+        { 'd': 'd-1', 'e': 'e-1' },
+        { 'd': 'd-2', 'e': 'e-2' }
+      ]
+    }
+  ];
+  rhs = [
+    { 'a': 'apple',
+      'b': 'bat-XXXX',
+      'c': [
+        { 'd': 'd-1', 'e': 'NOT_E_1' },
+        { 'd': 'NOT_D_2', 'e': 'e-2' }
+      ]
+    }
+  ];
+
+  const formatters = {
+    '^[(\\d+)]$': (hsh, match) => { return `[${match[1]}, ${hsh['a']}]`; },
+    '^(.*?/c)[(\\d+)]$': (hsh, match) => { return `${match[1]}[${match[2]}, ${hsh['d']}]`; },
+  };
+  const actual = jsonDiff.jsonDiff(lhs, rhs, 10, formatters);
+  const expected = [
+    '[0, apple]/b value: bat != bat-XXXX',
+    '[0, apple]/c[0, d-1]/e value: e-1 != NOT_E_1',
+    '[0, apple]/c[1, d-2]/d value: d-2 != NOT_D_2'
+  ];
+  t.deepEqual(actual, expected);
+  t.end();
+});
+
 test('array of hashes with differences', t => {
   lhs = [
     {
@@ -181,7 +215,7 @@ test('array of hashes with differences', t => {
 /////////////
 
 
-test.only('findArrays: initial', t => {
+test('findArrays: initial', t => {
   lhs = [
     {
       'a': 'apple',
