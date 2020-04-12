@@ -116,6 +116,33 @@ test('can limit max number of errors', t => {
   t.end();
 });
 
+test('documentation example', t => {
+  lhs = [
+    { 'a': 'apple',
+      'b': 'bat',
+      'c': [
+        { 'd': 'd-1', 'e': 'e-1' },
+        { 'd': 'd-2', 'e': 'e-2' }
+      ]
+    }
+  ];
+  rhs = [
+    { 'a': 'apple',
+      'b': 'bat-XXXX',
+      'c': [
+        { 'd': 'd-1', 'e': 'NOT_E_1' },
+        { 'd': 'NOT_D_2', 'e': 'e-2' }
+      ]
+    }
+  ];
+  const expected = [
+    '[0]/b value: bat != bat-XXXX',
+    '[0]/c[0]/e value: e-1 != NOT_E_1',
+    '[0]/c[1]/d value: d-2 != NOT_D_2'
+  ];
+  diffShouldBe(t, expected);
+});
+     
 test('array of hashes with differences', t => {
   lhs = [
     {
