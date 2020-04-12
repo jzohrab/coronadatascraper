@@ -33,7 +33,7 @@ export default function jsonDiff(lhs, rhs) {
         return;
       }
       for (var i = 0; i < lhs.length; ++i) {
-        _jsonDiffIter(lhs[i], rhs[i], `${currPath}[$i]`, errs);
+        _jsonDiffIter(lhs[i], rhs[i], `${currPath}[${i}]`, errs);
       }
     } else if (isDictionary(lhs) && isDictionary(rhs)) {
       const lhsKeys = Object.keys(lhs).sort();
