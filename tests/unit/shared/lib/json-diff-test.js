@@ -96,3 +96,37 @@ test('hash pointing to arrays in different order are different', t => {
   rhs = { 'a': [1, 3, 2, 4] };
   diffShouldBe(t, ['/a[1] value: 2 != 3', '/a[2] value: 3 != 2']);
 });
+
+test('array of hashes with differences', t => {
+  lhs = [
+    {
+      'a': 'apple',
+      'b': 'bat',
+      'c': { 'cats': [ 'tiger', 'lion' ] }
+    },
+    {
+      'a2': 'apple2',
+      'b2': 'bat2',
+      'c2': { 'cats2': [ 'tiger2', 'lion2' ] }
+    }
+  ];
+  rhs = [
+    {
+      'a': 'apple',
+      'b': 'bat',
+      'c': { 'cats': [ 'tiger', 'lion' ] }
+    },
+    {
+      'a2': 'XXXXXapple2',
+      'b2': 'XXXXXbat2',
+      'c2': { 'cats2': [ 'tiger2', 'XXXXlion2' ] }
+    }
+  ];
+
+  const expected = [
+    '[1]/a2 value: apple2 != XXXXXapple2',
+    '[1]/b2 value: bat2 != XXXXXbat2',
+    '[1]/c2/cats2[1] value: lion2 != XXXXlion2'
+  ];
+  diffShouldBe(t, expected);
+});
