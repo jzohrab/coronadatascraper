@@ -11,13 +11,13 @@ const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 const jsonDiff = imports(path.join(lib, 'json-diff.js'));
 
 /** Compare two json files. */
-function compareJson(leftFname, rightFname) {
+function compareJson(leftFname, rightFname, formatters) {
   const loadJson = f => {
     return JSON.parse(fs.readFileSync(f, 'utf8'));
   }
   const left = loadJson(leftFname);
   const right = loadJson(rightFname);
-  return jsonDiff.jsonDiff(left, right, 10);
+  return jsonDiff.jsonDiff(left, right, 10, formatters);
 }
 
 /** Compare two files.
@@ -75,6 +75,37 @@ function compareReports(left, right) {
   reportMissing(leftFiles, left);
   reportMissing(rightFiles, right);
 
+
+  const getDataRpt = files => {
+    const drs = files.filter(f => { return /data(.*).json/.test(f); });
+    if (drs.length === 0) {
+      console.log("Missing data(.*).json file.");
+      return null;
+    }
+    if (drs.length > 1) {
+      console.log("Multiple/ambiguous data(.*).json files.");
+      return null;
+    }
+    return drs[0];
+  }
+
+  const fpaths = d => { return glob(path.join(d, '**', '*.*')).sort(); }
+  const leftPaths = fpaths(left);
+  const rightPaths = fpaths(right);
+
+  const leftDataJson = getDataRpt(leftPaths);
+  const rightDataJson = getDataRpt(rightPaths);
+  console.log(leftDataJson);
+  if (leftDataJson && rightDataJson) {
+    const formatters = {
+      '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['name']}]`; }
+    };
+    const errs = compareJson(leftDataJson, rightDataJson, formatters);
+    if (errs.length === 0)
+      console.log('  equal');
+    else
+      errs.forEach(e => { console.log(`* ${e}`); });
+  }
 
 
   commonFiles.forEach(f => {
