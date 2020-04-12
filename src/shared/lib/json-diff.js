@@ -16,39 +16,32 @@ export default function jsonDiff(left, right, maxErrors = 10) {
    * onto errs. */
   function _jsonDiffIter(lhs, rhs, currPath, errs) {
 
-    if(lhs == rhs) {
-      return;
-    }
-    
     if (errs.length === maxErrors)
       return;
 
     if(isPrimitive(lhs) && isPrimitive(rhs)) {
       if (lhs !== rhs) {
         errs.push(`${currPath} value: ${lhs} != ${rhs}`.trim());
-        return;
       }
     }
-
-    if (Array.isArray(lhs) && Array.isArray(rhs)) {
+    else if (Array.isArray(lhs) && Array.isArray(rhs)) {
       if (lhs.length !== rhs.length) {
         errs.push(`${currPath} array length: ${lhs.length} != ${rhs.length}`.trim());
-        return;
-      }
-      for (var i = 0; i < lhs.length; ++i) {
-        _jsonDiffIter(lhs[i], rhs[i], `${currPath}[${i}]`, errs);
+      } else {
+        for (var i = 0; i < lhs.length; ++i) {
+          _jsonDiffIter(lhs[i], rhs[i], `${currPath}[${i}]`, errs);
+        }
       }
     } else if (isDictionary(lhs) && isDictionary(rhs)) {
       const lhsKeys = Object.keys(lhs).sort();
       const rhsKeys = Object.keys(rhs).sort();
       if(lhsKeys.toString() !== rhsKeys.toString()) {
         errs.push(`${currPath}/ keys: [${lhsKeys}] != [${rhsKeys}]`);
-        return;
+      } else {
+        lhsKeys.forEach(k => {
+          _jsonDiffIter(lhs[k], rhs[k], `${currPath}/${k}`, errs);
+        });
       }
-
-      lhsKeys.forEach(k => {
-        _jsonDiffIter(lhs[k], rhs[k], `${currPath}/${k}`, errs);
-      });
     } else {
       errs.push(`${currPath} value: type difference (array vs hash)`);
     }
