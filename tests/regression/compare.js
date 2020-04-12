@@ -71,8 +71,6 @@ function compareReports(left, right) {
   };
   const leftFiles = fnames(left);
   const rightFiles = fnames(right);
-  const commonFiles = leftFiles.filter(containedIn(rightFiles, true));
-  
   const allFiles = leftFiles.concat(rightFiles);
   function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
@@ -113,8 +111,8 @@ function compareReports(left, right) {
     };
 
     const [left, right] = findLeftRightFiles(regex);
-    console.log(left);
     if (left && right) {
+      console.log(left);
       compareJson(left, right, formatters);
     }
   };
@@ -124,24 +122,30 @@ function compareReports(left, right) {
       return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
     };
     const [left, right] = findLeftRightFiles(regex);
-    console.log(left);
-    compareCsv(left, right);
+    if (left && right) {
+      console.log(left);
+      compareCsv(left, right);
+    }
   };
 
   const jsonReports = [
     {
       regex: /data(.*).json/,
       formatters: {
-        '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['name']}]`; }
+        '^[(\\d+)]$': (h, m) => { return `[${m[1]}, ${h['name']}]`; }
       }
     },
     {
       regex: /report.json/,
-      formatters: {}
+      formatters: {
+        '^(.*?/sources)[(\\d+)]$': (h, m) => { return `${m[1]}[${m[2]}, ${h['url']}]`; }
+      }
     },
     {
       regex: /ratings.json/,
-      formatters: {}
+      formatters: {
+        '^[(\\d+)]$': (h, m) => { return `[${m[1]}, ${h['url']}]`; }
+      }
     },
     /*  // disabled during dev -- slow
     {
