@@ -97,6 +97,25 @@ test('hash pointing to arrays in different order are different', t => {
   diffShouldBe(t, ['/a[1] value: 2 != 3', '/a[2] value: 3 != 2']);
 });
 
+test('can limit max number of errors', t => {
+  lhs = { 'a': [0, 1, 2, 3] };
+  rhs = { 'a': [4, 5, 6, 7] };
+  const allExpected = [
+    '/a[0] value: 0 != 4',
+    '/a[1] value: 1 != 5',
+    '/a[2] value: 2 != 6',
+    '/a[3] value: 3 != 7'
+  ];
+  t.deepEqual(jsonDiff(lhs, rhs), allExpected);
+
+  const first2Expected = [
+    '/a[0] value: 0 != 4',
+    '/a[1] value: 1 != 5'
+  ];
+  t.deepEqual(jsonDiff(lhs, rhs, 2), first2Expected);
+  t.end();
+});
+
 test('array of hashes with differences', t => {
   lhs = [
     {

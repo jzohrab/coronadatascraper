@@ -1,4 +1,4 @@
-export default function jsonDiff(lhs, rhs) {
+export default function jsonDiff(left, right, maxErrors = 10) {
 
   function isPrimitive(arg) {
     var type = typeof arg;
@@ -17,18 +17,21 @@ export default function jsonDiff(lhs, rhs) {
   function _jsonDiffIter(lhs, rhs, currPath, errs) {
 
     if(lhs == rhs) {
-        return;
+      return;
     }
+    
+    if (errs.length === maxErrors)
+      return;
 
     if(isPrimitive(lhs) && isPrimitive(rhs)) {
-      if (lhs != rhs) {
+      if (lhs !== rhs) {
         errs.push(`${currPath} value: ${lhs} != ${rhs}`.trim());
         return;
       }
     }
 
     if (Array.isArray(lhs) && Array.isArray(rhs)) {
-      if (lhs.length != rhs.length) {
+      if (lhs.length !== rhs.length) {
         errs.push(`${currPath} array length: ${lhs.length} != ${rhs.length}`.trim());
         return;
       }
@@ -53,7 +56,7 @@ export default function jsonDiff(lhs, rhs) {
 
 
   const errs = [];
-  _jsonDiffIter(lhs, rhs, '', errs);
+  _jsonDiffIter(left, right, '', errs);
 
   return errs;
 }
