@@ -34,6 +34,27 @@
  *    '[0]/c[0]/e value: e-1 != NOT_E_1',
  *    '[0]/c[1]/d value: d-2 != NOT_D_2'
  *
+ *
+ * Since finding things by array index is annoying, you can also pass
+ * a hash of "formatters" to the method.  The key is a path pattern to
+ * match, and the value is a function(hash, match), where "match" is
+ * the result of regex.match(current path).
+ *
+ * Continuing the above example:
+ *
+ *    const formatters = {
+ *      '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['a']}]`; },
+ *      '^(.*?/c)[(\\d+)]$': (hsh, m) => { return `${m[1]}[${m[2]}, ${hsh['d']}]`; },
+ *    };
+ *
+ * The key '^(.*?/c)[(\\d+)]$' is converted to a regex: /^(.*?\/c)\[(\d+)]\]$/.
+ * When an error location path matches the regex, its method is called.  For this
+ * example, the results are:
+ #
+ *    '[0, apple]/b value: bat != bat-XXXX',
+ *    '[0, apple]/c[0, d-1]/e value: e-1 != NOT_E_1',
+ *    '[0, apple]/c[1, d-2]/d value: d-2 != NOT_D_2'
+ * 
  */
 
 

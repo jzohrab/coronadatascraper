@@ -164,8 +164,8 @@ test('can use formatters to add details to path output', t => {
   ];
 
   const formatters = {
-    '^[(\\d+)]$': (hsh, match) => { return `[${match[1]}, ${hsh['a']}]`; },
-    '^(.*?/c)[(\\d+)]$': (hsh, match) => { return `${match[1]}[${match[2]}, ${hsh['d']}]`; },
+    '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['a']}]`; },
+    '^(.*?/c)[(\\d+)]$': (hsh, m) => { return `${m[1]}[${m[2]}, ${hsh['d']}]`; },
   };
   const actual = jsonDiff.jsonDiff(lhs, rhs, 10, formatters);
   const expected = [
