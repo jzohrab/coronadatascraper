@@ -2,7 +2,7 @@ const imports = require('esm')(module);
 const { join } = require('path');
 const test = require('tape');
 
-const jsonDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'json-diff.js'));
+const jsonDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'diffing', 'json-diff.js'));
 
 // Globals reused for all tests
 var lhs = null;
