@@ -24,18 +24,31 @@ function compareJson(leftFname, rightFname, formatters) {
     errs.forEach(e => { console.log(`* ${e}`); });
 }
 
-/** Compare two files.
- * Pushes differences onto errs.
- */
-function compareFiles(leftFname, rightFname, errs) {
-  const ext = path.extname(leftFname);
-  console.log(`\n${leftFname} vs ${rightFname}`);
-  if (ext === '.json') {
-    compareJson(leftFname, rightFname);
+/** Compare two CSV files. */
+function compareCsv(leftFname, rightFname) {
+  const loadlines = f => {
+    return fs.readFileSync(f, 'utf8').match(/[^\r\n]+/g);
   }
-  else {
-    console.log(`CAN'T HANDLE THIS: ${leftFname}`);
+  const left = loadlines(leftFname);
+  const right = loadlines(rightFname);
+
+  const errs = [];
+  if (left.length !== right.length) {
+    errs.push(`Different line count (${left.length} vs ${right.length})`);
   }
+
+  const minLength = (left.length < right.length) ? left.length : right.length;
+  for (var i = 0; i < minLength; ++i) {
+    if (left[i] != right[i])
+      errs.push(`Line ${i}: "${left[i]}" != "${right[i]}"`);
+    if (errs.length >= 10)
+      break;
+  }
+
+  if (errs.length === 0)
+    console.log('  equal');
+  else
+    errs.forEach(e => { console.log(`* ${e}`); });
 }
 
 /** Filter function */
@@ -93,11 +106,12 @@ function compareReports(left, right) {
     return drs[0];
   }
 
-  const findLeftRightFiles = regex => {
-    return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
-  };
 
-  const runReport = (regex, formatters) => {
+  const runJsonCompare = (regex, formatters) => {
+    const findLeftRightFiles = regex => {
+      return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
+    };
+
     const [left, right] = findLeftRightFiles(regex);
     console.log(left);
     if (left && right) {
@@ -105,7 +119,16 @@ function compareReports(left, right) {
     }
   };
 
-  const reports = [
+  const runCsvCompare = (regex) => {
+    const findLeftRightFiles = regex => {
+      return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
+    };
+    const [left, right] = findLeftRightFiles(regex);
+    console.log(left);
+    compareCsv(left, right);
+  };
+
+  const jsonReports = [
     {
       regex: /data(.*).json/,
       formatters: {
@@ -120,37 +143,25 @@ function compareReports(left, right) {
       regex: /ratings.json/,
       formatters: {}
     },
+    /*  // disabled during dev -- slow
     {
-      regex: /features-2020-4-9.json/,
+      regex: /features(.*).json/,
       formatters: {}
     }
-  ]
-  reports.forEach(hsh => {
-    runReport(hsh.regex, hsh.formatters);
-  });
-
-/*  
-  const formatters = {
-    '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['name']}]`; }
-  };
-  runReport(/data(.*).json/, 
-  const [leftDataJson, rightDataJson] = findLeftRightFiles(/data(.*).json/);
-  console.log(leftDataJson);
-  if (leftDataJson && rightDataJson) {
-    const formatters = {
-      '^[(\\d+)]$': (hsh, m) => { return `[${m[1]}, ${hsh['name']}]`; }
-    };
-    compareJson(leftDataJson, rightDataJson, formatters);
-  }
-
-  const [lratings, rratings] = findLeftRightFiles(/ratings.json/);
 */
-
-  commonFiles.forEach(f => {
-    compareFiles(path.join(left, f), path.join(right, f), ret);
+  ]
+  jsonReports.forEach(hsh => {
+    runJsonCompare(hsh.regex, hsh.formatters);
   });
-  
-  return ret;
+
+  const csvReports = [
+    /crawler-report.csv/,
+    /data(.*).csv/
+  ];
+  csvReports.forEach(regex => {
+    runCsvCompare(regex);
+  });
+
 }
 
 const { argv } = yargs
@@ -170,5 +181,5 @@ const { argv } = yargs
 
 // console.log(argv);
 
-const differences = compareReports(argv.base, argv.other);
-console.log(differences);
+compareReports(argv.base, argv.other);
+// console.log(differences);
