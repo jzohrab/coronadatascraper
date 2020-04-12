@@ -54,3 +54,9 @@ test('can compare strings', t => {
   rhs = 'there';
   diffShouldBe(t, ['value: hi != there']);
 });
+
+test('same strings ok', t => {
+  lhs = 'hi';
+  rhs = 'hi';
+  diffShouldBe(t, []);
+});
