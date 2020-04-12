@@ -1,41 +1,59 @@
-export default function jsonDiff(left, right) {
+export default function jsonDiff(lhs, rhs) {
 
   function isPrimitive(arg) {
     var type = typeof arg;
     return arg == null || (type != "object" && type != "function");
   }
-  
-  /** Iterates through the left and right, pushes errors (differences)
-   * onto errs. */
-  function _jsonDiffIter(left, right, currPath, errs) {
 
-    if(left == right) {
+  function isDictionary(arg) {
+    if(!arg) return false;
+    if(Array.isArray(arg)) return false;
+    if(arg.constructor != Object) return false;
+    return true;
+  };
+  
+  /** Iterates through the lhs and rhs, pushes errors (differences)
+   * onto errs. */
+  function _jsonDiffIter(lhs, rhs, currPath, errs) {
+
+    if(lhs == rhs) {
         return;
     }
 
-    if(isPrimitive(left) && isPrimitive(right)) {
-      if (left != right) {
-        errs.push(`${currPath} value: ${left} != ${right}`.trim());
+    if(isPrimitive(lhs) && isPrimitive(rhs)) {
+      if (lhs != rhs) {
+        errs.push(`${currPath} value: ${lhs} != ${rhs}`.trim());
         return;
       }
     }
 
-    const leftKeys = Object.keys(left).sort();
-    const rightKeys = Object.keys(right).sort();
-    if(leftKeys.toString() !== rightKeys.toString()) {
-      errs.push(`${currPath}/ keys: [${leftKeys}] != [${rightKeys}]`);
-      return;
+    if (Array.isArray(lhs) && Array.isArray(rhs)) {
+      if (lhs.length != rhs.length) {
+        errs.push(`${currPath} array length: ${lhs.length} != ${rhs.length}`.trim());
+        return;
+      }
+      for (var i = 0; i < lhs.length; ++i) {
+        _jsonDiffIter(lhs[i], rhs[i], `${currPath}[$i]`, errs);
+      }
+    } else if (isDictionary(lhs) && isDictionary(rhs)) {
+      const lhsKeys = Object.keys(lhs).sort();
+      const rhsKeys = Object.keys(rhs).sort();
+      if(lhsKeys.toString() !== rhsKeys.toString()) {
+        errs.push(`${currPath}/ keys: [${lhsKeys}] != [${rhsKeys}]`);
+        return;
+      }
+
+      lhsKeys.forEach(k => {
+        _jsonDiffIter(lhs[k], rhs[k], `${currPath}/${k}`, errs);
+      });
+    } else {
+      errs.push(`${currPath} value: type difference (array vs hash)`);
     }
-
-    // compare objects with same keys
-    leftKeys.forEach(k => {
-      _jsonDiffIter(left[k], right[k], `${currPath}/${k}`, errs);
-    });
-
   }
 
+
   const errs = [];
-  _jsonDiffIter(left, right, '', errs);
+  _jsonDiffIter(lhs, rhs, '', errs);
 
   return errs;
 }

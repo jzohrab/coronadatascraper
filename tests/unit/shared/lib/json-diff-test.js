@@ -60,3 +60,42 @@ test('same strings ok', t => {
   rhs = 'hi';
   diffShouldBe(t, []);
 });
+
+test('arrays in same order are equivalent', t => {
+  lhs = [1, 2, 3, 4];
+  rhs = [1, 2, 3, 4];
+  diffShouldBe(t, []);
+});
+
+test('hash pointing to arrays in same order are equivalent', t => {
+  lhs = { 'a': [1, 2, 3, 4] };
+  rhs = { 'a': [1, 2, 3, 4] };
+  diffShouldBe(t, []);
+});
+
+test('hash pointing to different types are different', t => {
+  lhs = { 'a': [1, 2, 3, 4] };
+  rhs = { 'a': { '1': '2', '3': '4' } };
+  diffShouldBe(t, ['/a value: type difference (array vs hash)']);
+});
+
+test('hash pointing to different types are different #2', t => {
+  rhs = { 'a': { '1': '2', '3': '4' } };
+  lhs = { 'a': [1, 2, 3, 4] };
+  diffShouldBe(t, ['/a value: type difference (array vs hash)']);
+});
+
+test('hash pointing to diff length arrays are different', t => {
+  lhs = { 'a': ['a', 'b', 'c'] };
+  rhs = { 'a': ['a', 'b', 'c', 'd'] };
+  diffShouldBe(t, ['/a array length: 3 != 4']);
+});
+
+/*
+test('hash pointing to arrays in different order are different', t => {
+  lhs = { 'a': [1, 2, 3, 4] };
+  rhs = { 'a': [1, 3, 2, 4] };
+  diffShouldBe(t, ['/a value: [1, 2, 3, 4] != [1, 3, 2, 4]']);
+});
+
+*/
