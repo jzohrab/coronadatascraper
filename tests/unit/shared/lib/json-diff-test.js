@@ -143,7 +143,7 @@ test('documentation example', t => {
   diffShouldBe(t, expected);
 });
 
-test.only('can use formatters to add details to path output', t => {
+test('can use formatters to add details to path output', t => {
   lhs = [
     { 'a': 'apple',
       'b': 'bat',
