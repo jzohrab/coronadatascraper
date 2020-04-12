@@ -2,14 +2,14 @@ const imports = require('esm')(module);
 const { join } = require('path');
 const test = require('tape');
 
-const jsonDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'json-diff.js')).default;
+const jsonDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'json-diff.js'));
 
 // Globals reused for all tests
 var lhs = null;
 var rhs = null;
 
 function diffShouldBe(t, expected) {
-  t.deepEqual(jsonDiff(lhs, rhs), expected);
+  t.deepEqual(jsonDiff.jsonDiff(lhs, rhs), expected);
   t.end();
 }
 
@@ -106,13 +106,13 @@ test('can limit max number of errors', t => {
     '/a[2] value: 2 != 6',
     '/a[3] value: 3 != 7'
   ];
-  t.deepEqual(jsonDiff(lhs, rhs), allExpected);
+  t.deepEqual(jsonDiff.jsonDiff(lhs, rhs), allExpected);
 
   const first2Expected = [
     '/a[0] value: 0 != 4',
     '/a[1] value: 1 != 5'
   ];
-  t.deepEqual(jsonDiff(lhs, rhs, 2), first2Expected);
+  t.deepEqual(jsonDiff.jsonDiff(lhs, rhs, 2), first2Expected);
   t.end();
 });
 
@@ -175,4 +175,29 @@ test('array of hashes with differences', t => {
     '[1]/c2/cats2[1] value: lion2 != XXXXlion2'
   ];
   diffShouldBe(t, expected);
+});
+
+
+/////////////
+
+
+test.only('findArrays: initial', t => {
+  lhs = [
+    {
+      'a': 'apple',
+      'b': 'bat',
+      'c': { 'cats': [ 'tiger', 'lion' ] }
+    },
+    {
+      'a': 'apple2',
+      'b': 'bat2',
+      'c': { 'cats': [ 'tiger2', 'lion2' ] }
+    }
+  ];
+  const expected = [
+    'root', '[n]/c/cats'
+  ];
+  const ret = jsonDiff.findArrays(lhs);
+  t.deepEqual(ret, expected);
+  t.end();
 });

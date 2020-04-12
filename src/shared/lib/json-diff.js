@@ -93,3 +93,34 @@ export function jsonDiff(left, right, maxErrors = 10) {
   _jsonDiffIter(left, right, '', errs, maxErrors);
   return errs;
 }
+
+
+/** Finding arrays */
+
+/** Recursively find arrays in hash, add to arrays. */
+function _findArraysIter(obj, currPath, arrays) {
+  if (Array.isArray(obj)) {
+    var p = currPath.trim();
+    if (p === '') { p = 'root'; }
+    arrays.push(p);
+    for (var i = 0; i < obj.length; ++i) {
+      _findArraysIter(obj[i], `${currPath}[n]`, arrays);
+    }
+  } else if (isDictionary(obj)) {
+    Object.keys(obj).forEach(k => {
+      _findArraysIter(obj[k], `${currPath}/${k}`, arrays);
+    });
+  }
+}
+
+export function findArrays(obj) {
+  const arrays = [];
+  _findArraysIter(obj, '', arrays);
+
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+  var uniques = arrays.filter(onlyUnique);
+
+  return uniques;
+}
