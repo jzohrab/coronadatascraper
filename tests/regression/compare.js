@@ -78,22 +78,8 @@ function compareReportFolders(left, right) {
   const leftPaths = fpaths(left);
   const rightPaths = fpaths(right);
 
-  const runJsonCompare = (regex, formatters) => {
-    const [left, right] = findLeftRightFiles(regex, leftPaths, rightPaths);
-    if (left && right) {
-      console.log(left);
-      compareJson(left, right, formatters);
-    }
-  };
-
-  const runCsvCompare = (regex) => {
-    const [left, right] = findLeftRightFiles(regex, leftPaths, rightPaths);
-    if (left && right) {
-      console.log(left);
-      compareCsv(left, right);
-    }
-  };
-
+  const printTitle = s => { console.log(`\n${s}\n${'-'.repeat(s.length)}`); }
+  
   const jsonReports = [
     {
       regex: /data(.*).json/,
@@ -113,15 +99,18 @@ function compareReportFolders(left, right) {
         '^[(\\d+)]$': (h, m) => { return `[${m[1]}, ${h['url']}]`; }
       }
     },
-    /*  // disabled during dev -- slow
     {
       regex: /features(.*).json/,
       formatters: {}
     }
-*/
-  ]
+  ];
+
   jsonReports.forEach(hsh => {
-    runJsonCompare(hsh.regex, hsh.formatters);
+    const [left, right] = findLeftRightFiles(hsh.regex, leftPaths, rightPaths);
+    if (left && right) {
+      printTitle(left);
+      compareJson(left, right, hsh.formatters);
+    }
   });
 
   const csvReports = [
@@ -129,8 +118,14 @@ function compareReportFolders(left, right) {
     /data(.*).csv/
   ];
   csvReports.forEach(regex => {
-    runCsvCompare(regex);
+    const [left, right] = findLeftRightFiles(regex, leftPaths, rightPaths);
+    if (left && right) {
+      printTitle(left);
+      compareCsv(left, right);
+    }
   });
+
+
 
 }
 
