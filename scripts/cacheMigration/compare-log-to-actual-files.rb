@@ -15,7 +15,7 @@ ROOTDIR = File.join(__dir__, '..', '..')
 # a final comma, and put everything in [ ].
 # Totally lazy hack.
 def get_cache_hits()
-  raw_content = File.read(File.join(__dir__, 'cacheCalls.txt'))
+  raw_content = File.read(File.join(__dir__, 'log_cacheCalls.txt'))
   actual = "[ #{raw_content} ]".gsub(",\n ]", "\n]")
   all = JSON.parse(actual)
 
