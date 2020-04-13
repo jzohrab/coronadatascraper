@@ -51,28 +51,29 @@ def validate(scraper_dir, f)
 end
 
 
-def add_filename_to_scraper_this(src)
-  m = src.match(LOCATION_RE)
-  # puts "add filename: #{m.inspect}"
-  if (m.nil?) then
-    puts "  - skipping adding filepath (no match for RE)"
-    return src
-  end
-
-  if (src =~ /filepath: __filename/)
-    puts "  - skipping adding _filepath, already added"
-    return src
-  end
-
-  spaces = m[1].gsub("\n", '')
-  loctype = m[2]
-  puts "  + adding filepath above #{loctype}"
-  add_code = "
-#{spaces}_filepath: __filename,
-#{spaces}#{loctype}:"
-  src = src.sub(LOCATION_RE, add_code)
-  src
-end
+# DISABLING THIS -- scrapers should already have _path.
+# def add_filename_to_scraper_this(src)
+#   m = src.match(LOCATION_RE)
+#   # puts "add filename: #{m.inspect}"
+#   if (m.nil?) then
+#     puts "  - skipping adding filepath (no match for RE)"
+#     return src
+#   end
+# 
+#   if (src =~ /filepath: __filename/)
+#     puts "  - skipping adding _filepath, already added"
+#     return src
+#   end
+# 
+#   spaces = m[1].gsub("\n", '')
+#   loctype = m[2]
+#   puts "  + adding filepath above #{loctype}"
+#   add_code = "
+# #{spaces}_filepath: __filename,
+# #{spaces}#{loctype}:"
+#   src = src.sub(LOCATION_RE, add_code)
+#   src
+# end
 
 
 def add_this_to_fetch_calls(src)
@@ -177,10 +178,9 @@ files.each do |f|
   puts '-' * 50
   fpath = File.join(scraper_dir, f)
   src = File.read(fpath)
-  src = add_filename_to_scraper_this(src)
-  raise "BAD this, this, 1" if (src =~ /this, this,/)
+  # src = add_filename_to_scraper_this(src)
   src = add_this_to_fetch_calls(src)
-  raise "BAD this, this, 2" if (src =~ /this, this,/)
+  raise "BAD this, this" if (src =~ /this, this,/)
   src = postmigration_AU_QLD_stuff(src)
   
   post_migration_check(src)

@@ -74,7 +74,7 @@ export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8')
   const cacheExists = await fs.exists(filePath);
 
   const cacheCheck = {
-    scraperPath: scraper._filepath,
+    scraperPath: scraper._path,
     date,
     requestedUrl: url,
     cacheFilePath: filePath,
