@@ -2,13 +2,13 @@ const imports = require('esm')(module);
 const { join } = require('path');
 const test = require('tape');
 
-const stringDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'diffing', 'string-diff.js'));
+const stringDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'diffing', 'string-diff.js')).default;
 
 let lhs = '';
 let rhs = '';
 
 function diffShouldBe(t, expected) {
-  t.deepEqual(stringDiff.stringDiff(lhs, rhs), expected);
+  t.deepEqual(stringDiff(lhs, rhs), expected);
   t.end();
 }
 
@@ -52,6 +52,6 @@ test('empty right', t => {
 test('either null throws', t => {
   lhs = 'Here is 1 string';
   rhs = null;
-  t.throws(() => stringDiff.stringDiff(lhs, rhs));
+  t.throws(() => stringDiff(lhs, rhs));
   t.end();
 });
