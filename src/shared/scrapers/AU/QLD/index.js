@@ -55,7 +55,7 @@ const scraper = {
       return data;
     },
     '2020-04-09': async function() {
-      const $ = await getCurrentArticlePage(this.url);
+      const $ = await getCurrentArticlePage(this);
       const $table = $('#content table');
 
       const $headings = $table.find('tbody:first-child tr th, thead:first-child tr th');
