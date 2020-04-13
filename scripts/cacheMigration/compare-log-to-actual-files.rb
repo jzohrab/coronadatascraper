@@ -14,20 +14,20 @@ ROOTDIR = File.join(__dir__, '..', '..')
 # The cacheCalls file isn't actually valid json: we have to strip off
 # a final comma, and put everything in [ ].
 # Totally lazy hack.
-def get_cachecalls_json()
-  raw_content = File.read(File.join(__dir__, '..', '..', 'log_cacheCalls.txt'))
+def get_cache_hits()
+  raw_content = File.read(File.join(__dir__, 'cacheCalls.txt'))
   actual = "[ #{raw_content} ]".gsub(",\n ]", "\n]")
-  return JSON.parse(actual)
-end
+  all = JSON.parse(actual)
 
-# Remove cruft from the cacheCalls data.
-def clean_output(hsh)
-  ret = hsh.clone
-  if (ret['scraperPath'].nil?)
-    raise hsh.inspect
-  end
-  ret['scraperPath'].gsub!(/^.*?src/, 'src')
-  ret.delete('cacheFileExists')
+  bad_records = all.select { |hsh| hsh['scraperPath'].nil? }
+  raise "Bad records missing scraperPath" if (bad_records.size > 0)
+
+  puts "Have #{all.size} records, including cache misses"
+  ret =
+    all.
+      select { |h| h['cacheFileExists'] == true }.
+      select { |h| h['cacheFilePath'] =~ /coronadatascraper-cache/ }
+  puts "Have #{ret.size} records, only cache hits"
   return ret
 end
 
@@ -148,14 +148,12 @@ end
 #########################################################3
 # Analysis
 
-j = get_cachecalls_json()
+cache_hits = get_cache_hits()
+# puts cache_hits[0].inspect
 
-jout =
-  j.select { |h| h['cacheFilePath'] =~ /coronadatascraper-cache/ }.
-    map { |h| clean_output(h) }
-files_returned = jout.map { |h| h['cacheFilePath'] }.uniq.sort
-
-# puts JSON.pretty_generate(jout)
+files_hit = cache_hits.map { |h| h['cacheFilePath'] }.uniq.sort
+# puts files_hit.select { |f| f.include?("3636e44f67113049a0a53c378bef5a88") }
+# return
 
 cachedir = File.join(__dir__, '..', '..', 'coronadatascraper-cache')
 files = []
@@ -168,8 +166,16 @@ all_files =
     uniq.
     sort
 
-cache_hits = files_returned & all_files
-unused_files = all_files - files_returned
+unused_files = all_files - files_hit
+
+# Tracking down a troublesome commit:
+# puts all_files.select { |f| f.include?("3636e44f67113049a0a53c378bef5a88") }
+# puts "Hits:"
+# puts files_hit.select { |f| f.include?("3636e44f67113049a0a53c378bef5a88") }
+# return
+# puts "Unused:"
+# puts unused_files.select { |f| f.include?("3636e44f67113049a0a53c378bef5a88") }
+# return
 
 puts "The following #{unused_files.size} files were NOT INCLUDED in log_cacheCalls.txt"
 puts unused_files.map { |f| f.gsub(/coronadatascraper-cache\./, '') }

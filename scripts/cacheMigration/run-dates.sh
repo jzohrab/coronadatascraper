@@ -8,7 +8,7 @@ rm ./log.txt
 for dt in `ls -1 coronadatascraper-cache/`
 do
     echo "Running $dt"
-    cmd="node scripts/cacheMigration/fetchOnly.js --date '$dt' --onlyUseCache --location US/PA"
+    cmd="node scripts/cacheMigration/fetchOnly.js --date '$dt' --onlyUseCache"
     echo $cmd
     echo "   ... running, piping output to log.txt"
     echo "===============================" >> log.txt
