@@ -80,8 +80,8 @@ def add_this_to_fetch_calls(src)
   original_src = "CLONE: #{src}"
 
   matches = src.scan(FETCH_RE)
-  # puts "add this: #{matches.inspect}"
-  matches.each do |m|
+  puts "add this: #{matches.inspect}"
+  matches.uniq.each do |m|
     raise "bad re? #{m}" if m.size != 3
     wholeline, before, after = m
     if (after =~ /this, /) then
