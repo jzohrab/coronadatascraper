@@ -1,17 +1,17 @@
-/** TEMP SCRIPT ONLY.
- * Registered in package.json, usage:
- * yarn fetchOnly --date '2020-03-28' --onlyUseCache
- */
+/** TEMP SCRIPT ONLY. */
 
 const imports = require('esm')(module);
 
+const { join } = imports('path');
+
 delete process.env.USE_OLD_DATETIME;
 
-const argv = imports('./cli/cli-args.js').default;
-const clearAllTimeouts = imports('./utils/timeouts.js').default;
-const fetchSources = imports('../events/crawler/get-sources/index.js').default;
-const scrapeData = imports('../events/crawler/scrape-data/index.js').default;
-const datetime = imports('./lib/datetime/index.js').default;
+const src = join(__dirname, '..', '..', 'src');
+const argv = imports(join(src, 'shared/cli/cli-args.js')).default;
+const clearAllTimeouts = imports(join(src, 'shared/utils/timeouts.js')).default;
+const fetchSources = imports(join(src, 'events/crawler/get-sources/index.js')).default;
+const scrapeData = imports(join(src, 'events/crawler/scrape-data/index.js')).default;
+const datetime = imports(join(src, 'shared/lib/datetime/index.js')).default;
 
 /** Fetch and scrape the data only.
  * temp file to extract data only.
@@ -35,5 +35,3 @@ fetchAndScrape(argv.date, argv)
     clearAllTimeouts();
     throw e;
   });
-
-console.log('REMOVE THIS WHEN CACHE MIGRATED');

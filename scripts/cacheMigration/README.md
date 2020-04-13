@@ -8,6 +8,9 @@ Summary:
 * A script to automatically change all scraper files to use the
   updated API
 
+* A new "fetchonly.js" script run from command line, to actually fetch
+  data, hit cache, hence logging calls.
+
 * A set of scripts to run full scrapes for all dates stored in
   coronadatascraper-cache, collecting and analyzing the cache calls
   and errors.
@@ -89,7 +92,8 @@ include `this`, and a few small misc changes.
 After running this, can run yarn and check `cacheCalls.txt`
 
 ```
-$ yarn fetchOnly --date '2020-03-28' --onlyUseCache --location 'PA, USA'
+cd project root
+$ node scripts/cacheMigrationfetchOnly.js --date '2020-03-28' --onlyUseCache --location 'PA, USA'
 ```
 
 #### Debugging and manual hacks.
