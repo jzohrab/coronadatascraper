@@ -1,15 +1,53 @@
-// Regression testing.
-// Compare the json files in 2 folders.
+/** Compare two folders of Covid Data Scraper reports.
+ *
+ * Given two folders, this script diffs the corresponding reports, and
+ * prints the differences to console log.  Call this script from the
+ * command line.
+ *
+ * Usage:
+ * node ${this_file} --left <one folder> --right <other folder>
+ *
+ * Sample annotated output:
+ *
+ *    $ node tests/regression/compare.js --left zzzBase/ --right zzzOther/
+ *    
+ *    data-2020-4-9.json
+ *    ------------------
+ *    * [2703, Roberts County, South Dakota]/sources[0]/url value: X != https://doh.org
+ *    
+ *    Explanation:
+ *    Nested json structures are separated by `/`.  `[#]` indicates an array.
+ *    Some "formatters" are used to add extra info to the diff report.
+ *    So, the above line says:
+ *    * For the two files zzzBase/data-2020-4-9.json and zzzOther/data-2020-4-9.json,
+ *    * - root array element 2703 (Roberts County, SD)
+ *    * - ... has a 'sources' array, of which element 0
+ *    * - ... has a 'url' property which is different:
+ *    * the `--left` file contains `X`, the `--right` file contains `https://doh.org`
+ *
+ *    reports/crawler-report.csv
+ *    --------------------------
+ *    * Line 154, col 51: "," != "s"
+ *
+ *    features-2020-4-9.json
+ *    ----------------------
+ *      equal
+ *    
+ *    The corresponding files in the `--left` and `--right` directories are equal.
+ */
 
 const imports = require('esm')(module);
 const path = require('path');
 const fs = require('fs');
 const yargs = imports('yargs');
 const glob = require('fast-glob').sync;
+
 const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
-const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 const jsonDiff = imports(path.join(lib, 'diffing', 'json-diff.js'));
 const stringDiff = imports(path.join(lib, 'diffing', 'string-diff.js'));
+
+
+// Utilities /////////////////////////////////////////
 
 /** Compare two json files. */
 function compareJson(leftFname, rightFname, formatters) {
@@ -71,6 +109,8 @@ function findLeftRightFiles(regex, leftPaths, rightPaths) {
   return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
 }
 
+// Main method /////////////////////////////////////////
+
 /** Compare reports in "left" and "right" folders. */
 function compareReportFolders(left, right) {
 
@@ -78,7 +118,10 @@ function compareReportFolders(left, right) {
   const leftPaths = fpaths(left);
   const rightPaths = fpaths(right);
 
-  const printTitle = s => { console.log(`\n${s}\n${'-'.repeat(s.length)}`); }
+  const printTitle = s => {
+    const b = path.basename(s);
+    console.log(`\n${b}\n${'-'.repeat(b.length)}`);
+  }
   
   const jsonReports = [
     {
@@ -125,25 +168,25 @@ function compareReportFolders(left, right) {
     }
   });
 
-
-
 }
 
+// Entry point /////////////////////////////////////////
+
 const { argv } = yargs
-  .option('base', {
-    alias: 'b',
-    description: 'Base folder',
+  .option('left', {
+    alias: 'l',
+    description: 'Left folder',
     type: 'string',
     default: 'dist'
   })
-  .option('other', {
-    alias: 'o',
-    description: 'Other folder',
+  .option('right', {
+    alias: 'r',
+    description: 'Right folder',
     type: 'string'
   })
-  .demand(['base', 'other'], 'Please specify both directories')
+  .demand(['left', 'right'], 'Please specify both directories')
+  .version(false)
   .help();
 
 
-compareReportFolders(argv.base, argv.other);
-
+compareReportFolders(argv.left, argv.right);
