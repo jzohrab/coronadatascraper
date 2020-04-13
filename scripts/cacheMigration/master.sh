@@ -21,9 +21,9 @@ git checkout -b $1
 # Auto-migrate code and save it
 pushd ./scripts/cacheMigration
 ruby cache-migration-hacks.rb save
+popd
 
 # Run scrape, gen reports
-popd
 ./scripts/cacheMigration/run-dates.sh
 ruby scripts/cacheMigration/compare-log-to-actual-files.rb > cache_comparison.txt
 ./scripts/cacheMigration/check_log.sh > log_error_check.txt
