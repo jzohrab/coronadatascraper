@@ -121,9 +121,9 @@ ruby scripts/cacheMigration/compare-log-to-actual-files.rb
 
 * `run-dates.sh`: loops through all the folders in the cache, and runs
   `yarn start` for each date.  Writes `./log.txt` and
-  `./scripts/cacheMigration/cacheCalls.txt`
+  `./log_cacheCalls.txt`
 * `compare-log-to-actual-files.rb`: compares the files used (recorded
-  in `cacheCalls.txt`) to actual cache files, see what's included, and
+  in `log_cacheCalls.txt`) to actual cache files, see what's included, and
   what's missing.
 * `check_log.sh`: checks the logs for anything bad which indicates
   that the the code changes in `cache-migration-hacks.rb` weren't

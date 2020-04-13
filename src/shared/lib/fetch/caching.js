@@ -84,7 +84,7 @@ export const getCachedFile = async (scraper, url, type, date, encoding = 'utf8')
 
   // Write data to aid in cache migration.
   const newData = `${JSON.stringify(cacheCheck, null, 2)},\n`;
-  fsBuiltIn.appendFile(join(process.cwd(), 'scripts', 'cacheMigration', 'cacheCalls.txt'), newData, err => {
+  fsBuiltIn.appendFile(join(process.cwd(), 'log_cacheCalls.txt'), newData, err => {
     if (err) throw err;
   });
   // console.error(cacheCheck);

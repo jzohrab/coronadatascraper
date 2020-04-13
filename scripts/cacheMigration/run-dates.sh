@@ -2,13 +2,13 @@
 # Run this in the project root directory!
 
 # Clear out logs.
-rm ./scripts/cacheMigration/cacheCalls.txt
+rm ./log_cacheCalls.txt
 rm ./log.txt
 
 for dt in `ls -1 coronadatascraper-cache/`
 do
     echo "Running $dt"
-    cmd="node scripts/cacheMigration/fetchOnly.js --date '$dt' --onlyUseCache"
+    cmd="node scripts/cacheMigration/fetchOnly.js --date '$dt' --onlyUseCache --location US/PA"
     echo $cmd
     echo "   ... running, piping output to log.txt"
     echo "===============================" >> log.txt

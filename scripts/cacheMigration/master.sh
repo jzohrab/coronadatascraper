@@ -28,4 +28,4 @@ popd
 ruby scripts/cacheMigration/compare-log-to-actual-files.rb > cache_comparison.txt
 ./scripts/cacheMigration/check_log.sh > log_error_check.txt
 
-echo "Done: check files: scripts/cacheMigration/cacheCalls.txt, and .txt files in root (log, log_error_check, cache_comparison)"
+echo "Done: check files: check .txt files in root (log_cacheCalls, log, log_error_check, cache_comparison)"

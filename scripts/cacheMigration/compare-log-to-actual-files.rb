@@ -1,5 +1,5 @@
 # coding: utf-8
-# Given cacheCalls.txt in this directory, compare the output against the data.
+# Given log_cacheCalls.txt, compare the output against the data.
 
 
 require 'json'
@@ -15,7 +15,7 @@ ROOTDIR = File.join(__dir__, '..', '..')
 # a final comma, and put everything in [ ].
 # Totally lazy hack.
 def get_cachecalls_json()
-  raw_content = File.read(File.join(__dir__, 'cacheCalls.txt'))
+  raw_content = File.read(File.join(__dir__, '..', '..', 'log_cacheCalls.txt'))
   actual = "[ #{raw_content} ]".gsub(",\n ]", "\n]")
   return JSON.parse(actual)
 end
@@ -171,9 +171,9 @@ all_files =
 cache_hits = files_returned & all_files
 unused_files = all_files - files_returned
 
-puts "The following #{unused_files.size} files were NOT INCLUDED in cacheCalls.txt"
+puts "The following #{unused_files.size} files were NOT INCLUDED in log_cacheCalls.txt"
 puts unused_files.map { |f| f.gsub(/coronadatascraper-cache\./, '') }
-puts "End #{unused_files.size} files not included in cacheCalls.txt"
+puts "End #{unused_files.size} files not included in log_cacheCalls.txt"
 
 puts
 puts "Same file name occurring more than once in unused files:"
