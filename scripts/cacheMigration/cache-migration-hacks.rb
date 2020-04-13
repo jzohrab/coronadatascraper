@@ -93,10 +93,10 @@ def add_this_to_fetch_calls(src)
     end
   end
 
-  if (original_src !~ /this, this,/ && src =~ /this, this,/) then
-    src = src.gsub('this, this,', 'this, ')
+  if (original_src !~ /this,\s+this,/ && src =~ /this,\s+this,/) then
+    src = src.gsub(/this,\s+this,/, 'this, ')
   end
-  # raise "have 'this, this'" if (src =~ /this, this,/)
+  raise "still have 'this, this'" if (src =~ /this,\sthis,/)
 
   src
 end

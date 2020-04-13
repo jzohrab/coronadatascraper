@@ -22,3 +22,6 @@ echo
 echo "Count of filepath errors (need to fix instrumentation)"
 grep "_filepath" log.txt | wc -l
 
+echo
+echo "Count of UnhandledPromiseRejectionWarning (instrumentation)"
+grep "UnhandledPromiseRejectionWarning" log.txt | wc -l
