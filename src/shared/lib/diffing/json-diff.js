@@ -57,26 +57,25 @@
  * 
  */
 
-
 /** Returns true if arg is a primitive. */
 function isPrimitive(arg) {
-  var type = typeof arg;
-  return arg == null || (type != "object" && type != "function");
+  const type = typeof arg;
+  return arg == null || (type != 'object' && type != 'function');
 }
 
 /** True if arg is a hash. */
 function isDictionary(arg) {
-  if(!arg) return false;
-  if(Array.isArray(arg)) return false;
-  if(arg.constructor != Object) return false;
+  if (!arg) return false;
+  if (Array.isArray(arg)) return false;
+  if (arg.constructor != Object) return false;
   return true;
-};
+}
 
 /** Return the new path to show to the user, if the current path
  * matches any of the formaters. */
 function reformatCurrPath(hsh, currPath, formatters) {
-  var newPath = currPath;
-  for (var i = 0; i < formatters.length; ++i) {
+  let newPath = currPath;
+  for (let i = 0; i < formatters.length; ++i) {
     const [re, formattingFunction] = formatters[i];
     const m = newPath.match(re);
     // console.log(`newPath: "${newPath}"; re: ${re}; m: ${m}`);
@@ -91,29 +90,26 @@ function reformatCurrPath(hsh, currPath, formatters) {
 /** Recursion through the lhs and rhs, pushing errors (differences)
  * onto errs, up to maxErrors. */
 function _jsonDiffIter(lhs, rhs, currPath, errs, maxErrors, formatters) {
-  
-  if (errs.length === maxErrors)
-    return;
+  if (errs.length === maxErrors) return;
 
   const newPath = reformatCurrPath(lhs, currPath, formatters);
 
-  if(isPrimitive(lhs) && isPrimitive(rhs)) {
+  if (isPrimitive(lhs) && isPrimitive(rhs)) {
     if (lhs !== rhs) {
       errs.push(`${newPath} value: ${lhs} != ${rhs}`.trim());
     }
-  }
-  else if (Array.isArray(lhs) && Array.isArray(rhs)) {
+  } else if (Array.isArray(lhs) && Array.isArray(rhs)) {
     if (lhs.length !== rhs.length) {
       errs.push(`${newPath} array length: ${lhs.length} != ${rhs.length}`.trim());
     } else {
-      for (var i = 0; i < lhs.length; ++i) {
+      for (let i = 0; i < lhs.length; ++i) {
         _jsonDiffIter(lhs[i], rhs[i], `${newPath}[${i}]`, errs, maxErrors, formatters);
       }
     }
   } else if (isDictionary(lhs) && isDictionary(rhs)) {
     const lhsKeys = Object.keys(lhs).sort();
     const rhsKeys = Object.keys(rhs).sort();
-    if(lhsKeys.toString() !== rhsKeys.toString()) {
+    if (lhsKeys.toString() !== rhsKeys.toString()) {
       errs.push(`${newPath}/ keys: [${lhsKeys}] != [${rhsKeys}]`);
     } else {
       lhsKeys.forEach(k => {
@@ -125,16 +121,15 @@ function _jsonDiffIter(lhs, rhs, currPath, errs, maxErrors, formatters) {
   }
 }
 
-
 /** The formatter keys are simplified strings.  Make them regexes.
  * e.g., "^([\d+]/c)[(\d+)]$" => /^(\[\d+\]\/c)\[(\d+)\]$" */
 function convertFormatterKeysToRegexes(formatters) {
-  const ret = []
+  const ret = [];
   Object.keys(formatters).forEach(k => {
     const restring = k
-          .replace(/\[/g, '\\[')
-          .replace(/\]/g, '\\]')
-          .replace(/\//g, '\/');
+      .replace(/\[/g, '\\[')
+      .replace(/\]/g, '\\]')
+      .replace(/\//g, '/');
     // console.log(`${k} => ${restring}`);
     const re = new RegExp(restring);
     ret.push([re, formatters[k]]);
@@ -150,16 +145,17 @@ export function jsonDiff(left, right, maxErrors = 10, formatters = {}) {
   return errs;
 }
 
-
 /** Finding arrays */
 
 /** Recursively find arrays in hash, add to arrays. */
 function _findArraysIter(obj, currPath, arrays) {
   if (Array.isArray(obj)) {
-    var p = currPath.trim();
-    if (p === '') { p = 'root'; }
+    let p = currPath.trim();
+    if (p === '') {
+      p = 'root';
+    }
     arrays.push(p);
-    for (var i = 0; i < obj.length; ++i) {
+    for (let i = 0; i < obj.length; ++i) {
       _findArraysIter(obj[i], `${currPath}[n]`, arrays);
     }
   } else if (isDictionary(obj)) {
@@ -173,10 +169,10 @@ export function findArrays(obj) {
   const arrays = [];
   _findArraysIter(obj, '', arrays);
 
-  function onlyUnique(value, index, self) { 
+  function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
-  var uniques = arrays.filter(onlyUnique);
+  const uniques = arrays.filter(onlyUnique);
 
   return uniques;
 }

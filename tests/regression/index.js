@@ -1,32 +1,31 @@
 // Regression testing.
 const imports = require('esm')(module);
 const path = require('path');
+
 const yargs = imports('yargs');
 const glob = require('fast-glob').sync;
+
 const lib = path.join(process.cwd(), 'src', 'shared', 'lib');
 const datetime = imports(path.join(lib, 'datetime', 'index.js')).default;
 
-                                   
 /** Get the latest folder date in coronadatascraper-cache. */
 // TODO - this belongs in the cache class.  Also move fast-glob there.
 function latestCompleteCacheDate() {
   const cache = path.join(process.cwd(), 'coronadatascraper-cache');
   const folders = glob(path.join(cache, '*'), { onlyDirectories: true });
   const dates = folders
-        .map(f => f.split(path.sep).pop())
-        .filter(s => /\d{4}-\d{1,2}-\d{1,2}$/.test(s))
-        .map(s => new Date(s));
-  const maxDate=new Date(Math.max.apply(null,dates));
+    .map(f => f.split(path.sep).pop())
+    .filter(s => /\d{4}-\d{1,2}-\d{1,2}$/.test(s))
+    .map(s => new Date(s));
+  const maxDate = new Date(Math.max.apply(null, dates));
   return datetime.getYYYYMD(maxDate);
 }
-
 
 function runRegression(argv) {
   console.log(argv.origin);
   console.log(argv.branch);
   console.log(argv.commit);
 }
-
 
 const { argv } = yargs
   .option('origin', {
@@ -50,7 +49,7 @@ const { argv } = yargs
   .option('writeTo', {
     alias: 'w',
     description: 'Write to dir',
-    type: 'string',
+    type: 'string'
   })
   .demand('writeTo', 'Please specify directory to write to')
   .help();
@@ -59,11 +58,10 @@ console.log(argv);
 
 const cacheDate = latestCompleteCacheDate();
 
-const execSync = imports('child_process').execSync;
-
+const { execSync } = imports('child_process');
 
 function runCommand(cmd) {
-  execSync(cmd, {stdio: 'inherit'});
+  execSync(cmd, { stdio: 'inherit' });
 }
 
 // First run of reports, going through public interface.

@@ -4,9 +4,8 @@ const test = require('tape');
 
 const stringDiff = imports(join(process.cwd(), 'src', 'shared', 'lib', 'diffing', 'string-diff.js'));
 
-
-var lhs = '';
-var rhs = '';
+let lhs = '';
+let rhs = '';
 
 function diffShouldBe(t, expected) {
   t.deepEqual(stringDiff.stringDiff(lhs, rhs), expected);
