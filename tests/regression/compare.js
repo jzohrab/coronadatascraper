@@ -53,6 +53,25 @@ function compareCsv(leftFname, rightFname) {
     errs.forEach(e => { console.log(`* ${e}`); });
 }
 
+/** Find _one_ file in leftPaths and rightPaths that matches the
+ * regex. */
+function findLeftRightFiles(regex, leftPaths, rightPaths) {
+  function findFile(files, regex) {
+    const drs = files.filter(f => { return regex.test(f); });
+    if (drs.length === 0) {
+      console.log(`Missing ${regex} file.`);
+      return null;
+    }
+    if (drs.length > 1) {
+      console.log(`Multiple/ambiguous ${regex} files.`);
+      return null;
+    }
+    return drs[0];
+  }
+  return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
+}
+
+
 /** Filter function */
 function containedIn(arr, expected) {
   return function arrContains(element) {
@@ -60,10 +79,8 @@ function containedIn(arr, expected) {
   };
 }
 
-/** Compare dirs.
- * Returns array reporting differences.
- */
-function compareReports(left, right) {
+/** Compare reports in "left" and "right" folders. */
+function compareReportFolders(left, right) {
   let ret = [];
 
   const fnames = d => {
@@ -93,26 +110,8 @@ function compareReports(left, right) {
   const leftPaths = fpaths(left);
   const rightPaths = fpaths(right);
 
-  function findFile(files, regex) {
-    const drs = files.filter(f => { return regex.test(f); });
-    if (drs.length === 0) {
-      console.log(`Missing ${regex} file.`);
-      return null;
-    }
-    if (drs.length > 1) {
-      console.log(`Multiple/ambiguous ${regex} files.`);
-      return null;
-    }
-    return drs[0];
-  }
-
-
   const runJsonCompare = (regex, formatters) => {
-    const findLeftRightFiles = regex => {
-      return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
-    };
-
-    const [left, right] = findLeftRightFiles(regex);
+    const [left, right] = findLeftRightFiles(regex, leftPaths, rightPaths);
     if (left && right) {
       console.log(left);
       compareJson(left, right, formatters);
@@ -120,10 +119,7 @@ function compareReports(left, right) {
   };
 
   const runCsvCompare = (regex) => {
-    const findLeftRightFiles = regex => {
-      return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
-    };
-    const [left, right] = findLeftRightFiles(regex);
+    const [left, right] = findLeftRightFiles(regex, leftPaths, rightPaths);
     if (left && right) {
       console.log(left);
       compareCsv(left, right);
@@ -185,7 +181,6 @@ const { argv } = yargs
   .demand(['base', 'other'], 'Please specify both directories')
   .help();
 
-// console.log(argv);
 
-compareReports(argv.base, argv.other);
-// console.log(differences);
+compareReportFolders(argv.base, argv.other);
+
