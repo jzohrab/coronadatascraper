@@ -71,40 +71,8 @@ function findLeftRightFiles(regex, leftPaths, rightPaths) {
   return [findFile(leftPaths, regex), findFile(rightPaths, regex)];
 }
 
-
-/** Filter function */
-function containedIn(arr, expected) {
-  return function arrContains(element) {
-    return (expected == (arr.indexOf(element) >= 0));
-  };
-}
-
 /** Compare reports in "left" and "right" folders. */
 function compareReportFolders(left, right) {
-  let ret = [];
-
-  const fnames = d => {
-    return glob(path.join(d, '**', '*.*'))
-      .map(s => s.replace(`${d}${path.sep}`, '')).
-      sort();
-  };
-  const leftFiles = fnames(left);
-  const rightFiles = fnames(right);
-  const allFiles = leftFiles.concat(rightFiles);
-  function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index;
-  }
-  var uniques = allFiles.filter(onlyUnique);
-
-  const reportMissing = (files, folderName) => {
-    const missing = uniques.filter(containedIn(files, false));
-    missing.forEach(f => {
-      ret.push(`${f} missing in ${folderName}`);
-    });
-  };
-  reportMissing(leftFiles, left);
-  reportMissing(rightFiles, right);
-
 
   const fpaths = d => { return glob(path.join(d, '**', '*.*')).sort(); }
   const leftPaths = fpaths(left);
