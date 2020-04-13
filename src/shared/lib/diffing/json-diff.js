@@ -60,14 +60,14 @@
 /** Returns true if arg is a primitive. */
 function isPrimitive(arg) {
   const type = typeof arg;
-  return arg == null || (type != 'object' && type != 'function');
+  return arg == null || (type !== 'object' && type !== 'function');
 }
 
 /** True if arg is a hash. */
 function isDictionary(arg) {
   if (!arg) return false;
   if (Array.isArray(arg)) return false;
-  if (arg.constructor != Object) return false;
+  if (arg.constructor !== Object) return false;
   return true;
 }
 

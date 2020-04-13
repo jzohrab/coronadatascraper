@@ -1,6 +1,6 @@
 /** Diff two strings. */
 
-export function stringDiff(lhs, rhs) {
+export default function stringDiff(lhs, rhs) {
   if (lhs === null || rhs === null) throw new Error('Missing lhs or rhs');
 
   const ret = { column: null, left: '', right: '' };
@@ -10,7 +10,7 @@ export function stringDiff(lhs, rhs) {
   for (let i = 0; i < minLen; ++i) {
     const lc = lhs[i];
     const rc = rhs[i];
-    if (lc != rc) {
+    if (lc !== rc) {
       foundDiff = true;
       ret.column = i + 1;
       ret.left = lc;

@@ -21,12 +21,6 @@ function latestCompleteCacheDate() {
   return datetime.getYYYYMD(maxDate);
 }
 
-function runRegression(argv) {
-  console.log(argv.origin);
-  console.log(argv.branch);
-  console.log(argv.commit);
-}
-
 const { argv } = yargs
   .option('origin', {
     alias: 'o',
@@ -80,8 +74,3 @@ runCommand(baseCmd);
 
 // Update things
 // git submodule update --remote
-
-/*
-output = execSync('git checkout master', { encoding: 'utf-8' });  // the default is 'buffer'
-console.log('Output was:\n', output);
-*/
