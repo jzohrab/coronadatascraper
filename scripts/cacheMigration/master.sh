@@ -10,6 +10,11 @@
 # eg
 # ./scripts/cacheMigration/master.sh wip-my-migration-branch
 
+if ["$1" -eq ""]; then
+    echo "NO GOOD.  Specify a branch name, puh-leaze ... quitting."
+    exit 0
+fi
+
 # Prep migration branch
 git checkout -b $1
 
