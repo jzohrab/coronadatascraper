@@ -55,7 +55,7 @@ def delete_bad_json_files(unused_files)
   data.sort! { |a, b| a[:length] <=> b[:length] }
 
   bad_json = data.select { |d| d[:is_error] }
-  puts "\n# DELETE ERROR JSON FILES:"
+  puts "# DELETE ERROR JSON FILES:"
   bad_json.each do |d|
     puts "git rm #{d[:filename]}"
   end
@@ -64,7 +64,7 @@ end
 
 def delete_txt_files(unused_files)
   txt = unused_files.select { |f| f =~ /txt$/ }
-  puts "\n# DELETE .txt FILES:"
+  puts "# DELETE .txt FILES:"
   txt.each do |f|
     puts "git rm #{f}"
   end
@@ -101,7 +101,7 @@ def delete_bad_html_files(unused_files)
   # end
   
   bad_html = data.select { |d| d[:is_error] }
-  puts "\n# DELETE BAD HTML FILES:"
+  puts "# DELETE BAD HTML FILES:"
   bad_html.each do |d|
     puts "git rm #{d[:filename]}"
   end
@@ -138,7 +138,7 @@ def delete_bad_csv_files(unused_files)
   #  end
   
   bad_files = data.select { |d| d[:is_error] }
-  puts "\n# DELETE BAD CSV FILES:"
+  puts "# DELETE BAD CSV FILES:"
   bad_files.each do |d|
     puts "git rm #{d[:filename]}"
   end
@@ -204,12 +204,84 @@ report.each { |s| puts "  #{s}" }
 
 puts "\n\n"
 puts "=" * 55
-puts "Suggested cache cleanup:"
-
-
-puts "\n\n\n"
+puts "SUGGESTED CACHE CLEANUP:"
 puts "# #{unused_files.size} unused"
 delete_bad_json_files(unused_files)
 delete_txt_files(unused_files)
 delete_bad_html_files(unused_files)
 delete_bad_csv_files(unused_files)
+
+
+############################################
+# Scrapers that have multiple calls
+#
+# For each date, get the count of coronadatascraper-cache file path
+# hits, per scraperPath.
+
+puts "\n\n"
+puts "=" * 55
+puts "SCRAPERS WITH MULTIPLE CALLS:"
+
+cache_hits = get_cache_hits()
+
+# For some scrapers which use ArcGIS, we actually have too many cache
+# hits.  For example, NJ uses an ArcGIS method (which in turn calls
+# another ArcGIS method) to determine its final URL to call.  This
+# means that there are 3 calls for just one source.  As a result, we
+# can discard some of the cache hits
+port_cache_hits = cache_hits.select do |h|
+  u = h['requestedUrl']
+  (u !~ /maps\.arcgis\.com/) && (u !~ /services.*?\.arcgis\.com/)
+end
+
+puts "#{cache_hits.size} cache hits, but after removing ArcGIS it's #{port_cache_hits.size}"
+
+
+# All right, crazy code:
+date_scraper_hash = Hash.new do |hash, key|
+  hash[key] = Hash.new { |ih, ik| ih[ik] = [] }
+end
+# This lets us access and immediately push values:
+# > date_scraper_hash[1]['c'] << 'h'
+# => date_scraper_hash = {1=>{"c"=>["h"]}}
+
+port_cache_hits.each do |h|
+  d = h['date']
+  s = h['scraperPath']
+
+  # Some scrapers use ArcGIS, which results in multiple calls being
+  # made to determine the final URL.
+  date_scraper_hash[d][s] << h['requestedUrl']
+end
+
+# puts date_scraper_hash.inspect
+multiple_hits = []
+date_scraper_hash.each_pair do |dt, path_and_sources|
+  path_and_sources.each_pair do |path, sources|
+    multiple_hits << [dt, path, sources] if (sources.size > 1)
+  end
+end
+# puts multiple_hits
+
+puts "Scrapers with multiple calls:"
+sc_with_mult =
+  multiple_hits.
+    map { |d, p, s| p }.
+    map { |s| s.gsub(/.*scrapers\//, '') }.
+    sort.
+    uniq
+puts sc_with_mult
+puts "(#{sc_with_mult.size} scrapers)"
+
+puts "\nThese scrapers, and their calls by date:"
+sc_with_mult.each do |sc|
+  calls = multiple_hits.select { |d, p, s| p =~ /#{sc}/ }
+  calls.each do |d, p, s|
+    puts d
+    if (s.size > 3) then
+      puts "#{s[0..2].inspect}, and #{s.size - 3} more ..."
+    else
+      puts s.inspect
+    end
+  end
+end
