@@ -16,7 +16,7 @@ import datetime from './lib/datetime/index.js';
 const { performance } = require('perf_hooks');
 
 /** The start time of the generation. */
-let startTime = performance.now();
+const startTime = performance.now();
 
 /** The current time, updated as code runs. */
 let currTime = startTime;
@@ -35,7 +35,7 @@ function reportTotalSeconds(args) {
   const newTime = performance.now();
   console.log(`PROFILE: total time: ${(newTime - startTime) / 1000}`);
   return args;
-};
+}
 
 /**
  * Entry file while we're still hosted on GitHub

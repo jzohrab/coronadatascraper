@@ -121,31 +121,58 @@ export async function runScraper(location) {
   return scraperOutput;
 }
 
+// I tried returning an array, it didn't work.
+async function runSingleScraper(location) {
+  try {
+    log(`\n\nBegin scraper for ${geography.getName(location)}`);
+    const data = await runScraper(location);
+    log(`Finished scraper for ${geography.getName(location)}\n\n\n`);
+    return { data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+const logError = (errors, location, err) => {
+  log.error('  ❌ Error processing %s: ', geography.getName(location), err);
+  errors.push({
+    name: geography.getName(location),
+    url: location.url,
+    type: err.name,
+    err: err.toString()
+  });
+  reporter.logError('scraper failure', 'scraper failed', err.toString(), 'critical', location);
+};
+
+const updateData = async (locations, location, data, errors) => {
+  try {
+    addData(locations, location, data);
+  } catch (err) {
+    logError(errors, location, err);
+  }
+};
+
 const runScrapers = async args => {
   const { sources } = args;
 
   const locations = [];
   const errors = [];
-  for (const location of sources) {
-    if (location.scraper) {
-      try {
-        log(`\n\n\nBegin scraper for ${geography.getName(location)}`);
-        addData(locations, location, await runScraper(location));
-        log(`Finished scraper for ${geography.getName(location)}\n\n\n`);
-      } catch (err) {
-        log.error('  ❌ Error processing %s: ', geography.getName(location), err);
 
-        errors.push({
-          name: geography.getName(location),
-          url: location.url,
-          type: err.name,
-          err: err.toString()
-        });
+  const runSources = sources.filter(location => location.scraper);
+  const results = await Promise.all(
+    runSources.map(loc => {
+      const ret = runSingleScraper(loc);
+      return [loc, ret.data, ret.error];
+    })
+  );
 
-        reporter.logError('scraper failure', 'scraper failed', err.toString(), 'critical', location);
-      }
-    }
-  }
+  // Initial errors
+  results.filter((location, data, err) => err !== null).map((location, data, err) => logError(errors, location, err));
+
+  // Data.
+  results
+    .filter((location, data) => data !== null)
+    .map((location, data) => updateData(locations, location, data, errors));
 
   return { ...args, locations, scraperErrors: errors };
 };
