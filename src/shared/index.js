@@ -13,6 +13,30 @@ import cleanLocations from '../events/processor/clean-locations/index.js';
 import writeData from '../events/processor/write-data/index.js';
 import datetime from './lib/datetime/index.js';
 
+const { performance } = require('perf_hooks');
+
+/** The start time of the generation. */
+let startTime = performance.now();
+
+/** The current time, updated as code runs. */
+let currTime = startTime;
+
+/** Creates a function that reports timing data, then returns same args. */
+function reportSeconds(stepName) {
+  return function(args) {
+    const newTime = performance.now();
+    console.log(`PROFILE: ${stepName}: ${(newTime - currTime) / 1000}`);
+    currTime = newTime;
+    return args;
+  };
+}
+
+function reportTotalSeconds(args) {
+  const newTime = performance.now();
+  console.log(`PROFILE: total time: ${(newTime - startTime) / 1000}`);
+  return args;
+};
+
 /**
  * Entry file while we're still hosted on GitHub
  */
@@ -32,15 +56,24 @@ async function generate(date, options = {}) {
 
   // Crawler
   const output = scrapeData(srcs)
-    // processor
+    .then(reportSeconds('scrapeData'))
     .then(rateSources)
+    .then(reportSeconds('rateSources'))
     .then(dedupeLocations)
+    .then(reportSeconds('dedupeLocations'))
     .then(reportScrape)
+    .then(reportSeconds('reportScrape'))
     .then(options.findFeatures !== false && findFeatures)
+    .then(reportSeconds('options.findFeatures !== false && findFeatures'))
     .then(options.findPopulations !== false && findPopulations)
+    .then(reportSeconds('options.findPopulations !== false && findPopulations'))
     .then(transformIds)
+    .then(reportSeconds('transformIds'))
     .then(cleanLocations)
-    .then(options.writeData !== false && writeData); // To be retired
+    .then(reportSeconds('cleanLocations'))
+    .then(options.writeData !== false && writeData) // To be retired
+    .then(reportSeconds('options.writeData !== false && writeData'))
+    .then(reportTotalSeconds);
 
   return output;
 }
